@@ -6,7 +6,8 @@ import { useDay } from '../day/DayProvider'
 const VW = 70
 const VH = 1000
 const LEAF = 'M0 0C-40-10-50-60-10-92C-4-96 4-96 10-92C50-60 40-10 0 0Z'
-const LEAF_COLORS = ['#2F6B4F', '#7FB08A', '#5B7B5A']
+// IguazuFalls (musgo, helecho) + Monet (hoja)
+const LEAF_COLORS = ['#415521', '#97AD3D', '#749E89']
 
 type VineLeafData = { x: number; y: number; r: number; t: number; s: number; c: string }
 
@@ -59,7 +60,7 @@ function Vine({ data, grow, flip }: { data: ReturnType<typeof buildVine>; grow: 
       <m.path
         d={data.d}
         fill="none"
-        stroke="#5B7B5A"
+        stroke="#5E7A2A"
         strokeWidth="3"
         strokeLinecap="round"
         style={{ pathLength: grow }}

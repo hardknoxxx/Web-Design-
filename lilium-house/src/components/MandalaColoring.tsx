@@ -6,9 +6,10 @@ const PALETTE = [
   { name: 'Turquesa', value: '#00A896' },
   { name: 'Rosa', value: '#E07A5F' },
   { name: 'Mostaza', value: '#E9B44C' },
-  { name: 'Salvia', value: '#5B7B5A' },
-  { name: 'Terracota', value: '#B5532F' },
-  { name: 'Lavanda', value: '#9C89B8' },
+  { name: 'Musgo', value: '#415521' },
+  { name: 'Helecho', value: '#97AD3D' },
+  { name: 'Rosa viejo', value: '#C399A2' },
+  { name: 'Niebla', value: '#5A8093' },
   { name: 'Madera', value: '#3D2314' },
   { name: 'Crema', value: '#FFFDF9' },
 ] as const

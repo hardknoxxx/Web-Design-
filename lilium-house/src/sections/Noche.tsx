@@ -54,6 +54,7 @@ export function Noche() {
         <p className="-mt-2 text-xs font-semibold tracking-[0.4em] text-mostaza uppercase">Coffee Lounge</p>
 
         <h2 className="mt-14 font-display text-[clamp(2.6rem,10vw,5rem)] leading-none italic">Te esperamos</h2>
+        <p className="mt-3 inline-block -rotate-2 font-hand text-2xl text-rosa-palido">con la mesa lista y los lápices afilados</p>
 
         <div className="mt-12 grid gap-4 text-left sm:grid-cols-3">
           <div className="rounded-3xl border border-crema/15 bg-crema/[0.04] p-6">

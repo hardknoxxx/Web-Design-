@@ -28,32 +28,32 @@ export function Selva() {
   const textY = useTransform(p, [0.05, 0.2], [40, 0])
 
   return (
-    <section ref={ref} id="selva" className="relative z-[4] h-[240svh] bg-[#1E4A3B]" aria-label="La selva de Puerto Iguazú">
-      <div className="absolute top-0" data-phase="#1E4A3B|#FAF7F2|18:00" />
-      <Edge color="#1E4A3B" flip />
+    <section ref={ref} id="selva" className="relative z-[4] h-[240svh] bg-musgo" aria-label="La selva de Puerto Iguazú">
+      <div className="absolute top-0" data-phase="#415521|#FAF7F2|18:00" />
+      <Edge color="#415521" flip />
       <div className="sticky top-0 h-[100svh] overflow-hidden text-crema">
         {/* bruma de las cataratas */}
         <m.div style={{ y: mistY }} className="absolute inset-x-0 top-0 flex h-[85%] justify-around px-4 opacity-90">
           {[0.14, 0.2, 0.11, 0.17, 0.12].map((o, i) => (
             <div
               key={i}
-              className="h-full w-[11%] rounded-b-full bg-gradient-to-b from-white to-transparent"
+              className="h-full w-[11%] rounded-b-full bg-gradient-to-b from-[#9FBAD3] to-transparent"
               style={{ opacity: o, height: `${70 + (i % 3) * 10}%` }}
             />
           ))}
         </m.div>
 
         <m.div style={{ y: backY }} className="absolute inset-0">
-          <Leaf className="absolute top-[18%] -left-6 w-28 -rotate-[30deg]" color="#2E7A57" />
-          <Leaf className="absolute top-[10%] -right-4 w-24 rotate-[40deg]" color="#2E7A57" />
-          <Leaf className="absolute top-[58%] right-[12%] w-16 rotate-[70deg]" color="#3E8C63" />
+          <Leaf className="absolute top-[18%] -left-6 w-28 -rotate-[30deg]" color="#5E7A2A" />
+          <Leaf className="absolute top-[10%] -right-4 w-24 rotate-[40deg]" color="#5E7A2A" />
+          <Leaf className="absolute top-[58%] right-[12%] w-16 rotate-[70deg]" color="#97AD3D" />
         </m.div>
 
         <m.div
           style={{ opacity: textOpacity, y: textY }}
           className="relative z-10 mx-auto flex h-full max-w-3xl flex-col justify-center px-9 pb-[18svh] text-center sm:px-14"
         >
-          <p className="text-[0.7rem] font-semibold tracking-[0.3em] text-mostaza uppercase">18:00 · Puerto Iguazú</p>
+          <p className="inline-block -rotate-2 font-hand text-3xl text-helecho">18:00 · Puerto Iguazú</p>
           <h2 className="mt-4 font-display text-[clamp(2rem,7.4vw,4rem)] leading-[1.08] font-medium text-balance">
             En la ciudad de las Cataratas, la selva siempre está cerca.
           </h2>
@@ -75,10 +75,10 @@ export function Selva() {
         {/* hojas de frente: la capa más rápida */}
         <m.div style={{ y: frontY }} className="absolute inset-x-0 bottom-0 z-30 h-[45%]">
           <m.div style={{ rotate: frontL }} className="absolute -bottom-[10%] -left-[22%] w-[72vw] max-w-[560px] origin-bottom-left">
-            <Monstera color="#2F6B4F" className="w-full" />
+            <Monstera color="#2C3A14" className="w-full" />
           </m.div>
           <m.div style={{ rotate: frontR }} className="absolute -right-[22%] -bottom-[14%] w-[76vw] max-w-[600px] origin-bottom-right">
-            <Monstera color="#255C44" className="w-full -scale-x-100" />
+            <Monstera color="#33441A" className="w-full -scale-x-100" />
           </m.div>
         </m.div>
       </div>

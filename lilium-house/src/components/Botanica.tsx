@@ -12,7 +12,7 @@ const safeId = (id: string) => id.replace(/[^a-zA-Z0-9_-]/g, '')
 type ArtProps = { className?: string; style?: CSSProperties; color?: string }
 
 /** Hoja de monstera con cortes reales (máscara), apoyada en su base (0,0). */
-export function Monstera({ className, style, color = '#2F6B4F' }: ArtProps) {
+export function Monstera({ className, style, color = '#415521' }: ArtProps) {
   const id = safeId(useId())
   return (
     <svg viewBox="-130 -222 260 232" className={className} style={style} aria-hidden="true">
@@ -37,7 +37,7 @@ export function Monstera({ className, style, color = '#2F6B4F' }: ArtProps) {
   )
 }
 
-export function Leaf({ className, style, color = '#5B7B5A' }: ArtProps) {
+export function Leaf({ className, style, color = '#749E89' }: ArtProps) {
   return (
     <svg viewBox="-50 -98 100 100" className={className} style={style} aria-hidden="true">
       <path d={LEAF} fill={color} />

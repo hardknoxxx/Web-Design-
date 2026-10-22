@@ -80,16 +80,16 @@ export function Amanecer() {
 
         {/* cortina de hojas: la base de cada hoja es el pivote (origin-bottom) */}
         <m.div style={backL} className="absolute -bottom-[3%] -left-[52vw] z-20 w-[95vw] max-w-[700px] origin-bottom">
-          <Monstera color="#7FB08A" className="w-full" />
+          <Monstera color="#749E89" className="w-full" />
         </m.div>
         <m.div style={backR} className="absolute -right-[52vw] -bottom-[3%] z-20 w-[95vw] max-w-[700px] origin-bottom">
-          <Monstera color="#7FB08A" className="w-full -scale-x-100" />
+          <Monstera color="#749E89" className="w-full -scale-x-100" />
         </m.div>
         <m.div style={frontL} className="absolute -bottom-[8%] -left-[42vw] z-20 w-[100vw] max-w-[760px] origin-bottom">
-          <Monstera color="#2F6B4F" className="w-full" />
+          <Monstera color="#415521" className="w-full" />
         </m.div>
         <m.div style={frontR} className="absolute -right-[42vw] -bottom-[8%] z-20 w-[100vw] max-w-[760px] origin-bottom">
-          <Monstera color="#255C44" className="w-full -scale-x-100" />
+          <Monstera color="#3A4C1D" className="w-full -scale-x-100" />
         </m.div>
 
         {/* pista de scroll: un brote */}
@@ -100,7 +100,7 @@ export function Amanecer() {
           <m.div style={{ scale: sprout }} className="origin-bottom animate-sway">
             <Leaf className="h-7 w-7 -rotate-12" color="#E9B44C" />
           </m.div>
-          <span className="text-sm font-medium tracking-wide">Deslizá para que amanezca</span>
+          <span className="font-hand text-2xl leading-none">Deslizá para que amanezca</span>
         </m.div>
       </div>
     </m.section>

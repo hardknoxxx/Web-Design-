@@ -77,15 +77,15 @@ export function TopBar() {
           <m.nav
             id="menu-escenas"
             aria-label="Escenas"
-            className="fixed inset-0 z-[60] overflow-hidden bg-[#1E4A3B] text-crema"
+            className="fixed inset-0 z-[60] overflow-hidden bg-musgo text-crema"
             initial={{ clipPath: 'circle(0% at 92% 4%)' }}
             animate={{ clipPath: 'circle(150% at 92% 4%)' }}
             exit={{ clipPath: 'circle(0% at 92% 4%)' }}
             transition={{ duration: 0.7, ease: EASE }}
           >
-            <Monstera className="absolute -bottom-10 -left-16 w-80 -rotate-12 opacity-60" color="#2F6B4F" />
-            <Monstera className="absolute -right-20 -bottom-16 w-96 rotate-[20deg] opacity-40" color="#255C44" />
-            <Leaf className="absolute top-24 right-10 w-16 rotate-45" color="#7FB08A" />
+            <Monstera className="absolute -bottom-10 -left-16 w-80 -rotate-12 opacity-60" color="#2C3A14" />
+            <Monstera className="absolute -right-20 -bottom-16 w-96 rotate-[20deg] opacity-40" color="#5E7A2A" />
+            <Leaf className="absolute top-24 right-10 w-16 rotate-45" color="#97AD3D" />
             <div className="relative flex h-full flex-col px-7 pt-6 pb-10">
               <div className="flex items-center justify-between">
                 <span className="font-script text-3xl">Lilium</span>
@@ -111,7 +111,7 @@ export function TopBar() {
                       onClick={() => setOpen(false)}
                       className="group flex items-baseline gap-4 py-2 font-display text-4xl sm:text-5xl"
                     >
-                      <span className="w-14 font-sans text-sm font-semibold tabular-nums text-mostaza">{s.time}</span>
+                      <span className="w-16 font-hand text-2xl text-helecho">{s.time}</span>
                       <span className="transition-transform duration-300 group-hover:translate-x-2">{s.label}</span>
                     </a>
                   </m.li>

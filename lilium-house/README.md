@@ -33,6 +33,24 @@ Piezas globales: `day/DayProvider.tsx` (scroll → hora y color de la barra), `c
 `components/CupButton.tsx` (WhatsApp: taza que se llena de café con el scroll y abre una comanda con mensajes listos),
 `components/TopBar.tsx` (logo, reloj sol/luna y menú de escenas), `components/Botanica.tsx` (ilustraciones SVG).
 
+## Tipografía y color
+
+| Uso | Fuente | Origen (revisado antes de usar) |
+| --- | --- | --- |
+| Títulos | Young Serif (variable, 300–700, con itálica) | [noirblancrouge/YoungSerif](https://github.com/noirblancrouge/YoungSerif) · OFL |
+| Textos | Bricolage Grotesque (variable, ancho fijo al 100%) | [ateliertriay/bricolage](https://github.com/ateliertriay/bricolage) · OFL |
+| Notas a mano | Caveat (Impallari Type, Rosario) | [googlefonts/caveat](https://github.com/googlefonts/caveat) · OFL |
+| Logo | Yellowtail (como el cartel del local) | Google Fonts |
+
+Las tres primeras están auto-alojadas en `public/fonts/` como woff2 recortado a latín (licencias en
+`public/fonts/licencias/`).
+
+Paleta: base de la marca (estuco, madera, turquesa `#00A896`, rosa `#E07A5F`) + **IguazuFalls** de
+[NatParksPalettes](https://github.com/kevinsblake/NatParksPalettes) (MIT), tomada de una foto de las Cataratas
+(musgo `#415521`, helecho `#97AD3D`, tierra `#4C3425`, niebla `#5A8093`) + **Monet** de
+[MetBrewer](https://github.com/BlakeRMills/MetBrewer) (CC0), del cuadro de los nenúfares
+(nenúfar `#ABCCBE`, hoja `#749E89`, rosa viejo `#C399A2`). Tokens en `src/index.css`.
+
 ## Para completar antes de publicar
 
 - **WhatsApp**: `SITE.whatsapp` usa `543757457085` (línea fija según Google Maps). Si el WhatsApp del local es un celular, cambiar a `5493757457085`.

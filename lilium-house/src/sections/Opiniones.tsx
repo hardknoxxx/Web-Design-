@@ -34,7 +34,7 @@ export function Opiniones() {
     >
       <Edge color="#E07A5F" />
       <div className="relative z-10 mx-auto max-w-3xl text-center">
-        <p className="text-[0.7rem] font-semibold tracking-[0.3em] text-hierro/70 uppercase">19:30 · Lo que dicen</p>
+        <p className="inline-block -rotate-2 font-hand text-3xl text-hierro/80">19:30 · lo que dicen</p>
         <p className="mt-4 font-display text-[clamp(7rem,34vw,13rem)] leading-none font-medium text-crema tabular-nums" aria-hidden="true">
           <m.span>{scoreLabel}</m.span>
         </p>
@@ -94,10 +94,10 @@ export function Opiniones() {
 
       {/* las hojas empiezan a cerrarse: llega la noche */}
       <m.div style={{ x: leftX, rotate: leftR }} className="absolute -bottom-[6%] -left-[10%] w-[70vw] max-w-[560px] origin-bottom-left">
-        <Monstera color="#2F6B4F" className="w-full" />
+        <Monstera color="#415521" className="w-full" />
       </m.div>
       <m.div style={{ x: rightX, rotate: rightR }} className="absolute -right-[10%] -bottom-[6%] w-[70vw] max-w-[560px] origin-bottom-right">
-        <Monstera color="#2F6B4F" className="w-full -scale-x-100" />
+        <Monstera color="#415521" className="w-full -scale-x-100" />
       </m.div>
     </section>
   )

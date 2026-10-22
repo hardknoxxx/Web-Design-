@@ -56,7 +56,7 @@ export function CupButton() {
             <div className="flex items-start justify-between gap-3 border-b border-dashed border-madera/25 pb-3">
               <div>
                 <p className="text-[0.65rem] font-semibold tracking-[0.25em] text-rosa uppercase">Comanda</p>
-                <p className="font-display text-xl leading-tight">¿Qué se te antoja?</p>
+                <p className="font-hand text-3xl leading-none">¿Qué se te antoja?</p>
               </div>
               <button
                 type="button"
@@ -82,7 +82,7 @@ export function CupButton() {
                     className="group flex items-center justify-between gap-3 rounded-lg px-2 py-2.5 font-medium transition-colors hover:bg-turquesa/10"
                   >
                     <span className="flex items-center gap-2.5">
-                      <span className="font-display text-sm text-rosa italic tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                      <span className="font-hand text-xl text-rosa">{String(i + 1).padStart(2, '0')}</span>
                       {o.label}
                     </span>
                     <WhatsAppIcon className="h-4 w-4 text-turquesa-dark opacity-60 transition-opacity group-hover:opacity-100" />
@@ -118,7 +118,7 @@ export function CupButton() {
               </clipPath>
             </defs>
             {/* hojita de la casa */}
-            <path d="M-27 -12C-36 -30 -16 -36 -10 -25C-16 -22 -22 -18 -27 -12Z" fill="#5B7B5A" />
+            <path d="M-27 -12C-36 -30 -16 -36 -10 -25C-16 -22 -22 -18 -27 -12Z" fill="#415521" />
             {/* vapor al pasar el mouse */}
             <g className="opacity-0 transition-opacity duration-300 group-hover:opacity-100" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none">
               <path className="animate-steam [transform-box:fill-box]" d="M-5 -13C-8 -17 -2 -19 -5 -24" />

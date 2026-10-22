@@ -168,7 +168,7 @@ export function Lily({ input, lowPower, reducedMotion }: Props) {
       curl: 0.9,
       cup: 0.2,
       ruffle: 0.015,
-      palette: ['#3F6B4A', '#5B7B5A', '#8DB580', '#34573D'],
+      palette: ['#415521', '#5E7A2A', '#97AD3D', '#34451A'],
       segU: lowPower ? 16 : 24,
       segV: 6,
     })
@@ -211,7 +211,7 @@ export function Lily({ input, lowPower, reducedMotion }: Props) {
       filament: new THREE.MeshStandardMaterial({ color: '#F4E6C8', roughness: 0.6 }),
       anther: new THREE.MeshStandardMaterial({ color: '#8A3B1E', roughness: 0.85 }),
       stigma: new THREE.MeshStandardMaterial({ color: '#00A896', roughness: 0.35, emissive: '#00A896', emissiveIntensity: 0.25 }),
-      stem: new THREE.MeshStandardMaterial({ color: '#4E6E4C', roughness: 0.7 }),
+      stem: new THREE.MeshStandardMaterial({ color: '#415521', roughness: 0.7 }),
     }),
     [],
   )

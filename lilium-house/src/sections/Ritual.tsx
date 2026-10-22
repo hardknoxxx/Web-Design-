@@ -11,16 +11,19 @@ const ACTS = [
   {
     n: '01',
     title: 'Café de especialidad',
+    note: '¿espresso o algo frío?',
     text: 'Granos seleccionados y tazas generosas: del espresso intenso a las bebidas frías para el calor misionero.',
   },
   {
     n: '02',
     title: 'Chipa casera',
+    note: '¡calentitas!',
     text: 'Almidón de mandioca y queso, como manda la tradición del Litoral. Calentitas, para acompañar el primer sorbo.',
   },
   {
     n: '03',
     title: 'Pastelería',
+    note: 'mirá la vitrina',
     text: 'La vitrina se abre: tortas, cheesecakes y tentaciones para la merienda.',
   },
 ]
@@ -44,7 +47,10 @@ function Act({ p, i, act }: { p: MotionValue<number>; i: number; act: (typeof AC
   ])
   return (
     <m.div style={{ opacity, y }} className="absolute inset-x-0 top-0">
-      <p className="font-display text-2xl text-rosa italic">{act.n}</p>
+      <p className="flex items-baseline gap-3">
+        <span className="font-display text-2xl text-rosa italic">{act.n}</span>
+        <span className="inline-block -rotate-3 font-hand text-2xl text-musgo">{act.note}</span>
+      </p>
       <m.h3 style={{ clipPath: clip }} className="mt-1 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.98] font-medium text-balance">
         {act.title}
       </m.h3>
@@ -111,7 +117,7 @@ export function Ritual() {
         {/* escenario */}
         <div className="relative min-h-0">
           <m.div style={{ rotate: leafR }} className="absolute -top-6 right-2 w-16 opacity-70 lg:w-24">
-            <Leaf color="#7FB08A" className="w-full" />
+            <Leaf color="#97AD3D" className="w-full" />
           </m.div>
           <div className="absolute inset-x-0 bottom-[6%] mx-auto h-3 w-[70%] rounded-[50%] bg-madera/10 blur-[2px]" />
           <m.div style={{ y: cakeY, opacity: cakeOpacity }} className="absolute inset-x-0 bottom-[2%] mx-auto w-[min(72%,400px)] origin-bottom">
