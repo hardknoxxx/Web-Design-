@@ -48,10 +48,10 @@ function Act({ p, i, act }: { p: MotionValue<number>; i: number; act: (typeof AC
   return (
     <m.div style={{ opacity, y }} className="absolute inset-x-0 top-0">
       <p className="flex items-baseline gap-3">
-        <span className="font-display text-2xl text-rosa italic">{act.n}</span>
+        <span className="font-display text-2xl font-semibold text-rosa tabular-nums">{act.n}</span>
         <span className="inline-block -rotate-3 font-hand text-2xl text-musgo">{act.note}</span>
       </p>
-      <m.h3 style={{ clipPath: clip }} className="mt-1 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.98] font-medium text-balance">
+      <m.h3 style={{ clipPath: clip }} className="mt-1 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.98] font-semibold text-balance">
         {act.title}
       </m.h3>
       <p className="mt-4 max-w-sm text-base leading-relaxed text-madera/75 sm:text-lg">{act.text}</p>

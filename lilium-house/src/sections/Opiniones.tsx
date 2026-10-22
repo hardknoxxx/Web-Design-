@@ -35,7 +35,7 @@ export function Opiniones() {
       <Edge color="#E07A5F" />
       <div className="relative z-10 mx-auto max-w-3xl text-center">
         <p className="inline-block -rotate-2 font-hand text-3xl text-hierro/80">19:30 · lo que dicen</p>
-        <p className="mt-4 font-display text-[clamp(7rem,34vw,13rem)] leading-none font-medium text-crema tabular-nums" aria-hidden="true">
+        <p className="mt-4 font-display text-[clamp(7rem,34vw,13rem)] leading-none font-semibold text-crema tabular-nums" aria-hidden="true">
           <m.span>{scoreLabel}</m.span>
         </p>
         <p className="sr-only">
@@ -55,7 +55,7 @@ export function Opiniones() {
           {breakdown.map((b) => (
             <div key={b.label}>
               <dt className="text-xs font-semibold tracking-[0.2em] uppercase opacity-75">{b.label}</dt>
-              <dd className="font-display text-3xl">{fmt(b.score)}</dd>
+              <dd className="font-display text-3xl font-semibold tabular-nums">{fmt(b.score)}</dd>
             </div>
           ))}
         </dl>

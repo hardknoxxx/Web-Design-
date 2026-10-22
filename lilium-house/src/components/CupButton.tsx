@@ -7,17 +7,28 @@ import { CloseIcon, WhatsAppIcon } from './Icons'
 const EASE = [0.22, 1, 0.36, 1] as const
 
 /**
- * Botón de WhatsApp con forma de taza: se va llenando de café a medida que avanza
- * el día (scroll). Al tocarlo se abre una comanda con mensajes listos.
+ * Botón de WhatsApp: una rodaja de tronco (posavasos) con una taza vista desde arriba
+ * que se va llenando de café a medida que avanza el día (scroll). Al tocarlo se abre
+ * una comanda con mensajes listos.
  */
+
+// contorno irregular de la corteza
+const BARK = (() => {
+  const pts = Array.from({ length: 36 }, (_, k) => {
+    const a = (k / 36) * Math.PI * 2
+    const r = 37 + Math.sin(k * 2.7) * 1.1 + Math.cos(k * 5.3) * 0.7
+    return `${(Math.cos(a) * r).toFixed(2)} ${(Math.sin(a) * r).toFixed(2)}`
+  })
+  return `M${pts.join('L')}Z`
+})()
 export function CupButton() {
   const { progress } = useDay()
   const level = useSpring(progress, { stiffness: 110, damping: 28 })
-  const coffeeY = useTransform(level, [0, 1], [23, 2])
-  const labelOpacity = useTransform(progress, [0.9, 0.97], [0, 1])
-  const labelX = useTransform(labelOpacity, [0, 1], [10, 0])
+  // el café se va sirviendo con el día; al final aparece el latte art
+  const coffee = useTransform(level, [0, 1], [0.12, 1])
+  const latte = useTransform(level, [0.88, 0.98], [0, 1])
   const [open, setOpen] = useState(false)
-  const clip = useId().replace(/[^a-zA-Z0-9_-]/g, '')
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '')
   const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -94,48 +105,55 @@ export function CupButton() {
         )}
       </AnimatePresence>
 
-      <div className="flex items-center gap-3">
-        <m.span
-          aria-hidden="true"
-          style={{ opacity: labelOpacity, x: labelX }}
-          className="pointer-events-none rounded-full bg-crema px-4 py-2 text-sm font-semibold text-madera shadow-lg"
-        >
-          Pedí por WhatsApp
-        </m.span>
-        <m.button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-controls="comanda"
-          aria-label="Escribinos por WhatsApp"
-          whileTap={{ scale: 0.92 }}
-          className="group relative grid h-16 w-16 place-items-center rounded-full bg-turquesa shadow-[0_14px_30px_-10px_rgb(0_0_0/0.45)] transition-transform duration-300 hover:-rotate-6"
-        >
-          <svg viewBox="-32 -32 64 64" className="h-16 w-16" aria-hidden="true">
-            <defs>
-              <clipPath id={clip}>
-                <path d="M-13 -8H13V7C13 14 7 16 0 16C-7 16-13 14-13 7Z" />
-              </clipPath>
-            </defs>
-            {/* hojita de la casa */}
-            <path d="M-27 -12C-36 -30 -16 -36 -10 -25C-16 -22 -22 -18 -27 -12Z" fill="#415521" />
-            {/* vapor al pasar el mouse */}
-            <g className="opacity-0 transition-opacity duration-300 group-hover:opacity-100" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none">
-              <path className="animate-steam [transform-box:fill-box]" d="M-5 -13C-8 -17 -2 -19 -5 -24" />
-              <path className="animate-steam [animation-delay:.4s] [transform-box:fill-box]" d="M4 -13C1 -17 7 -19 4 -24" />
-            </g>
-            <g clipPath={`url(#${clip})`}>
-              <m.rect x="-13" y="-8" width="26" height="26" fill="#6B3A1E" style={{ y: coffeeY }} />
-            </g>
-            <path d="M-13 -8H13V7C13 14 7 16 0 16C-7 16-13 14-13 7Z" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinejoin="round" />
-            <path d="M13 -3C21 -3 21 9 13 9" fill="none" stroke="#fff" strokeWidth="2.6" />
-            <path d="M-18 19H18" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" />
-          </svg>
-          <span className="absolute -top-0.5 -right-0.5 grid h-6 w-6 place-items-center rounded-full bg-crema shadow">
-            <WhatsAppIcon className="h-3.5 w-3.5 text-turquesa-dark" />
-          </span>
-        </m.button>
-      </div>
+      <m.button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls="comanda"
+        aria-label="Escribinos por WhatsApp"
+        whileTap={{ scale: 0.92 }}
+        className="group relative h-[78px] w-[78px] transition-transform duration-500 ease-organic [filter:drop-shadow(0_10px_10px_rgb(0_0_0/0.38))] hover:-translate-y-0.5 hover:rotate-[14deg]"
+      >
+        {/* rodaja de tronco (posavasos) con la taza vista desde arriba */}
+        <svg viewBox="-40 -40 80 80" className="h-full w-full" aria-hidden="true">
+          <defs>
+            <radialGradient id={`${uid}-wood`} cx="45%" cy="40%" r="65%">
+              <stop offset="0" stopColor="#E0B98B" />
+              <stop offset="1" stopColor="#B9865A" />
+            </radialGradient>
+          </defs>
+          <path d={BARK} fill="#4C3425" />
+          <circle r="33" fill="#8E5F3C" />
+          <circle r="31.5" fill={`url(#${uid}-wood)`} />
+          <g fill="none" stroke="#9A6A42" strokeWidth=".8" opacity=".75">
+            {[27, 22.5, 18.5, 14.5, 10.5, 6.5, 3].map((r, i) => (
+              <ellipse key={r} cx={i % 2 ? 0.8 : -0.6} cy={i % 2 ? -0.6 : 0.5} rx={r} ry={r * 0.96} />
+            ))}
+          </g>
+          <path d="M3 -2L12 -10L16 -9L27 -16" fill="none" stroke="#6E4628" strokeWidth="1" strokeLinecap="round" />
+          {/* taza */}
+          <g transform="translate(-3 3)">
+            <circle r="21" fill="#3D2314" opacity=".18" transform="translate(1.5 2)" />
+            <circle r="20" fill="#FAF7F2" stroke="#3D2314" strokeOpacity=".35" strokeWidth=".8" />
+            <rect x="14" y="-3.5" width="11" height="7" rx="3.5" fill="#FFFFFF" stroke="#3D2314" strokeWidth="1.2" />
+            <circle r="15" fill="#FFFFFF" stroke="#3D2314" strokeWidth="1.3" />
+            <circle r="15" fill="none" stroke="#00A896" strokeWidth="1.1" strokeDasharray="2 2.2" transform="scale(.9)" />
+            <circle r="12.4" fill="#EFE6DA" />
+            <m.circle r="12.4" fill="#6B3A1E" style={{ scale: coffee }} />
+            <m.circle r="11.2" fill="none" stroke="#C08552" strokeWidth="1.3" style={{ scale: coffee, opacity: coffee }} />
+            <m.path
+              d="M0 7C-5 3-6-3 0-8C6-3 5 3 0 7ZM0 7V-6M0 1L-3-2M0 -2L3-4"
+              fill="#F3E3C8"
+              stroke="#E8D3B0"
+              strokeWidth=".6"
+              style={{ opacity: latte }}
+            />
+          </g>
+        </svg>
+        <span className="absolute -top-1 -right-1 grid h-7 w-7 place-items-center rounded-[4%_70%_4%_70%] bg-turquesa text-crema ring-2 ring-crema/80">
+          <WhatsAppIcon className="h-3.5 w-3.5" />
+        </span>
+      </m.button>
     </div>
   )
 }

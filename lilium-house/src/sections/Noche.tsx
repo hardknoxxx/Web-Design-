@@ -34,7 +34,7 @@ export function Noche() {
         {FIREFLIES.map((f, i) => (
           <span
             key={i}
-            className="absolute h-1.5 w-1.5 animate-firefly rounded-full bg-mostaza shadow-[0_0_12px_4px_rgb(233_180_76/0.45)]"
+            className="absolute h-1.5 w-1.5 animate-firefly rounded-full bg-[#E4F0D0] shadow-[0_0_12px_4px_rgb(171_204_190/0.45)]"
             style={{ left: f.left, top: f.top, animationDelay: f.delay, animationDuration: f.dur }}
           />
         ))}
@@ -45,22 +45,22 @@ export function Noche() {
           <span className="font-script text-[clamp(5rem,24vw,11rem)] leading-[1.05] text-crema/25">Lilium</span>
           <m.span
             style={{ opacity: glow }}
-            className="absolute inset-0 font-script text-[clamp(5rem,24vw,11rem)] leading-[1.05] text-[#FFF6E0] [text-shadow:0_0_18px_rgb(233_180_76/0.85),0_0_42px_rgb(233_180_76/0.5)]"
+            className="absolute inset-0 font-script text-[clamp(5rem,24vw,11rem)] leading-[1.05] text-[#FBFFFC] [text-shadow:0_0_16px_rgb(171_204_190/0.85),0_0_44px_rgb(0_168_150/0.45)]"
             aria-hidden="true"
           >
             Lilium
           </m.span>
         </m.div>
-        <p className="-mt-2 text-xs font-semibold tracking-[0.4em] text-mostaza uppercase">Coffee Lounge</p>
+        <p className="-mt-2 text-xs font-semibold tracking-[0.4em] text-rosa-palido uppercase">Coffee Lounge</p>
 
-        <h2 className="mt-14 font-display text-[clamp(2.6rem,10vw,5rem)] leading-none italic">Te esperamos</h2>
+        <h2 className="mt-14 font-display text-[clamp(2.6rem,10vw,5rem)] leading-none font-semibold">Te esperamos</h2>
         <p className="mt-3 inline-block -rotate-2 font-hand text-2xl text-rosa-palido">con la mesa lista y los lápices afilados</p>
 
         <div className="mt-12 grid gap-4 text-left sm:grid-cols-3">
           <div className="rounded-3xl border border-crema/15 bg-crema/[0.04] p-6">
-            <ClockIcon className="h-7 w-7 text-mostaza" />
-            <p className="mt-4 font-display text-xl">{SITE.hours.days}</p>
-            <p className="mt-1 tabular-nums">{SITE.hours.slots.join('  ·  ')}</p>
+            <ClockIcon className="h-7 w-7 text-nenufar" />
+            <p className="mt-4 text-xl font-semibold">{SITE.hours.days}</p>
+            <p className="mt-1 text-lg lining-nums tabular-nums">{SITE.hours.slots.join('  ·  ')}</p>
             <p className="text-sm text-crema/55">{SITE.hours.closed}</p>
             {status && (
               <p
@@ -79,14 +79,14 @@ export function Noche() {
             href={SITE.mapsHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="group rounded-3xl border border-crema/15 bg-crema/[0.04] p-6 transition-colors hover:border-mostaza/50"
+            className="group rounded-3xl border border-crema/15 bg-crema/[0.04] p-6 transition-colors hover:border-nenufar/50"
           >
-            <MapPinIcon className="h-7 w-7 text-mostaza" />
-            <p className="mt-4 font-display text-xl">{SITE.address}</p>
+            <MapPinIcon className="h-7 w-7 text-nenufar" />
+            <p className="mt-4 text-xl font-semibold lining-nums tabular-nums">{SITE.address}</p>
             <p className="text-crema/70">
               {SITE.postalCode} · {SITE.city}
             </p>
-            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-mostaza">
+            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-nenufar">
               Cómo llegar
               <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </span>
@@ -94,12 +94,12 @@ export function Noche() {
 
           <a
             href={SITE.phoneHref}
-            className="group rounded-3xl border border-crema/15 bg-crema/[0.04] p-6 transition-colors hover:border-mostaza/50"
+            className="group rounded-3xl border border-crema/15 bg-crema/[0.04] p-6 transition-colors hover:border-nenufar/50"
           >
-            <PhoneIcon className="h-7 w-7 text-mostaza" />
-            <p className="mt-4 font-display text-xl">{SITE.phoneDisplay}</p>
+            <PhoneIcon className="h-7 w-7 text-nenufar" />
+            <p className="mt-4 text-xl font-semibold lining-nums tabular-nums">{SITE.phoneDisplay}</p>
             <p className="text-crema/70">Llamanos o tocá la taza para escribirnos</p>
-            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-mostaza">
+            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-nenufar">
               Llamar
               <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </span>

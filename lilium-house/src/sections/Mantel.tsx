@@ -24,7 +24,7 @@ export function Mantel() {
               transition={{ duration: 0.9, ease: EASE }}
             >
               <p className="inline-block -rotate-2 font-hand text-3xl text-musgo">17:00 · la merienda</p>
-              <h2 className="mt-3 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.98] font-medium text-balance">
+              <h2 className="mt-3 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.98] font-semibold text-balance">
                 Coloreá tu mantel
               </h2>
               <p className="mt-4 max-w-md text-lg leading-relaxed text-madera/80">

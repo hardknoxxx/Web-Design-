@@ -49,26 +49,30 @@ export function TopBar() {
             Lilium
           </m.span>
         </a>
-        <div className="pointer-events-auto flex items-center gap-2">
-          <m.div
-            className="flex h-10 items-center gap-2 rounded-full border border-current/25 px-3.5 text-sm font-semibold tabular-nums backdrop-blur-[2px]"
-            style={{ color: fg }}
-            aria-label="Hora del día en Lilium según tu recorrido"
-          >
-            <SunMoon />
-            <m.span>{time}</m.span>
-          </m.div>
-          <m.button
+        <div className="pointer-events-auto flex items-start gap-2.5">
+          {/* cartelito de madera colgado de dos hilos: la hora del día */}
+          <div className="relative pt-3" aria-label="Hora del día en Lilium según tu recorrido">
+            <span className="absolute top-0 left-3 h-3.5 w-px rotate-[8deg] bg-current/40" style={{ color: '#5E7A2A' }} />
+            <span className="absolute top-0 right-3 h-3.5 w-px -rotate-[8deg] bg-current/40" style={{ color: '#5E7A2A' }} />
+            <div className="wood-sign flex h-9 items-center gap-2 rounded-[10px_14px_9px_13px/12px_9px_14px_10px] px-3 text-sm font-semibold text-crema lining-nums tabular-nums">
+              <span className="h-1.5 w-1.5 rounded-full bg-black/35 shadow-[inset_0_1px_0_rgb(255_255_255/0.25)]" />
+              <SunMoon />
+              <m.span>{time}</m.span>
+              <span className="h-1.5 w-1.5 rounded-full bg-black/35 shadow-[inset_0_1px_0_rgb(255_255_255/0.25)]" />
+            </div>
+          </div>
+          {/* menú: una hoja */}
+          <button
             type="button"
-            className="grid h-10 w-10 place-items-center rounded-full border border-current/25"
-            style={{ color: fg }}
+            className="group relative mt-1 grid h-11 w-11 place-items-center rounded-[4%_70%_4%_70%] bg-hoja-monet text-hierro shadow-[0_6px_14px_-6px_rgb(0_0_0/0.5)] ring-1 ring-hierro/15 transition-transform duration-300 hover:-rotate-12"
             aria-label="Abrir menú"
             aria-expanded={open}
             aria-controls="menu-escenas"
             onClick={() => setOpen(true)}
           >
-            <MenuIcon className="h-5 w-5" />
-          </m.button>
+            <span className="absolute inset-[18%] rotate-45 border-t border-hierro/20" aria-hidden="true" />
+            <MenuIcon className="relative h-[18px] w-[18px]" />
+          </button>
         </div>
       </header>
 

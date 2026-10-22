@@ -51,13 +51,13 @@ export function Selva() {
 
         <m.div
           style={{ opacity: textOpacity, y: textY }}
-          className="relative z-10 mx-auto flex h-full max-w-3xl flex-col justify-center px-9 pb-[18svh] text-center sm:px-14"
+          className="relative z-10 mx-auto flex h-full w-full max-w-3xl flex-col justify-center px-9 pb-[18svh] text-center sm:px-14"
         >
           <p className="inline-block -rotate-2 font-hand text-3xl text-helecho">18:00 · Puerto Iguazú</p>
-          <h2 className="mt-4 font-display text-[clamp(2rem,7.4vw,4rem)] leading-[1.08] font-medium text-balance">
+          <h2 className="mt-4 font-display text-[clamp(2rem,7.4vw,4rem)] leading-[1.08] font-semibold text-balance">
             En la ciudad de las Cataratas, la selva siempre está cerca.
           </h2>
-          <p className="mx-auto mt-5 max-w-md text-lg leading-relaxed text-crema/75">
+          <p className="mx-auto mt-5 w-full max-w-md text-lg leading-relaxed text-pretty text-crema/80">
             Por eso Lilium es verde por dentro: plantas en cada rincón, flores frescas en las mesas y madera por todos lados.
           </p>
         </m.div>
@@ -65,10 +65,10 @@ export function Selva() {
         <m.div style={{ x: toucanX, y: toucanY }} className="absolute top-[16%] left-0 z-20 w-[min(42vw,260px)]">
           <Toucan className="w-full" />
         </m.div>
-        <m.div style={{ x: b1x, y: b1y }} className="absolute bottom-[30%] left-[20%] z-20 w-10">
+        <m.div style={{ x: b1x, y: b1y }} className="absolute bottom-[30%] left-[20%] z-[5] w-10">
           <Butterfly className="w-full" color="#00A896" />
         </m.div>
-        <m.div style={{ x: b2x, y: b2y }} className="absolute right-[18%] bottom-[22%] z-20 w-8">
+        <m.div style={{ x: b2x, y: b2y }} className="absolute right-[18%] bottom-[22%] z-[5] w-8">
           <Butterfly className="w-full" color="#E07A5F" />
         </m.div>
 

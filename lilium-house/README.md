@@ -37,12 +37,11 @@ Piezas globales: `day/DayProvider.tsx` (scroll → hora y color de la barra), `c
 
 | Uso | Fuente | Origen (revisado antes de usar) |
 | --- | --- | --- |
-| Títulos | Young Serif (variable, 300–700, con itálica) | [noirblancrouge/YoungSerif](https://github.com/noirblancrouge/YoungSerif) · OFL |
-| Textos | Bricolage Grotesque (variable, ancho fijo al 100%) | [ateliertriay/bricolage](https://github.com/ateliertriay/bricolage) · OFL |
+| Títulos y textos | Bricolage Grotesque (variable con tamaño óptico: corte display en títulos; cifras alineadas en datos) | [ateliertriay/bricolage](https://github.com/ateliertriay/bricolage) · OFL |
 | Notas a mano | Caveat (Impallari Type, Rosario) | [googlefonts/caveat](https://github.com/googlefonts/caveat) · OFL |
 | Logo | Yellowtail (como el cartel del local) | Google Fonts |
 
-Las tres primeras están auto-alojadas en `public/fonts/` como woff2 recortado a latín (licencias en
+Bricolage y Caveat están auto-alojadas en `public/fonts/` como woff2 recortado a latín (licencias en
 `public/fonts/licencias/`).
 
 Paleta: base de la marca (estuco, madera, turquesa `#00A896`, rosa `#E07A5F`) + **IguazuFalls** de
