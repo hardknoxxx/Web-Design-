@@ -18,18 +18,47 @@
 
   --ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --animate-spin-slow: spin 60s linear infinite;
-  --animate-marquee: marquee 38s linear infinite;
-  --animate-float: float 6s ease-in-out infinite;
+  --animate-steam: steam 3.2s ease-in-out infinite;
+  --animate-wing: wing 0.45s ease-in-out infinite alternate;
+  --animate-flutter: flutter 0.28s ease-in-out infinite alternate;
+  --animate-sway: sway 2.6s ease-in-out infinite;
+  --animate-firefly: firefly 4s ease-in-out infinite;
 
-  @keyframes marquee {
-    to {
-      transform: translate3d(-50%, 0, 0);
+  @keyframes steam {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+      opacity: 0.8;
+    }
+    50% {
+      transform: translate3d(0, -5px, 0);
+      opacity: 0.45;
     }
   }
-  @keyframes float {
+  @keyframes wing {
+    to {
+      transform: rotate(28deg);
+    }
+  }
+  @keyframes flutter {
+    to {
+      transform: scaleX(0.35);
+    }
+  }
+  @keyframes sway {
     50% {
-      transform: translate3d(0, -6px, 0);
+      transform: rotate(8deg);
+    }
+  }
+  @keyframes firefly {
+    0%,
+    100% {
+      opacity: 0.15;
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      opacity: 1;
+      transform: translate3d(6px, -10px, 0);
     }
   }
 }
@@ -43,6 +72,10 @@
 
   body {
     @apply bg-crema font-sans text-madera antialiased;
+    overflow-x: clip;
+  }
+
+  .stucco {
     /* Estuco: ruido SVG rasterizado una sola vez por tile (sin costo por frame) */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.24 0 0 0 0 0.14 0 0 0 0 0.08 0.45 0 0 0 -0.16'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
@@ -84,22 +117,5 @@
   .eyebrow {
     @apply inline-flex items-center gap-3 text-xs font-semibold tracking-[0.28em] uppercase;
   }
-  .wood-grain {
-    /* tablas verticales de madera oscura, como la fachada del local */
-    background-color: var(--color-madera);
-    background-image:
-      repeating-linear-gradient(
-        90deg,
-        rgb(0 0 0 / 0.22) 0 1px,
-        rgb(255 255 255 / 0.025) 1px 3px,
-        transparent 3px 38px,
-        rgb(0 0 0 / 0.06) 38px 46px
-      ),
-      repeating-linear-gradient(
-        180deg,
-        transparent 0 140px,
-        rgb(255 255 255 / 0.012) 140px 260px
-      ),
-      radial-gradient(120% 60% at 50% 0%, rgb(224 122 95 / 0.14), transparent 70%);
-  }
+
 }

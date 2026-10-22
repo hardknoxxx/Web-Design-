@@ -37,7 +37,8 @@ export default function LilyCanvas() {
   // Progreso de scroll del hero, sin re-renders
   useEffect(() => {
     const onScroll = () => {
-      input.current.scroll = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.85)))
+      // el hero dura ~1.3 pantallas de scroll (escena fijada)
+      input.current.scroll = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 1.3)))
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
