@@ -1,0 +1,105 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-crema: #faf7f2;
+  --color-estuco: #f0eae1;
+  --color-madera: #3d2314;
+  --color-madera-soft: #6b4a36;
+  --color-hierro: #1a1a1a;
+  --color-turquesa: #00a896;
+  --color-turquesa-dark: #008a7b;
+  --color-rosa: #e07a5f;
+  --color-salvia: #5b7b5a;
+  --color-mostaza: #e9b44c;
+
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-script: 'Yellowtail', 'Brush Script MT', cursive;
+
+  --ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-spin-slow: spin 60s linear infinite;
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+  @keyframes float {
+    50% {
+      transform: translate3d(0, -6px, 0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-crema font-sans text-madera antialiased;
+    /* Estuco: ruido SVG rasterizado una sola vez por tile (sin costo por frame) */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.24 0 0 0 0 0.14 0 0 0 0 0.08 0.45 0 0 0 -0.16'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background: var(--color-turquesa);
+    color: var(--color-hierro);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-turquesa);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 py-3 text-base font-semibold transition-[transform,background-color,box-shadow,color] duration-300 ease-organic select-none active:scale-[0.97];
+  }
+  .btn-primary {
+    @apply bg-turquesa text-hierro shadow-[0_10px_30px_-12px_rgb(0_168_150/0.7)] hover:bg-[#13b9a6] hover:shadow-[0_14px_34px_-12px_rgb(0_168_150/0.85)];
+  }
+  .btn-outline {
+    @apply border-2 border-madera/80 text-madera hover:bg-madera hover:text-crema;
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-3 text-xs font-semibold tracking-[0.28em] uppercase;
+  }
+  .wood-grain {
+    /* tablas verticales de madera oscura, como la fachada del local */
+    background-color: var(--color-madera);
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        rgb(0 0 0 / 0.22) 0 1px,
+        rgb(255 255 255 / 0.025) 1px 3px,
+        transparent 3px 38px,
+        rgb(0 0 0 / 0.06) 38px 46px
+      ),
+      repeating-linear-gradient(
+        180deg,
+        transparent 0 140px,
+        rgb(255 255 255 / 0.012) 140px 260px
+      ),
+      radial-gradient(120% 60% at 50% 0%, rgb(224 122 95 / 0.14), transparent 70%);
+  }
+}
