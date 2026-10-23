@@ -62,7 +62,7 @@ export function CupButton() {
             exit={{ opacity: 0, y: 12, rotate: 3, scale: 0.94 }}
             transition={{ duration: 0.45, ease: EASE }}
             style={{ transformOrigin: '90% 100%' }}
-            className="w-[min(18rem,calc(100vw-2rem))] rounded-[4px] bg-[#FFFDF9] p-5 text-madera shadow-[0_24px_50px_-18px_rgb(0_0_0/0.45)] [background-image:repeating-linear-gradient(transparent_0_27px,rgb(0_168_150/0.12)_27px_28px)]"
+            className="w-[min(18rem,calc(100vw-2rem))] rounded-[4px] bg-[#FFFDF9] p-5 text-madera shadow-[0_24px_50px_-18px_rgb(0_0_0/0.45)] [background-image:repeating-linear-gradient(transparent_0_27px,rgb(100_188_176/0.12)_27px_28px)]"
           >
             <div className="flex items-start justify-between gap-3 border-b border-dashed border-madera/25 pb-3">
               <div>
@@ -137,7 +137,7 @@ export function CupButton() {
             <circle r="20" fill="#FAF7F2" stroke="#3D2314" strokeOpacity=".35" strokeWidth=".8" />
             <rect x="14" y="-3.5" width="11" height="7" rx="3.5" fill="#FFFFFF" stroke="#3D2314" strokeWidth="1.2" />
             <circle r="15" fill="#FFFFFF" stroke="#3D2314" strokeWidth="1.3" />
-            <circle r="15" fill="none" stroke="#00A896" strokeWidth="1.1" strokeDasharray="2 2.2" transform="scale(.9)" />
+            <circle r="15" fill="none" stroke="#64BCB0" strokeWidth="1.1" strokeDasharray="2 2.2" transform="scale(.9)" />
             <circle r="12.4" fill="#EFE6DA" />
             <m.circle r="12.4" fill="#6B3A1E" style={{ scale: coffee }} />
             <m.circle r="11.2" fill="none" stroke="#C08552" strokeWidth="1.3" style={{ scale: coffee, opacity: coffee }} />

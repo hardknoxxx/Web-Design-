@@ -6,9 +6,9 @@
     <title>Lilium Coffee Lounge · Puerto Iguazú, Misiones</title>
     <meta
       name="description"
-      content="Café de especialidad, chipa casera, pastelería y manteles para colorear sobre Av. Tres Fronteras, en el corazón verde de Puerto Iguazú, Misiones."
+      content="Desayunos, almuerzos y meriendas: café de especialidad, chipa casera, pastelería y manteles para colorear sobre Av. Tres Fronteras, en el corazón verde de Puerto Iguazú, Misiones."
     />
-    <meta name="theme-color" content="#F4E4CC" />
+    <meta name="theme-color" content="#64BCB0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <meta property="og:type" content="website" />
@@ -16,7 +16,7 @@
     <meta property="og:title" content="Lilium Coffee Lounge · Puerto Iguazú" />
     <meta
       property="og:description"
-      content="Café de especialidad, chipa casera y pastelería en el corazón verde de Puerto Iguazú."
+      content="Desayunos, almuerzos y meriendas en el corazón verde de Puerto Iguazú."
     />
 
     <!-- Tipografías propias (OFL, auto-alojadas): Bricolage Grotesque, Caveat -->
@@ -32,7 +32,8 @@
       {
         "@context": "https://schema.org",
         "@type": "CafeOrCoffeeShop",
-        "name": "Lilium House & Coffee",
+        "name": "Lilium Coffee Lounge",
+        "alternateName": "Lilium House & Coffee",
         "telephone": "+54 3757 45-7085",
         "address": {
           "@type": "PostalAddress",
@@ -42,16 +43,24 @@
           "addressRegion": "Misiones",
           "addressCountry": "AR"
         },
+        "servesCuisine": ["Café", "Desayunos", "Almuerzos", "Meriendas", "Pastelería"],
+        "sameAs": ["https://www.instagram.com/lilium.coffee/"],
         "openingHoursSpecification": [
           {
             "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            "opens": "08:00",
+            "closes": "21:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Sunday",
             "opens": "08:00",
             "closes": "12:00"
           },
           {
             "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "dayOfWeek": "Sunday",
             "opens": "17:00",
             "closes": "21:00"
           }

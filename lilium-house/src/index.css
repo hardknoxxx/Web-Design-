@@ -36,9 +36,12 @@
   --color-madera: #3d2314;
   --color-madera-soft: #6b4a36;
   --color-hierro: #1a1a1a;
-  --color-turquesa: #00a896;
-  --color-turquesa-dark: #008a7b;
-  /* Paleta "Tierra colorada": suelo rojo de Misiones, selva, yerba y madera
+  --color-turquesa: #64bcb0;
+  --color-turquesa-dark: #277067;
+  --color-laguna: #1c4a45;
+  --color-laguna-deep: #173f3b;
+  --color-menta: #bfe3dc;
+  /* Menta del logo (Lilium Coffee Lounge) como color de marca; acentos "tierra colorada": suelo rojo de Misiones, selva, yerba y madera
      (base Bakery/Cafe de UI UX Pro Max + IguazuFalls de NatParksPalettes) */
   --color-tierra: #b4472b;
   --color-tierra-dark: #8e3520;
@@ -188,7 +191,7 @@
     @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 py-3 text-base font-semibold transition-[transform,background-color,box-shadow,color] duration-300 ease-organic select-none active:scale-[0.97];
   }
   .btn-primary {
-    @apply bg-turquesa text-hierro shadow-[0_10px_30px_-12px_rgb(0_168_150/0.7)] hover:bg-[#13b9a6] hover:shadow-[0_14px_34px_-12px_rgb(0_168_150/0.85)];
+    @apply bg-turquesa text-hierro shadow-[0_10px_30px_-12px_rgb(100_188_176/0.7)] hover:bg-[#78c8bd] hover:shadow-[0_14px_34px_-12px_rgb(100_188_176/0.85)];
   }
   .btn-outline {
     @apply border-2 border-madera/80 text-madera hover:bg-madera hover:text-crema;

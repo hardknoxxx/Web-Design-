@@ -24,7 +24,7 @@ npm run preview  # servir el build
 | --- | --- | --- |
 | `sections/Amanecer.tsx` | 08:00 | Escena fijada: lirio 3D; la cortina de hojas se abre, sube el sol, aparece la bajada |
 | `sections/Ritual.tsx` | 09:00–11:00 | Escena fijada de 3 actos: la taza entra y cambia de lugar, llega la chipa, se levanta la campana de la torta |
-| `sections/Carta.tsx` | 11:45 | Los platos se sirven sobre la mesa de madera (datos en `CARTA`, `src/data/site.ts`) |
+| `sections/Carta.tsx` | 11:45 | Pestañas Desayunos / Almuerzos / Meriendas (abre la que corresponde a la hora); platos ilustrados y fotos del Instagram se sirven sobre la mesa (datos en `CARTA`, `src/data/site.ts`) |
 | `sections/Mantel.tsx` | 17:00 | El mantel de papel se despliega y se colorea (mandala interactivo, descarga PNG) |
 | `sections/Selva.tsx` | 18:00 | Parallax: bruma de cataratas, tucán que cruza, mariposas, hojas de frente |
 | `sections/Opiniones.tsx` | 19:30 | Contador 0 → 4,5 (Google), chips, las hojas empiezan a cerrarse |
@@ -45,25 +45,28 @@ Piezas globales: `day/DayProvider.tsx` (scroll → hora y color de la barra), `c
 
 Auto-alojadas en `public/fonts/` como woff2 recortado a latín (licencias en `public/fonts/licencias/`).
 
-Paleta **Tierra colorada** (tokens en `src/index.css`): el suelo rojo de Misiones (`#B4472B`), miel `#D9A441`,
-canela, madera y crema, más los verdes de la selva (musgo `#415521`, yerba `#6F7F2E`, helecho `#97AD3D`).
-Base tomada de la paleta Bakery/Cafe de la skill UI UX Pro Max e IguazuFalls de NatParksPalettes. El turquesa
-`#00A896` queda como color de marca, usado con moderación.
+Color de marca: la **menta del logo** `#64BCB0` (token `turquesa`), con `turquesa-dark` `#277067` para texto
+sobre claro y `laguna` `#1C4A45` para superficies oscuras (menú, noche). Acompañan madera, crema, miel y los
+verdes de la selva (musgo `#415521`, yerba `#6F7F2E`, helecho `#97AD3D`); la tierra colorada `#B4472B` queda
+como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
 
 ## Animación
 
 - **GSAP + ScrollTrigger** (`src/lib/gsap.ts`): cortina de hojas del amanecer (8 especies, cada una con su
   ángulo, distancia y momento), enredaderas asimétricas (`components/Vines.tsx`: filodendro a la izquierda,
   hiedra con flores a la derecha, con ritmos de crecimiento distintos), platos de la carta, potus, picaflor,
-  hojas que caen y el menú-hoja que se despliega en el panel.
+  hojas que caen y el menú-hoja: un contorno de 8 curvas (`clip-path: path()`) cuyos bordes crecen a
+  ritmos distintos, de modo que la hoja cambia de forma hasta volverse panel y al cerrar vuelve a ser hoja.
 - **Framer Motion**: escenas fijadas existentes (ritual, mantel, selva, opiniones, noche) y la comanda.
 - Todo respeta `prefers-reduced-motion` y anima solo `transform`/`opacity`/`clip-path`.
 
 ## Para completar antes de publicar
 
-- **WhatsApp**: `SITE.whatsapp` usa `543757457085` (línea fija según Google Maps). Si el WhatsApp del local es un celular, cambiar a `5493757457085`.
-- **Carta**: los platos de `CARTA` salen de las fotos y opiniones del local; confirmar con la carta real.
-- **Fotos**: la página usa ilustraciones propias. Si se agregan fotos del local, deben ser propias o con permiso.
+- **WhatsApp**: `SITE.whatsapp` = `543757317284` (el del perfil de Instagram, wa.link/k3hzi5).
+- **Horario**: Mar a Sáb 08–21, Dom 08–12 y 17–21, lunes cerrado (`SITE.hours`, `useOpenStatus`, JSON-LD).
+- **Carta**: nombres y descripciones de `CARTA` salen de las fotos y opiniones; confirmar con la carta real.
+- **Fotos** (`public/fotos/`): recortes chicos de la grilla de Instagram del local. Reemplazar por los originales
+  en mejor resolución (mín. 800 px) cuando estén.
 
 ## Rendimiento móvil
 

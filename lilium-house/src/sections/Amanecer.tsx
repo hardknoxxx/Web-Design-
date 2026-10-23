@@ -94,7 +94,7 @@ export function Amanecer() {
         />
 
         <div data-title="" className="relative z-10 pt-[max(5.5rem,12svh)] text-center">
-          <p className="text-[0.7rem] font-semibold tracking-[0.3em] text-tierra uppercase">Coffee Lounge · Puerto Iguazú</p>
+          <p className="text-[0.7rem] font-semibold tracking-[0.3em] text-turquesa-dark uppercase">Coffee Lounge · Puerto Iguazú</p>
           <h1 className="mt-1 font-script text-[clamp(4.6rem,21vw,10rem)] leading-[1.05] text-madera">Lilium</h1>
         </div>
 
@@ -106,7 +106,7 @@ export function Amanecer() {
           <Suspense
             fallback={
               <div className="grid h-full place-items-center">
-                <LilyMark className="h-24 w-24 animate-pulse text-tierra/70" />
+                <LilyMark className="h-24 w-24 animate-pulse text-turquesa" />
               </div>
             }
           >
@@ -120,7 +120,7 @@ export function Amanecer() {
           data-tagline=""
           className="invisible absolute inset-x-0 bottom-[11svh] z-20 mx-auto max-w-xl px-9 text-center font-display text-[clamp(1.35rem,5.2vw,2rem)] leading-snug text-balance text-madera"
         >
-          Café de especialidad, chipa casera y pastelería en el corazón verde de Puerto Iguazú.
+          Desayunos, almuerzos y meriendas con café de especialidad, en el corazón verde de Puerto Iguazú.
         </p>
 
         {/* cortina de hojas */}

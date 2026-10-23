@@ -57,13 +57,13 @@ export function Toucan({ className, style }: ArtProps) {
       <ellipse cx="11" cy="-12" rx="14" ry="16" fill="#F7E2A9" />
       <path d="M14 -28C60 -40 92 -20 98 -8C72 -10 42 -12 16 -14Z" fill="#D9A441" />
       <path d="M84 -16C92 -14 96 -10 98 -8C92 -8 88 -9 84 -10Z" fill="#C2413A" />
-      <circle cx="8" cy="-24" r="5" fill="#00A896" />
+      <circle cx="8" cy="-24" r="5" fill="#64BCB0" />
       <circle cx="8" cy="-24" r="2" fill="#1A1A1A" />
     </svg>
   )
 }
 
-export function Butterfly({ className, style, color = '#00A896' }: ArtProps) {
+export function Butterfly({ className, style, color = '#64BCB0' }: ArtProps) {
   return (
     <svg viewBox="-24 -22 48 40" className={className} style={style} aria-hidden="true">
       <g className="origin-center animate-flutter [transform-box:fill-box]">
@@ -86,7 +86,7 @@ export function Cup({ className, steam }: { className?: string; steam?: MotionVa
       <ellipse cx="0" cy="46" rx="78" ry="13" fill="#F0EAE1" stroke={INK} strokeWidth="3" />
       <path d="M52 -6C82 -8 82 30 46 26" fill="none" stroke={INK} strokeWidth="6" />
       <path d="M-54 -22H54C54 30 32 46 0 46C-32 46-54 30-54 -22Z" fill="#FAF7F2" stroke={INK} strokeWidth="3" />
-      <path d="M-51 0H51" stroke="#00A896" strokeWidth="8" />
+      <path d="M-51 0H51" stroke="#64BCB0" strokeWidth="8" />
       <ellipse cx="0" cy="-22" rx="54" ry="10" fill="#6B3A1E" stroke={INK} strokeWidth="3" />
       <g className="animate-steam [transform-box:fill-box]">
         {[-20, 0, 20].map((x, i) => (
@@ -147,16 +147,16 @@ export function CakeStand({ className, dome }: { className?: string; dome?: Moti
         <circle key={x} cx={x} cy="-28" r="7" fill="#B5302F" />
       ))}
       <m.g style={dome ? { y: dome } : undefined}>
-        <path d="M-80 36C-80 -110 80 -110 80 36" fill="#fff" fillOpacity=".3" stroke="#00A896" strokeWidth="3" />
+        <path d="M-80 36C-80 -110 80 -110 80 36" fill="#fff" fillOpacity=".3" stroke="#64BCB0" strokeWidth="3" />
         <path d="M-56 -10C-52 -50 -30 -70 -14 -74" stroke="#fff" strokeWidth="5" strokeLinecap="round" fill="none" opacity=".8" />
-        <circle cx="0" cy="-74" r="9" fill="#00A896" />
+        <circle cx="0" cy="-74" r="9" fill="#64BCB0" />
       </m.g>
     </svg>
   )
 }
 
 export function PencilJar({ className }: { className?: string }) {
-  const colors = ['#00A896', '#B4472B', '#D9A441', '#5B7B5A', '#9C89B8']
+  const colors = ['#64BCB0', '#B4472B', '#D9A441', '#5B7B5A', '#9C89B8']
   return (
     <svg viewBox="-44 -140 88 156" className={className} aria-hidden="true">
       {colors.map((c, i) => (

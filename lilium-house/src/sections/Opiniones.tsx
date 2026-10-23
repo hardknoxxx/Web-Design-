@@ -29,15 +29,15 @@ export function Opiniones() {
     <section
       ref={ref}
       id="opiniones"
-      data-phase="#B4472B|#FAF7F2|19:30"
-      className="relative z-[6] overflow-x-clip bg-tierra px-9 pt-32 pb-48 text-crema sm:px-14"
+      data-phase="#64BCB0|#173F3B|19:30"
+      className="relative z-[6] overflow-x-clip bg-turquesa px-9 pt-32 pb-48 text-laguna-deep sm:px-14"
       aria-label="Opiniones en Google"
     >
-      <Edge color="#B4472B" />
+      <Edge color="#64BCB0" />
       <HojasCayendo />
       <div className="relative z-10 mx-auto max-w-3xl text-center">
-        <p className="inline-block -rotate-2 font-hand text-3xl text-crema/85">19:30 · lo que dicen</p>
-        <p className="mt-4 font-display text-[clamp(7rem,34vw,13rem)] leading-none font-semibold text-crema tabular-nums" aria-hidden="true">
+        <p className="inline-block -rotate-2 font-hand text-3xl text-laguna">19:30 · lo que dicen</p>
+        <p className="mt-4 font-display text-[clamp(7rem,34vw,13rem)] leading-none font-semibold text-white tabular-nums [text-shadow:0_2px_0_rgb(23_63_59/0.18)]" aria-hidden="true">
           <m.span>{scoreLabel}</m.span>
         </p>
         <p className="sr-only">
@@ -45,8 +45,8 @@ export function Opiniones() {
         </p>
         <div className="mt-3 flex items-center justify-center gap-3" aria-hidden="true">
           <span className="relative text-2xl tracking-[0.2em]">
-            <span className="text-crema/25">★★★★★</span>
-            <m.span style={{ width: stars }} className="absolute inset-0 overflow-hidden whitespace-nowrap text-miel">
+            <span className="text-laguna/25">★★★★★</span>
+            <m.span style={{ width: stars }} className="absolute inset-0 overflow-hidden whitespace-nowrap text-white">
               ★★★★★
             </m.span>
           </span>
@@ -87,7 +87,7 @@ export function Opiniones() {
           href={SITE.mapsHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mt-10 inline-flex items-center gap-2 border-b border-crema/50 pb-1 font-semibold"
+          className="group mt-10 inline-flex items-center gap-2 border-b border-laguna/40 pb-1 font-semibold"
         >
           Ver opiniones en Google Maps
           <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />

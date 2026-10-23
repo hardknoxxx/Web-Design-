@@ -137,7 +137,7 @@ export function Hummingbird({ className, style }: Props) {
       </g>
       <path d="M-16 6C-36 10-48 20-54 26C-40 24-28 18-14 14Z" fill="#22351E" />
       <ellipse cx="0" cy="2" rx="20" ry="10" fill="#415521" />
-      <ellipse cx="4" cy="6" rx="12" ry="5" fill="#00A896" opacity=".9" />
+      <ellipse cx="4" cy="6" rx="12" ry="5" fill="#64BCB0" opacity=".9" />
       <circle cx="16" cy="-2" r="7" fill="#22351E" />
       <circle cx="18" cy="-3" r="1.6" fill="#FAF7F2" />
       <path d="M22-2L56-8L22 1Z" fill="#3D2314" />

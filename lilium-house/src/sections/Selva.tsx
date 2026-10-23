@@ -66,7 +66,7 @@ export function Selva() {
           <Toucan className="w-full" />
         </m.div>
         <m.div style={{ x: b1x, y: b1y }} className="absolute bottom-[30%] left-[20%] z-[5] w-10">
-          <Butterfly className="w-full" color="#00A896" />
+          <Butterfly className="w-full" color="#64BCB0" />
         </m.div>
         <m.div style={{ x: b2x, y: b2y }} className="absolute right-[18%] bottom-[22%] z-[5] w-8">
           <Butterfly className="w-full" color="#B4472B" />

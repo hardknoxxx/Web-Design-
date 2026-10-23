@@ -3,7 +3,7 @@ import { memo, useCallback, useMemo, useRef, useState, type ReactNode } from 're
 import { PencilJar } from './Botanica'
 
 const PALETTE = [
-  { name: 'Turquesa', value: '#00A896' },
+  { name: 'Turquesa', value: '#64BCB0' },
   { name: 'Tierra colorada', value: '#B4472B' },
   { name: 'Miel', value: '#D9A441' },
   { name: 'Yerba', value: '#6F7F2E' },

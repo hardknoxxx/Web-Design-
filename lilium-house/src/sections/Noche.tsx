@@ -1,7 +1,7 @@
 import { m, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import { Edge } from '../components/Edge'
-import { ArrowIcon, CupHoursIcon, LilyMark, LilyPinIcon, RotaryPhoneIcon } from '../components/Icons'
+import { ArrowIcon, CupHoursIcon, InstagramIcon, LilyMark, LilyPinIcon, RotaryPhoneIcon } from '../components/Icons'
 import { SITE } from '../data/site'
 import { useOpenStatus } from '../hooks/useOpenStatus'
 
@@ -25,11 +25,11 @@ export function Noche() {
     <section
       ref={ref}
       id="visitanos"
-      data-phase="#20140C|#FAF7F2|21:00"
-      className="relative z-[7] overflow-x-clip bg-[#20140C] px-9 pt-28 pb-12 text-crema sm:px-14"
+      data-phase="#0F2220|#FAF7F2|21:00"
+      className="relative z-[7] overflow-x-clip bg-[#0F2220] px-9 pt-28 pb-12 text-crema sm:px-14"
       aria-label="Visitanos"
     >
-      <Edge color="#20140C" flip />
+      <Edge color="#0F2220" flip />
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         {FIREFLIES.map((f, i) => (
           <span
@@ -45,7 +45,7 @@ export function Noche() {
           <span className="font-script text-[clamp(5rem,24vw,11rem)] leading-[1.05] text-crema/25">Lilium</span>
           <m.span
             style={{ opacity: glow }}
-            className="absolute inset-0 font-script text-[clamp(5rem,24vw,11rem)] leading-[1.05] text-[#FBFFFC] [text-shadow:0_0_16px_rgb(171_204_190/0.85),0_0_44px_rgb(0_168_150/0.45)]"
+            className="absolute inset-0 font-script text-[clamp(5rem,24vw,11rem)] leading-[1.05] text-[#FBFFFC] [text-shadow:0_0_16px_rgb(171_204_190/0.85),0_0_44px_rgb(100_188_176/0.45)]"
             aria-hidden="true"
           >
             Lilium
@@ -57,18 +57,14 @@ export function Noche() {
         <p className="mt-3 inline-block -rotate-2 font-hand text-2xl text-arena">con la mesa lista y los lápices afilados</p>
 
         {/* tarjeta de datos, como una carta de café */}
-        <div className="relative mx-auto mt-12 max-w-4xl rounded-[28px] border border-arena/20 bg-[#2A1A10]/85 p-7 text-left font-ticket text-crema sm:p-10">
+        <div className="relative mx-auto mt-12 max-w-4xl rounded-[28px] border border-arena/20 bg-[#163330]/85 p-7 text-left font-ticket text-crema sm:p-10">
           <div className="grid gap-8 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-dashed sm:divide-arena/20">
             <div className="sm:pr-8">
               <CupHoursIcon className="h-9 w-9 text-arena" />
               <p className="mt-4 text-[0.7rem] tracking-[0.3em] text-arena uppercase">Horario</p>
               <p className="mt-2 text-lg font-bold">{SITE.hours.days}</p>
               <dl className="mt-2 space-y-1 text-[0.95rem]">
-                {[
-                  ['Mañana', SITE.hours.slots[0]],
-                  ['Tarde', SITE.hours.slots[1]],
-                  ['Lunes', 'cerrado'],
-                ].map(([k, v]) => (
+                {SITE.hours.rows.map(([k, v]) => (
                   <div key={k} className="flex items-baseline gap-2">
                     <dt className="text-crema/70">{k}</dt>
                     <span className="flex-1 translate-y-[-3px] border-b border-dotted border-arena/35" aria-hidden="true" />
@@ -114,10 +110,24 @@ export function Noche() {
           </div>
         </div>
 
+        <a
+          href={SITE.instagramHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group mx-auto mt-10 flex max-w-4xl items-center gap-4 rounded-[28px] border border-dashed border-arena/25 px-7 py-5 text-left font-ticket transition-colors hover:border-turquesa/70 sm:px-10"
+        >
+          <InstagramIcon className="h-9 w-9 shrink-0 text-turquesa" />
+          <span className="flex-1">
+            <span className="block text-[0.7rem] tracking-[0.3em] text-arena uppercase">Lo del día, en Instagram</span>
+            <span className="mt-1 block text-lg font-bold">@{SITE.instagram}</span>
+          </span>
+          <ArrowIcon className="h-5 w-5 text-arena transition-transform group-hover:translate-x-1" />
+        </a>
+
         <footer className="mt-20 flex flex-col items-center gap-3 pb-24 font-ticket text-[0.7rem] tracking-[0.15em] text-crema/45 uppercase sm:pb-6">
-          <LilyMark className="h-6 w-6 text-tierra" />
+          <LilyMark className="h-7 w-7 text-turquesa" />
           <span>
-            © {new Date().getFullYear()} {SITE.name} · Puerto Iguazú, Misiones
+            © {new Date().getFullYear()} {SITE.brand} · Puerto Iguazú, Misiones
           </span>
         </footer>
       </div>

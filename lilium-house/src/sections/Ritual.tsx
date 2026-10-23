@@ -63,7 +63,7 @@ function Act({ p, i, act }: { p: MotionValue<number>; i: number; act: (typeof AC
 function Dot({ p, i }: { p: MotionValue<number>; i: number }) {
   const r = range(i / 3 - 0.04 + (i === 0 ? 0.04 : 0), i / 3 + 0.02, (i + 1) / 3 - 0.04, (i + 1) / 3 + 0.02 - (i === 2 ? 0.02 : 0))
   const w = useTransform(p, r, [i === 0 ? 28 : 8, 28, 28, i === 2 ? 28 : 8])
-  const bg = useTransform(p, r, [i === 0 ? '#00A896' : '#3D231433', '#00A896', '#00A896', i === 2 ? '#00A896' : '#3D231433'])
+  const bg = useTransform(p, r, [i === 0 ? '#64BCB0' : '#3D231433', '#64BCB0', '#64BCB0', i === 2 ? '#64BCB0' : '#3D231433'])
   return <m.span style={{ width: w, backgroundColor: bg }} className="block h-2 rounded-full" />
 }
 

@@ -198,7 +198,7 @@ export function Lily({ input, lowPower, reducedMotion }: Props) {
     const dot = createDotTexture()
     const pollen = [
       createPollen(lowPower ? 45 : 110, '#D9A441'),
-      createPollen(lowPower ? 20 : 50, '#00A896'),
+      createPollen(lowPower ? 20 : 50, '#64BCB0'),
       createPollen(lowPower ? 15 : 35, '#B4472B'),
     ]
 
@@ -210,7 +210,7 @@ export function Lily({ input, lowPower, reducedMotion }: Props) {
       petal: new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: 0.55, metalness: 0 }),
       filament: new THREE.MeshStandardMaterial({ color: '#F4E6C8', roughness: 0.6 }),
       anther: new THREE.MeshStandardMaterial({ color: '#8A3B1E', roughness: 0.85 }),
-      stigma: new THREE.MeshStandardMaterial({ color: '#00A896', roughness: 0.35, emissive: '#00A896', emissiveIntensity: 0.25 }),
+      stigma: new THREE.MeshStandardMaterial({ color: '#64BCB0', roughness: 0.35, emissive: '#64BCB0', emissiveIntensity: 0.25 }),
       stem: new THREE.MeshStandardMaterial({ color: '#415521', roughness: 0.7 }),
     }),
     [],
@@ -261,7 +261,7 @@ export function Lily({ input, lowPower, reducedMotion }: Props) {
       <hemisphereLight args={['#FFF4E6', '#C9A68C', 1.25]} />
       <ambientLight intensity={0.35} color="#FFE9DA" />
       <directionalLight position={[2.5, 4, 5]} intensity={1.9} color="#FFE8D0" />
-      <directionalLight position={[-3, 1.5, -3]} intensity={1.1} color="#00A896" />
+      <directionalLight position={[-3, 1.5, -3]} intensity={1.1} color="#64BCB0" />
       <pointLight position={[0, 0.8, 1.2]} intensity={1.2} distance={4} color="#FFD7B5" />
 
       <group ref={root} rotation={[0.78, 0, 0]} position={[0, -0.35, 0]}>

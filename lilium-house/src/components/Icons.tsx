@@ -16,23 +16,28 @@ export const WhatsAppIcon = (p: IconProps) => (
   </svg>
 )
 
-/** Lirio estrella de seis pétalos, como el de la cartelería del local */
+/** Lirio en trazo blanco, como el del logo: seis pétalos puntiagudos y estambres curvos */
 export const LilyMark = (p: IconProps) => (
-  <svg viewBox="0 0 64 64" aria-hidden="true" {...p}>
-    <g fill="currentColor" stroke="var(--color-madera)" strokeWidth="1.6" strokeLinejoin="round">
-      {[30, 150, 270].map((a) => (
-        <path key={a} d="M32 32c-5-6-6.5-15-2.5-24 1.6 3 5.5 3.5 5.5 9 0 6-1 10-3 15Z" transform={`rotate(${a} 32 32)`} opacity="0.85" />
-      ))}
-      {[90, 210, 330].map((a) => (
-        <path key={a} d="M32 32c-6-7-7-17-1.5-28 2 3.5 7 4.5 6.5 11.5-.4 6-2 11-5 16.5Z" transform={`rotate(${a} 32 32)`} />
-      ))}
-    </g>
-    <g stroke="var(--color-madera)" strokeWidth="1.2" strokeLinecap="round" opacity="0.8">
-      {[0, 60, 120, 180, 240, 300].map((a) => (
-        <path key={a} d="M32 32v-9" transform={`rotate(${a + 15} 32 32)`} />
-      ))}
-    </g>
-    <circle cx="32" cy="32" r="3.2" fill="var(--color-turquesa)" />
+  <svg viewBox="0 0 64 64" aria-hidden="true" {...stroke} strokeWidth={2.4} {...p}>
+    {[0, 60, 120, 180, 240, 300].map((a, i) => (
+      <path
+        key={a}
+        d={i % 2 ? 'M32 34c-5-5-6.5-11-3-20 1 2.6 3.6 3.6 4.4 6.4 1.2 4.2.4 8.6-1.4 13.6Z' : 'M32 34c-6.5-6-8-14-2.5-27 1.4 3.6 5 5 5.8 9.4.9 5-.6 11-3.3 17.6Z'}
+        transform={`rotate(${a + 8} 32 34)`}
+      />
+    ))}
+    <path d="M33 33c4-4 9-7 15-9M33.5 34.5c5-2 10-2.5 15.5-1.5M33 32c2.5-5 6.5-9 11-12" strokeWidth={1.4} />
+    <circle cx="49" cy="23.6" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="50" cy="33.2" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="44.8" cy="19.4" r="1.5" fill="currentColor" stroke="none" />
+  </svg>
+)
+
+export const InstagramIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" {...stroke} {...p}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none" />
   </svg>
 )
 
