@@ -3,13 +3,14 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { WHATSAPP_OPTIONS, whatsappLink } from '../data/site'
 import { useDay } from '../day/DayProvider'
 import { CloseIcon, WhatsAppIcon } from './Icons'
+import { RamasNido } from './RamasNido'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 const INK = '#3D2314'
 
 /**
- * Botón de WhatsApp: la esquina de una mesa de madera asoma en la pantalla y sobre ella
- * hay una taza vista desde la silla (~55°). El café se va sirviendo con el día (scroll).
+ * Botón de WhatsApp: ramas rústicas que nacen de los bordes se cruzan como un nido y en
+ * el cruce se apoya una taza vista desde la silla (~55°). El café se va sirviendo con el día (scroll).
  * Al tocarla, la taza se corre con un tintineo y desde abajo del plato sale la comanda,
  * que se despliega como un papel doblado.
  */
@@ -102,38 +103,9 @@ export function CupButton() {
         </div>
       )}
 
-      {/* esquina de la mesa */}
-      <div className="relative h-[124px] w-[150px] sm:h-[150px] sm:w-[184px]">
-        <svg viewBox="0 0 160 136" className="absolute inset-0 h-full w-full [filter:drop-shadow(-6px_-6px_10px_rgb(0_0_0/0.35))]" aria-hidden="true">
-          <defs>
-            <linearGradient id={`${uid}-wood`} x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stopColor="#8A6244" />
-              <stop offset=".55" stopColor="#6B4A33" />
-              <stop offset="1" stopColor="#4E3322" />
-            </linearGradient>
-            <clipPath id={`${uid}-top`}>
-              <path d="M160 6C112 8 58 30 30 72C17 92 12 114 12 136H160Z" />
-            </clipPath>
-          </defs>
-          <path d="M160 6C112 8 58 30 30 72C17 92 12 114 12 136H160Z" fill={`url(#${uid}-wood)`} />
-          {/* vetas que siguen la curva del canto */}
-          <g clipPath={`url(#${uid}-top)`} fill="none" strokeLinecap="round">
-            {[10, 22, 34, 48, 62, 78, 96, 116].map((o, i) => (
-              <path
-                key={o}
-                d={`M${170} ${6 + o}C${118 + o * 0.3} ${8 + o} ${66 + o * 0.6} ${30 + o * 0.8} ${38 + o * 0.7} ${72 + o * 0.6}C${26 + o * 0.7} ${92 + o * 0.5} ${22 + o * 0.8} ${114 + o * 0.3} ${22 + o * 0.8} 150`}
-                stroke={i % 3 === 0 ? '#3D2314' : '#A57A55'}
-                strokeOpacity={i % 3 === 0 ? 0.35 : 0.22}
-                strokeWidth={i % 2 ? 1 : 1.6}
-              />
-            ))}
-            <ellipse cx="118" cy="104" rx="7" ry="3.2" fill="#3D2314" fillOpacity=".4" transform="rotate(-38 118 104)" />
-            <ellipse cx="118" cy="104" rx="11" ry="5.5" fill="none" stroke="#3D2314" strokeOpacity=".25" transform="rotate(-38 118 104)" />
-          </g>
-          {/* canto biselado */}
-          <path d="M160 6C112 8 58 30 30 72C17 92 12 114 12 136" fill="none" stroke="#C99A68" strokeWidth="2.4" />
-          <path d="M160 10C114 12 62 33 34 74C22 93 17 114 17 136" fill="none" stroke="#2E1E12" strokeOpacity=".35" strokeWidth="1.2" />
-        </svg>
+      {/* ramas cruzadas que nacen de los bordes: la taza se apoya en el cruce */}
+      <div className="relative h-[141px] w-[160px] sm:h-[173px] sm:w-[196px]">
+        <RamasNido className="absolute inset-0 h-full w-full [filter:drop-shadow(-4px_6px_8px_rgb(0_0_0/0.35))]" />
 
         <m.button
           type="button"
@@ -142,7 +114,7 @@ export function CupButton() {
           aria-controls="comanda"
           aria-label="Escribinos por WhatsApp"
           whileTap={{ scale: 0.94 }}
-          className="pointer-events-auto absolute right-2 bottom-[max(0.4rem,env(safe-area-inset-bottom))] h-[92px] w-[104px] sm:right-4 sm:h-[110px] sm:w-[124px]"
+          className="pointer-events-auto absolute top-[7%] left-[25%] h-[92px] w-[104px] sm:h-[110px] sm:w-[124px]"
         >
           <m.svg
             key={bump}
