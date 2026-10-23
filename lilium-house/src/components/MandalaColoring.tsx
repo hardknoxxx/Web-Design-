@@ -4,12 +4,12 @@ import { PencilJar } from './Botanica'
 
 const PALETTE = [
   { name: 'Turquesa', value: '#00A896' },
-  { name: 'Rosa', value: '#E07A5F' },
-  { name: 'Mostaza', value: '#E9B44C' },
-  { name: 'Musgo', value: '#415521' },
+  { name: 'Tierra colorada', value: '#B4472B' },
+  { name: 'Miel', value: '#D9A441' },
+  { name: 'Yerba', value: '#6F7F2E' },
   { name: 'Helecho', value: '#97AD3D' },
-  { name: 'Rosa viejo', value: '#C399A2' },
-  { name: 'Niebla', value: '#5A8093' },
+  { name: 'Selva', value: '#22351E' },
+  { name: 'Canela', value: '#9A5B2E' },
   { name: 'Madera', value: '#3D2314' },
   { name: 'Crema', value: '#FFFDF9' },
 ] as const

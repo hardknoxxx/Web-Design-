@@ -142,3 +142,36 @@ export const Sprig = (p: IconProps) => (
     ))}
   </svg>
 )
+
+/* Íconos con el concepto de la cafetería (pie de página) */
+
+/** Horario: taza humeante con un reloj en el plato. */
+export const CupHoursIcon = (p: IconProps) => (
+  <svg viewBox="0 0 32 32" aria-hidden="true" {...stroke} {...p}>
+    <path d="M6 13h16v5a7 7 0 0 1-7 7h-2a7 7 0 0 1-7-7v-5Z" />
+    <path d="M22 15h1.5a3 3 0 0 1 0 6H21" />
+    <path d="M11 4c-1.2 1.6 1.2 2.6 0 4.2M15 3c-1.2 1.8 1.2 3 0 5.2M19 4c-1.2 1.6 1.2 2.6 0 4.2" />
+    <path d="M4 28.5h20" />
+    <circle cx="27" cy="27" r="3.6" />
+    <path d="M27 25.4V27l1 .8" />
+  </svg>
+)
+
+/** Dirección: pin con forma de pétalo de lirio. */
+export const LilyPinIcon = (p: IconProps) => (
+  <svg viewBox="0 0 32 32" aria-hidden="true" {...stroke} {...p}>
+    <path d="M16 29C10 22 7 17.5 7 13a9 9 0 0 1 18 0c0 4.5-3 9-9 16Z" />
+    <path d="M16 8.5c-1.6 1.8-2.2 4.2 0 7 2.2-2.8 1.6-5.2 0-7Z" />
+    <path d="M16 15.5c-2.2-.6-4.2.2-5 2 2.2.8 4 .4 5-2ZM16 15.5c2.2-.6 4.2.2 5 2-2.2.8-4 .4-5-2Z" />
+  </svg>
+)
+
+/** Teléfono: aparato de disco, como el de los bares de antes. */
+export const RotaryPhoneIcon = (p: IconProps) => (
+  <svg viewBox="0 0 32 32" aria-hidden="true" {...stroke} {...p}>
+    <path d="M4 11c0-3 5-5 12-5s12 2 12 5l-1 2.5h-4.5L21 10H11l-1.5 3.5H5L4 11Z" />
+    <path d="M9 14l-3 11h20l-3-11" />
+    <circle cx="16" cy="19.5" r="4" />
+    <circle cx="16" cy="19.5" r="1" />
+  </svg>
+)

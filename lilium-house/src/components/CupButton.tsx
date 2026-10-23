@@ -66,7 +66,7 @@ export function CupButton() {
           >
             <div className="flex items-start justify-between gap-3 border-b border-dashed border-madera/25 pb-3">
               <div>
-                <p className="text-[0.65rem] font-semibold tracking-[0.25em] text-rosa uppercase">Comanda</p>
+                <p className="text-[0.65rem] font-semibold tracking-[0.25em] text-tierra uppercase">Comanda</p>
                 <p className="font-hand text-3xl leading-none">¿Qué se te antoja?</p>
               </div>
               <button
@@ -78,7 +78,7 @@ export function CupButton() {
                 <CloseIcon className="h-4 w-4" />
               </button>
             </div>
-            <ul className="mt-2">
+            <ul className="mt-2 font-ticket text-[0.95rem]">
               {WHATSAPP_OPTIONS.map((o, i) => (
                 <m.li
                   key={o.label}
@@ -93,7 +93,7 @@ export function CupButton() {
                     className="group flex items-center justify-between gap-3 rounded-lg px-2 py-2.5 font-medium transition-colors hover:bg-turquesa/10"
                   >
                     <span className="flex items-center gap-2.5">
-                      <span className="font-hand text-xl text-rosa">{String(i + 1).padStart(2, '0')}</span>
+                      <span className="font-hand text-xl text-tierra">{String(i + 1).padStart(2, '0')}</span>
                       {o.label}
                     </span>
                     <WhatsAppIcon className="h-4 w-4 text-turquesa-dark opacity-60 transition-opacity group-hover:opacity-100" />

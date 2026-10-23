@@ -148,7 +148,7 @@ export function Lily({ input, lowPower, reducedMotion }: Props) {
       curl: 1.9,
       cup: 0.32,
       ruffle: 0.035,
-      palette: ['#F7E2A9', '#E07A5F', '#F3B9A5', '#C2563F'],
+      palette: ['#F2CF8E', '#F8E6CF', '#FFF8EF', '#D99A62'],
       ...seg,
     })
     const innerPetal = createPetalGeometry({
@@ -158,7 +158,7 @@ export function Lily({ input, lowPower, reducedMotion }: Props) {
       curl: 1.75,
       cup: 0.38,
       ruffle: 0.05,
-      palette: ['#FBEAC0', '#EA8C70', '#F8C9B8', '#C9604A'],
+      palette: ['#F5D79C', '#FBEEDD', '#FFFBF4', '#DFA772'],
       ...seg,
     })
     const leaf = createPetalGeometry({
@@ -197,9 +197,9 @@ export function Lily({ input, lowPower, reducedMotion }: Props) {
 
     const dot = createDotTexture()
     const pollen = [
-      createPollen(lowPower ? 45 : 110, '#E9B44C'),
+      createPollen(lowPower ? 45 : 110, '#D9A441'),
       createPollen(lowPower ? 20 : 50, '#00A896'),
-      createPollen(lowPower ? 15 : 35, '#E07A5F'),
+      createPollen(lowPower ? 15 : 35, '#B4472B'),
     ]
 
     return { outerPetal, innerPetal, leaf, stamens, pistil, anther, stigma, stem, dot, pollen }

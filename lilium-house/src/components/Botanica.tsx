@@ -37,7 +37,7 @@ export function Monstera({ className, style, color = '#415521' }: ArtProps) {
   )
 }
 
-export function Leaf({ className, style, color = '#749E89' }: ArtProps) {
+export function Leaf({ className, style, color = '#6F7F2E' }: ArtProps) {
   return (
     <svg viewBox="-50 -98 100 100" className={className} style={style} aria-hidden="true">
       <path d={LEAF} fill={color} />
@@ -55,7 +55,7 @@ export function Toucan({ className, style }: ArtProps) {
         <path d="M-6 -6C-40 -40 -70 -36 -78 -24C-56 -18 -34 -6 -6 6Z" fill="#2B2B2B" />
       </g>
       <ellipse cx="11" cy="-12" rx="14" ry="16" fill="#F7E2A9" />
-      <path d="M14 -28C60 -40 92 -20 98 -8C72 -10 42 -12 16 -14Z" fill="#E9B44C" />
+      <path d="M14 -28C60 -40 92 -20 98 -8C72 -10 42 -12 16 -14Z" fill="#D9A441" />
       <path d="M84 -16C92 -14 96 -10 98 -8C92 -8 88 -9 84 -10Z" fill="#C2413A" />
       <circle cx="8" cy="-24" r="5" fill="#00A896" />
       <circle cx="8" cy="-24" r="2" fill="#1A1A1A" />
@@ -141,7 +141,7 @@ export function CakeStand({ className, dome }: { className?: string; dome?: Moti
       <rect x="-60" y="2" width="120" height="10" fill="#FAF7F2" />
       <path
         d="M-62 -22H62V-8C52 4 44 -6 34 4C24 -6 14 4 4 -6C-6 4-16 -6-26 4C-36 -6-46 4-62 -8Z"
-        fill="#E07A5F"
+        fill="#B4472B"
       />
       {[-34, -6, 22].map((x) => (
         <circle key={x} cx={x} cy="-28" r="7" fill="#B5302F" />
@@ -156,7 +156,7 @@ export function CakeStand({ className, dome }: { className?: string; dome?: Moti
 }
 
 export function PencilJar({ className }: { className?: string }) {
-  const colors = ['#00A896', '#E07A5F', '#E9B44C', '#5B7B5A', '#9C89B8']
+  const colors = ['#00A896', '#B4472B', '#D9A441', '#5B7B5A', '#9C89B8']
   return (
     <svg viewBox="-44 -140 88 156" className={className} aria-hidden="true">
       {colors.map((c, i) => (

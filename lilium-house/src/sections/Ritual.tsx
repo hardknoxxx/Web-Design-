@@ -1,5 +1,6 @@
 import { m, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useRef } from 'react'
+import { RitualDecor } from '../components/Ambiente'
 import { CakeStand, ChipaBasket, Cup, Leaf } from '../components/Botanica'
 
 /**
@@ -38,7 +39,7 @@ function Act({ p, i, act }: { p: MotionValue<number>; i: number; act: (typeof AC
   const first = i === 0
   const last = i === ACTS.length - 1
   // un acto termina de salir antes de que entre el siguiente (sin superposición)
-  const r = range(first ? 0 : start, first ? 0.01 : start + 0.06, end - 0.07, last ? 1 : end - 0.02)
+  const r = range(first ? 0 : start, first ? 0.01 : start + 0.05, end - 0.05, last ? 1 : end)
   const opacity = useTransform(p, r, [first ? 1 : 0, 1, 1, last ? 1 : 0])
   const y = useTransform(p, r, [first ? 0 : 50, 0, 0, last ? 0 : -40])
   const clip = useTransform(p, range(first ? 0 : start, first ? 0.01 : start + 0.06), [
@@ -48,7 +49,7 @@ function Act({ p, i, act }: { p: MotionValue<number>; i: number; act: (typeof AC
   return (
     <m.div style={{ opacity, y }} className="absolute inset-x-0 top-0">
       <p className="flex items-baseline gap-3">
-        <span className="font-display text-2xl font-semibold text-rosa tabular-nums">{act.n}</span>
+        <span className="font-display text-2xl font-semibold text-tierra tabular-nums">{act.n}</span>
         <span className="inline-block -rotate-3 font-hand text-2xl text-musgo">{act.note}</span>
       </p>
       <m.h3 style={{ clipPath: clip }} className="mt-1 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.98] font-semibold text-balance">
@@ -87,7 +88,7 @@ export function Ritual() {
   const dome = useTransform(p, [0.8, 0.95], [0, -62])
   const cakeOpacity = useTransform(p, [0.6, 0.66], [0, 1])
 
-  const bg = useTransform(p, [0.28, 0.4, 0.62, 0.74], ['#FAF7F2', '#F0EAE1', '#F0EAE1', '#F6D3C7'])
+  const bg = useTransform(p, [0.28, 0.4, 0.62, 0.74], ['#FAF7F2', '#F0EAE1', '#F0EAE1', '#F1DCC4'])
 
   // hojas que acompañan
   const leafR = useTransform(p, [0, 1], [-20, 30])
@@ -95,12 +96,13 @@ export function Ritual() {
   return (
     <m.section ref={ref} style={{ backgroundColor: bg }} id="ritual" className="relative z-[2] h-[340svh]" aria-label="El ritual: café, chipa y pastelería">
       <div className="absolute top-0" data-phase="#FAF7F2|#3D2314|09:00" />
-      <div className="absolute top-[33%]" data-phase="#F0EAE1|#3D2314|10:30" />
-      <div className="absolute top-[66%]" data-phase="#F6D3C7|#3D2314|12:00" />
+      <div className="absolute top-[33%]" data-phase="#F0EAE1|#3D2314|10:00" />
+      <div className="absolute top-[66%]" data-phase="#F1DCC4|#3D2314|11:00" />
 
       <div className="sticky top-0 grid h-[100svh] grid-rows-[auto_1fr] overflow-hidden px-9 pt-24 pb-10 sm:px-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:grid-rows-1 lg:items-center lg:gap-10 lg:px-24 lg:pt-16">
+        <RitualDecor />
         {/* textos de los 3 actos */}
-        <div className="relative h-[13.5rem] sm:h-[15rem] lg:h-[22rem]">
+        <div className="relative z-10 h-[13.5rem] sm:h-[15rem] lg:h-[22rem]">
           <p className="absolute -top-8 text-[0.7rem] font-semibold tracking-[0.3em] text-turquesa-dark uppercase lg:-top-12">
             El ritual
           </p>
@@ -115,7 +117,7 @@ export function Ritual() {
         </div>
 
         {/* escenario */}
-        <div className="relative min-h-0">
+        <div className="relative z-10 min-h-0">
           <m.div style={{ rotate: leafR }} className="absolute -top-6 right-2 w-16 opacity-70 lg:w-24">
             <Leaf color="#97AD3D" className="w-full" />
           </m.div>

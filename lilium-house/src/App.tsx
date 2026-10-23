@@ -4,6 +4,7 @@ import { TopBar } from './components/TopBar'
 import { Vines } from './components/Vines'
 import { DayProvider } from './day/DayProvider'
 import { Amanecer } from './sections/Amanecer'
+import { Carta } from './sections/Carta'
 import { Mantel } from './sections/Mantel'
 import { Noche } from './sections/Noche'
 import { Opiniones } from './sections/Opiniones'
@@ -26,6 +27,7 @@ export default function App() {
           <main className="overflow-x-clip">
             <Amanecer />
             <Ritual />
+            <Carta />
             <Mantel />
             <Selva />
             <Opiniones />

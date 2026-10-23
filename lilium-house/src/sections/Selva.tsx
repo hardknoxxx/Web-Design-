@@ -28,16 +28,16 @@ export function Selva() {
   const textY = useTransform(p, [0.05, 0.2], [40, 0])
 
   return (
-    <section ref={ref} id="selva" className="relative z-[4] h-[240svh] bg-musgo" aria-label="La selva de Puerto Iguazú">
+    <section ref={ref} id="selva" className="relative z-[5] h-[240svh] bg-musgo" aria-label="La selva de Puerto Iguazú">
       <div className="absolute top-0" data-phase="#415521|#FAF7F2|18:00" />
       <Edge color="#415521" flip />
       <div className="sticky top-0 h-[100svh] overflow-hidden text-crema">
-        {/* bruma de las cataratas */}
-        <m.div style={{ y: mistY }} className="absolute inset-x-0 top-0 flex h-[85%] justify-around px-4 opacity-90">
-          {[0.14, 0.2, 0.11, 0.17, 0.12].map((o, i) => (
+        {/* bruma de las cataratas: velos suaves, sin bordes duros */}
+        <m.div style={{ y: mistY }} className="absolute inset-x-0 top-0 flex h-[85%] justify-around px-2 [mask-image:linear-gradient(to_bottom,black,transparent_85%)]">
+          {[0.07, 0.11, 0.06, 0.09, 0.05].map((o, i) => (
             <div
               key={i}
-              className="h-full w-[11%] rounded-b-full bg-gradient-to-b from-[#9FBAD3] to-transparent"
+              className="h-full w-[18%] rounded-b-full bg-[linear-gradient(to_right,transparent,white_45%,white_55%,transparent)] blur-[6px]"
               style={{ opacity: o, height: `${70 + (i % 3) * 10}%` }}
             />
           ))}
@@ -69,7 +69,7 @@ export function Selva() {
           <Butterfly className="w-full" color="#00A896" />
         </m.div>
         <m.div style={{ x: b2x, y: b2y }} className="absolute right-[18%] bottom-[22%] z-[5] w-8">
-          <Butterfly className="w-full" color="#E07A5F" />
+          <Butterfly className="w-full" color="#B4472B" />
         </m.div>
 
         {/* hojas de frente: la capa más rápida */}

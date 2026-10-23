@@ -23,7 +23,8 @@ npm run preview  # servir el build
 | Sección | Hora | Qué pasa al scrollear |
 | --- | --- | --- |
 | `sections/Amanecer.tsx` | 08:00 | Escena fijada: lirio 3D; la cortina de hojas se abre, sube el sol, aparece la bajada |
-| `sections/Ritual.tsx` | 09:00–12:00 | Escena fijada de 3 actos: la taza entra y cambia de lugar, llega la chipa, se levanta la campana de la torta |
+| `sections/Ritual.tsx` | 09:00–11:00 | Escena fijada de 3 actos: la taza entra y cambia de lugar, llega la chipa, se levanta la campana de la torta |
+| `sections/Carta.tsx` | 11:45 | Los platos se sirven sobre la mesa de madera (datos en `CARTA`, `src/data/site.ts`) |
 | `sections/Mantel.tsx` | 17:00 | El mantel de papel se despliega y se colorea (mandala interactivo, descarga PNG) |
 | `sections/Selva.tsx` | 18:00 | Parallax: bruma de cataratas, tucán que cruza, mariposas, hojas de frente |
 | `sections/Opiniones.tsx` | 19:30 | Contador 0 → 4,5 (Google), chips, las hojas empiezan a cerrarse |
@@ -37,22 +38,31 @@ Piezas globales: `day/DayProvider.tsx` (scroll → hora y color de la barra), `c
 
 | Uso | Fuente | Origen (revisado antes de usar) |
 | --- | --- | --- |
-| Títulos y textos | Bricolage Grotesque (variable con tamaño óptico: corte display en títulos; cifras alineadas en datos) | [ateliertriay/bricolage](https://github.com/ateliertriay/bricolage) · OFL |
+| Títulos y textos | Bricolage Grotesque (variable con tamaño óptico) | [ateliertriay/bricolage](https://github.com/ateliertriay/bricolage) · OFL |
 | Notas a mano | Caveat (Impallari Type, Rosario) | [googlefonts/caveat](https://github.com/googlefonts/caveat) · OFL |
+| Datos, tickets y pie | Courier Prime (máquina de escribir, cifras alineadas) | [quoteunquoteapps/CourierPrime](https://github.com/quoteunquoteapps/CourierPrime) · OFL |
 | Logo | Yellowtail (como el cartel del local) | Google Fonts |
 
-Bricolage y Caveat están auto-alojadas en `public/fonts/` como woff2 recortado a latín (licencias en
-`public/fonts/licencias/`).
+Auto-alojadas en `public/fonts/` como woff2 recortado a latín (licencias en `public/fonts/licencias/`).
 
-Paleta: base de la marca (estuco, madera, turquesa `#00A896`, rosa `#E07A5F`) + **IguazuFalls** de
-[NatParksPalettes](https://github.com/kevinsblake/NatParksPalettes) (MIT), tomada de una foto de las Cataratas
-(musgo `#415521`, helecho `#97AD3D`, tierra `#4C3425`, niebla `#5A8093`) + **Monet** de
-[MetBrewer](https://github.com/BlakeRMills/MetBrewer) (CC0), del cuadro de los nenúfares
-(nenúfar `#ABCCBE`, hoja `#749E89`, rosa viejo `#C399A2`). Tokens en `src/index.css`.
+Paleta **Tierra colorada** (tokens en `src/index.css`): el suelo rojo de Misiones (`#B4472B`), miel `#D9A441`,
+canela, madera y crema, más los verdes de la selva (musgo `#415521`, yerba `#6F7F2E`, helecho `#97AD3D`).
+Base tomada de la paleta Bakery/Cafe de la skill UI UX Pro Max e IguazuFalls de NatParksPalettes. El turquesa
+`#00A896` queda como color de marca, usado con moderación.
+
+## Animación
+
+- **GSAP + ScrollTrigger** (`src/lib/gsap.ts`): cortina de hojas del amanecer (8 especies, cada una con su
+  ángulo, distancia y momento), enredaderas asimétricas (`components/Vines.tsx`: filodendro a la izquierda,
+  hiedra con flores a la derecha, con ritmos de crecimiento distintos), platos de la carta, potus, picaflor,
+  hojas que caen y el menú-hoja que se despliega en el panel.
+- **Framer Motion**: escenas fijadas existentes (ritual, mantel, selva, opiniones, noche) y la comanda.
+- Todo respeta `prefers-reduced-motion` y anima solo `transform`/`opacity`/`clip-path`.
 
 ## Para completar antes de publicar
 
 - **WhatsApp**: `SITE.whatsapp` usa `543757457085` (línea fija según Google Maps). Si el WhatsApp del local es un celular, cambiar a `5493757457085`.
+- **Carta**: los platos de `CARTA` salen de las fotos y opiniones del local; confirmar con la carta real.
 - **Fotos**: la página usa ilustraciones propias. Si se agregan fotos del local, deben ser propias o con permiso.
 
 ## Rendimiento móvil

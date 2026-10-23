@@ -1,67 +1,112 @@
-import { m, useScroll, useTransform } from 'framer-motion'
-import { lazy, Suspense, useRef } from 'react'
-import { LilyMark } from '../components/Icons'
+import { lazy, Suspense, useRef, type ReactNode } from 'react'
 import { Leaf, Monstera } from '../components/Botanica'
+import { BananaLeaf, Calathea, Fern, HeartLeaf, PalmFrond } from '../components/Flora'
+import { LilyMark } from '../components/Icons'
+import { gsap, MOTION_OK, useGsap } from '../lib/gsap'
 
 // three.js se carga en un chunk aparte: el texto pinta primero
 const LilyCanvas = lazy(() => import('../components/three/LilyCanvas'))
 
 /**
- * 01–02 · Amanecer. Escena fijada (sticky): una cortina de hojas de monstera cubre
- * los bordes y se abre con el scroll, el sol sube y aparece la bajada.
+ * Cortina de hojas, asimétrica: cada hoja tiene especie, ángulo, distancia y momento
+ * propios. La izquierda se abre primero y rápido (cae hacia afuera); la derecha arranca
+ * después, más lenta, y se despliega hacia arriba. [inicio, fin] en progreso del hero.
+ */
+type CurtainLeaf = {
+  key: string
+  el: ReactNode
+  box: string
+  from: gsap.TweenVars
+  to: gsap.TweenVars
+  at: [number, number]
+}
+
+const CURTAIN: CurtainLeaf[] = [
+  // izquierda
+  { key: 'banana-l', el: <BananaLeaf color="#6F7F2E" className="w-full" />, box: '-bottom-[6%] left-[-10vw] w-[46vw] max-w-[340px]', from: { rotation: 16 }, to: { rotation: -40, x: '-42vw' }, at: [0, 0.42] },
+  { key: 'heart-l', el: <HeartLeaf color="#2F4A22" className="w-full" />, box: 'bottom-[10%] left-[16vw] w-[24vw] max-w-[180px]', from: { rotation: 38 }, to: { rotation: -20, x: '-48vw', scale: 0.7 }, at: [0.06, 0.46] },
+  { key: 'monstera-l', el: <Monstera color="#415521" className="w-full" />, box: '-bottom-[10%] left-[-40vw] w-[92vw] max-w-[700px]', from: { rotation: 26 }, to: { rotation: -44, x: '-60vw' }, at: [0.02, 0.38] },
+  { key: 'fern-l', el: <Fern color="#97AD3D" className="w-full" />, box: '-bottom-[4%] left-[4vw] w-[30vw] max-w-[220px]', from: { rotation: 32 }, to: { rotation: -12, x: '-34vw', yPercent: 20 }, at: [0.04, 0.34] },
+  // derecha
+  { key: 'palm-r', el: <PalmFrond color="#415521" className="w-full -scale-x-100" />, box: '-bottom-[8%] right-[-30vw] w-[90vw] max-w-[680px]', from: { rotation: -22 }, to: { rotation: 16, x: '44vw', yPercent: -6 }, at: [0.12, 0.72] },
+  { key: 'fern-r', el: <Fern color="#6F7F2E" className="w-full -scale-x-100" />, box: 'bottom-[3%] right-[22vw] w-[26vw] max-w-[190px]', from: { rotation: -40 }, to: { rotation: -74, x: '52vw' }, at: [0.24, 0.62] },
+  { key: 'monstera-r', el: <Monstera color="#33441A" className="w-full -scale-x-100" />, box: '-bottom-[14%] right-[-36vw] w-[82vw] max-w-[620px]', from: { rotation: -30 }, to: { rotation: 32, x: '68vw' }, at: [0.18, 0.64] },
+  { key: 'calathea-r', el: <Calathea color="#2F4A22" className="w-full" />, box: '-bottom-[6%] right-[2vw] w-[28vw] max-w-[210px]', from: { rotation: -16 }, to: { rotation: 22, x: '40vw', yPercent: 8 }, at: [0.1, 0.56] },
+]
+
+/**
+ * 01–02 · Amanecer. Escena fijada: la cortina se abre con el scroll, el sol sube,
+ * el fondo pasa de durazno a crema y aparece la bajada.
  */
 export function Amanecer() {
   const ref = useRef<HTMLElement>(null)
-  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end end'] })
 
-  // cortina: hojas de adelante y de atrás se abren hacia afuera a distinta velocidad
-  const frontL = { x: useTransform(p, [0, 0.55], ['0vw', '-70vw']), rotate: useTransform(p, [0, 0.55], [24, -38]) }
-  const frontR = { x: useTransform(p, [0, 0.55], ['0vw', '70vw']), rotate: useTransform(p, [0, 0.55], [-24, 38]) }
-  const backL = { x: useTransform(p, [0.04, 0.6], ['0vw', '-55vw']), rotate: useTransform(p, [0.04, 0.6], [52, 80]) }
-  const backR = { x: useTransform(p, [0.04, 0.6], ['0vw', '55vw']), rotate: useTransform(p, [0.04, 0.6], [-52, -80]) }
-  const bg = useTransform(p, [0, 0.55], ['#F6E0CF', '#FAF7F2'])
+  useGsap(ref, () => {
+    const q = gsap.utils.selector(ref)
+    CURTAIN.forEach((l) => gsap.set(q(`[data-leaf="${l.key}"]`), { transformOrigin: '50% 100%', ...l.from }))
 
-  const sunY = useTransform(p, [0, 1], ['0vh', '-22vh'])
-  const sunScale = useTransform(p, [0, 1], [1, 1.35])
-  const titleY = useTransform(p, [0, 0.7], ['0vh', '-4vh'])
-  const titleScale = useTransform(p, [0, 0.7], [1, 0.82])
-  const lilyScale = useTransform(p, [0, 0.6], [0.9, 1.08])
-  const tagOpacity = useTransform(p, [0.35, 0.6], [0, 1])
-  const tagY = useTransform(p, [0.35, 0.6], [30, 0])
-  const hintOpacity = useTransform(p, [0, 0.12], [1, 0])
-  const sprout = useTransform(p, [0, 0.12], [1, 0.4])
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: { trigger: ref.current, start: 'top top', end: 'bottom bottom', scrub: 0.9 },
+    })
+    CURTAIN.forEach((l) => {
+      tl.to(q(`[data-leaf="${l.key}"]`), { ...l.to, duration: l.at[1] - l.at[0], ease: 'power2.inOut' }, l.at[0])
+    })
+    tl.to(ref.current, { backgroundColor: '#FAF7F2', duration: 0.55 }, 0)
+      .to(q('[data-sun]'), { yPercent: -60, scale: 1.35, duration: 1 }, 0)
+      .to(q('[data-title]'), { y: '-4vh', scale: 0.82, duration: 0.7 }, 0)
+      .fromTo(q('[data-lily]'), { scale: 0.9 }, { scale: 1.08, duration: 0.6 }, 0)
+      .fromTo(q('[data-tagline]'), { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.25 }, 0.4)
+      .to(q('[data-hint]'), { autoAlpha: 0, duration: 0.12 }, 0)
+      .set({}, {}, 1)
+
+    // cada hoja respira a su ritmo (nunca dos iguales)
+    gsap.matchMedia().add(MOTION_OK, () => {
+      q('[data-sway]').forEach((el, i) => {
+        gsap.to(el, {
+          rotation: gsap.utils.random(1.5, 4) * (i % 2 ? 1 : -1),
+          duration: gsap.utils.random(3, 7),
+          ease: 'sine.inOut',
+          yoyo: true,
+          repeat: -1,
+          delay: i * 0.37,
+          transformOrigin: '50% 100%',
+        })
+      })
+      gsap.to(q('[data-sprout]'), { rotation: 8, duration: 1.3, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 100%' })
+    })
+  })
 
   return (
-    <m.section
+    <section
       ref={ref}
-      style={{ backgroundColor: bg }}
       id="amanecer"
-      data-phase="#F6E0CF|#3D2314|08:00"
-      className="relative z-[1] h-[230svh]"
+      data-phase="#F4E4CC|#3D2314|08:00"
+      className="relative z-[1] h-[230svh] bg-[#F4E4CC]"
       aria-label="Amanecer en Lilium"
     >
       <div className="absolute top-[55%]" data-phase="#FAF7F2|#3D2314|08:40" />
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         {/* sol */}
-        <m.div
-          style={{ y: sunY, scale: sunScale }}
-          className="absolute top-[22%] left-1/2 h-[min(70vw,420px)] w-[min(70vw,420px)] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgb(233_180_76/0.55),rgb(233_180_76/0.18)_55%,transparent_70%)]"
+        <div
+          data-sun=""
+          className="absolute top-[22%] left-1/2 h-[min(70vw,420px)] w-[min(70vw,420px)] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgb(217_164_65/0.5),rgb(217_164_65/0.16)_55%,transparent_70%)]"
         />
 
-        <m.div style={{ y: titleY, scale: titleScale }} className="relative z-10 pt-[max(5.5rem,12svh)] text-center">
-          <p className="text-[0.7rem] font-semibold tracking-[0.3em] text-rosa uppercase">Coffee Lounge · Puerto Iguazú</p>
+        <div data-title="" className="relative z-10 pt-[max(5.5rem,12svh)] text-center">
+          <p className="text-[0.7rem] font-semibold tracking-[0.3em] text-tierra uppercase">Coffee Lounge · Puerto Iguazú</p>
           <h1 className="mt-1 font-script text-[clamp(4.6rem,21vw,10rem)] leading-[1.05] text-madera">Lilium</h1>
-        </m.div>
+        </div>
 
         {/* lirio 3D */}
-        <m.div
-          style={{ scale: lilyScale }}
+        <div
+          data-lily=""
           className="absolute top-[52%] left-1/2 aspect-square w-[min(96vw,64svh,640px)] -translate-x-1/2 -translate-y-1/2"
         >
           <Suspense
             fallback={
               <div className="grid h-full place-items-center">
-                <LilyMark className="h-24 w-24 animate-pulse text-rosa/70" />
+                <LilyMark className="h-24 w-24 animate-pulse text-tierra/70" />
               </div>
             }
           >
@@ -69,40 +114,30 @@ export function Amanecer() {
               <LilyCanvas />
             </div>
           </Suspense>
-        </m.div>
+        </div>
 
-        <m.p
-          style={{ opacity: tagOpacity, y: tagY }}
-          className="absolute inset-x-0 bottom-[11svh] z-20 mx-auto max-w-xl px-9 text-center font-display text-[clamp(1.35rem,5.2vw,2rem)] leading-snug text-balance text-madera"
+        <p
+          data-tagline=""
+          className="invisible absolute inset-x-0 bottom-[11svh] z-20 mx-auto max-w-xl px-9 text-center font-display text-[clamp(1.35rem,5.2vw,2rem)] leading-snug text-balance text-madera"
         >
           Café de especialidad, chipa casera y pastelería en el corazón verde de Puerto Iguazú.
-        </m.p>
+        </p>
 
-        {/* cortina de hojas: la base de cada hoja es el pivote (origin-bottom) */}
-        <m.div style={backL} className="absolute -bottom-[3%] -left-[52vw] z-20 w-[95vw] max-w-[700px] origin-bottom">
-          <Monstera color="#749E89" className="w-full" />
-        </m.div>
-        <m.div style={backR} className="absolute -right-[52vw] -bottom-[3%] z-20 w-[95vw] max-w-[700px] origin-bottom">
-          <Monstera color="#749E89" className="w-full -scale-x-100" />
-        </m.div>
-        <m.div style={frontL} className="absolute -bottom-[8%] -left-[42vw] z-20 w-[100vw] max-w-[760px] origin-bottom">
-          <Monstera color="#415521" className="w-full" />
-        </m.div>
-        <m.div style={frontR} className="absolute -right-[42vw] -bottom-[8%] z-20 w-[100vw] max-w-[760px] origin-bottom">
-          <Monstera color="#3A4C1D" className="w-full -scale-x-100" />
-        </m.div>
+        {/* cortina de hojas */}
+        {CURTAIN.map((l) => (
+          <div key={l.key} data-leaf={l.key} className={`absolute z-20 ${l.box}`}>
+            <div data-sway="">{l.el}</div>
+          </div>
+        ))}
 
         {/* pista de scroll: un brote */}
-        <m.div
-          style={{ opacity: hintOpacity }}
-          className="absolute inset-x-0 bottom-[max(1.5rem,4svh)] z-30 flex flex-col items-center gap-1 text-crema"
-        >
-          <m.div style={{ scale: sprout }} className="origin-bottom animate-sway">
-            <Leaf className="h-7 w-7 -rotate-12" color="#E9B44C" />
-          </m.div>
-          <span className="font-hand text-2xl leading-none">Deslizá para que amanezca</span>
-        </m.div>
+        <div data-hint="" className="absolute inset-x-0 bottom-[max(1.5rem,4svh)] z-30 flex flex-col items-center gap-1 text-crema">
+          <div data-sprout="">
+            <Leaf className="h-7 w-7 -rotate-12" color="#D9A441" />
+          </div>
+          <span className="font-hand text-2xl leading-none [text-shadow:0_1px_8px_rgb(0_0_0/0.35)]">Deslizá para que amanezca</span>
+        </div>
       </div>
-    </m.section>
+    </section>
   )
 }

@@ -17,6 +17,19 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Courier Prime';
+  src: url('/fonts/courier-prime-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Courier Prime';
+  src: url('/fonts/courier-prime-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
 @theme {
   --color-crema: #faf7f2;
   --color-estuco: #f0eae1;
@@ -25,28 +38,27 @@
   --color-hierro: #1a1a1a;
   --color-turquesa: #00a896;
   --color-turquesa-dark: #008a7b;
-  --color-rosa: #e07a5f;
+  /* Paleta "Tierra colorada": suelo rojo de Misiones, selva, yerba y madera
+     (base Bakery/Cafe de UI UX Pro Max + IguazuFalls de NatParksPalettes) */
+  --color-tierra: #b4472b;
+  --color-tierra-dark: #8e3520;
+  --color-canela: #9a5b2e;
+  --color-miel: #d9a441;
+  --color-arena: #e4d3b4;
+  --color-kraft: #e6d7bc;
+  --color-dulce: #f1dcc4;
   --color-salvia: #5b7b5a;
-  --color-mostaza: #e9b44c;
-
-  /* Paleta IguazuFalls (NatParksPalettes, foto de las Cataratas del Iguazú) */
+  --color-selva: #22351e;
   --color-musgo: #415521;
+  --color-yerba: #6f7f2e;
   --color-helecho: #97ad3d;
-  --color-tierra: #4c3425;
   --color-corteza: #7f6552;
-  --color-niebla: #5a8093;
-  --color-cielo: #9fbad3;
-
-  /* Paleta Monet (MetBrewer, “Puente sobre un estanque de nenúfares”, 1899) */
-  --color-nenufar: #abccbe;
-  --color-hoja-monet: #749e89;
-  --color-rosa-viejo: #c399a2;
-  --color-rosa-palido: #e3cacf;
 
   --font-display: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-sans: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-script: 'Yellowtail', 'Brush Script MT', cursive;
   --font-hand: 'Caveat', 'Segoe Print', cursive;
+  --font-ticket: 'Courier Prime', 'Courier New', ui-monospace, monospace;
 
   --ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -161,6 +173,15 @@
       inset 0 1px 0 rgb(255 255 255 / 0.18),
       inset 0 -2px 0 rgb(0 0 0 / 0.25),
       0 6px 14px -6px rgb(0 0 0 / 0.55);
+  }
+
+  /* mesa de tablones (sección carta) */
+  .wood-table {
+    background-color: #3b2416;
+    background-image:
+      repeating-linear-gradient(180deg, transparent 0 138px, rgb(0 0 0 / 0.35) 138px 140px),
+      repeating-linear-gradient(176deg, rgb(255 255 255 / 0.035) 0 2px, transparent 2px 7px, rgb(0 0 0 / 0.08) 7px 9px, transparent 9px 17px),
+      radial-gradient(120% 70% at 50% 0%, rgb(217 164 65 / 0.12), transparent 70%);
   }
 
   .btn {

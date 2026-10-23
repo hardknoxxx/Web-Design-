@@ -52,8 +52,19 @@ export const WHATSAPP_OPTIONS = [
 export const SCENES = [
   { href: '#amanecer', label: 'Amanecer', time: '08:00' },
   { href: '#ritual', label: 'El ritual', time: '09:00' },
+  { href: '#carta', label: 'La carta', time: '11:45' },
   { href: '#mantel', label: 'El mantel', time: '17:00' },
   { href: '#selva', label: 'La selva', time: '18:00' },
   { href: '#opiniones', label: 'Opiniones', time: '19:30' },
   { href: '#visitanos', label: 'Visitanos', time: '21:00' },
+] as const
+
+// Platos de la carta. Basados en lo que muestran las fotos y opiniones del local:
+// confirmar nombres y descripciones con la carta real antes de publicar.
+export const CARTA = [
+  { id: 'cafe', name: 'Café de especialidad', note: 'espresso, con leche o frío', desc: 'Tazas generosas y latte art de la casa.' },
+  { id: 'chipa', name: 'Chipa', note: 'recién horneada', desc: 'Almidón de mandioca y queso, calentita.' },
+  { id: 'te', name: 'Té en tetera', note: 'para compartir', desc: 'Hebras servidas en tetera, sin apuro.' },
+  { id: 'cheesecake', name: 'Cheesecake', note: 'de la vitrina', desc: 'Con frutos rojos.' },
+  { id: 'torta', name: 'Torta de chocolate', note: 'de la vitrina', desc: 'Húmeda, con frambuesa.' },
 ] as const

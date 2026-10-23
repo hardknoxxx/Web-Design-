@@ -1,4 +1,5 @@
 import { m } from 'framer-motion'
+import { Picaflor } from '../components/Ambiente'
 import { Edge } from '../components/Edge'
 import { MandalaColoring } from '../components/MandalaColoring'
 
@@ -9,11 +10,12 @@ export function Mantel() {
   return (
     <section
       id="mantel"
-      data-phase="#ABCCBE|#3D2314|17:00"
-      className="relative z-[3] overflow-x-clip bg-nenufar px-9 pt-28 pb-32 sm:px-14 lg:px-24"
+      data-phase="#E6D7BC|#3D2314|17:00"
+      className="relative z-[4] overflow-x-clip bg-kraft px-9 pt-28 pb-32 sm:px-14 lg:px-24"
       aria-label="El mantel para colorear"
     >
-      <Edge color="#ABCCBE" />
+      <Edge color="#E6D7BC" />
+      <Picaflor className="top-[30%] right-[4%] lg:top-[22%] lg:right-[8%]" />
       <div className="mx-auto max-w-6xl">
         <MandalaColoring
           intro={
