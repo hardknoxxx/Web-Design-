@@ -103,9 +103,6 @@ export function Ritual() {
         <RitualDecor />
         {/* textos de los 3 actos */}
         <div className="relative z-10 h-[13.5rem] sm:h-[15rem] lg:h-[22rem]">
-          <p className="absolute -top-8 text-[0.7rem] font-semibold tracking-[0.3em] text-turquesa-dark uppercase lg:-top-12">
-            El ritual
-          </p>
           {ACTS.map((a, i) => (
             <Act key={a.n} p={p} i={i} act={a} />
           ))}

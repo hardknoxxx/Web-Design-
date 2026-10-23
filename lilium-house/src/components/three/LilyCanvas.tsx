@@ -1,4 +1,4 @@
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { Lily, type LilyInput } from './Lily'
 
@@ -9,6 +9,29 @@ function detectLowPower() {
   const coarse = window.matchMedia('(pointer: coarse)').matches
   return cores <= 4 || (smallScreen && coarse)
 }
+
+/** En teléfonos el lirio se dibuja a 30 fps: mitad de trabajo para la GPU, igual de fluido a la vista. */
+function Throttle({ fps }: { fps: number }) {
+  const invalidate = useThree((s) => s.invalidate)
+  useEffect(() => {
+    let raf = 0
+    let last = 0
+    const tick = (t: number) => {
+      if (t - last >= 1000 / fps - 2) {
+        last = t
+        invalidate()
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [fps, invalidate])
+  return null
+}
+
+// el hero dura 1,5 pantallas de scroll; el lirio termina de desvanecerse al ~84 %
+const HERO_SCROLL = 1.5
+const LILY_GONE = 1.32
 
 export default function LilyCanvas() {
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -22,6 +45,8 @@ export default function LilyCanvas() {
     scroll: 0,
   })
   const [visible, setVisible] = useState(true)
+  // ya atravesamos el follaje: el lirio es invisible, no tiene sentido seguir dibujándolo
+  const [gone, setGone] = useState(false)
   const [lowPower] = useState(detectLowPower)
   const [reducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
 
@@ -37,8 +62,9 @@ export default function LilyCanvas() {
   // Progreso de scroll del hero, sin re-renders
   useEffect(() => {
     const onScroll = () => {
-      // el hero dura ~1.3 pantallas de scroll (escena fijada)
-      input.current.scroll = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 1.3)))
+      const h = window.innerHeight
+      input.current.scroll = Math.min(1, Math.max(0, window.scrollY / (h * HERO_SCROLL)))
+      setGone(window.scrollY > h * LILY_GONE)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -85,12 +111,13 @@ export default function LilyCanvas() {
       onPointerLeave={release}
     >
       <Canvas
-        dpr={lowPower ? [1, 1.5] : [1, 2]}
+        dpr={lowPower ? [1, 1.25] : [1, 2]}
         camera={{ position: [0, 0.25, 5.6], fov: 38 }}
         gl={{ antialias: !lowPower, alpha: true, powerPreference: 'high-performance', stencil: false }}
-        frameloop={visible ? 'always' : 'never'}
+        frameloop={visible && !gone ? (lowPower ? 'demand' : 'always') : 'never'}
         onCreated={({ camera }) => camera.lookAt(0, 0.15, 0)}
       >
+        {lowPower && visible && !gone && <Throttle fps={30} />}
         <Lily input={input} lowPower={lowPower} reducedMotion={reducedMotion} />
       </Canvas>
     </div>

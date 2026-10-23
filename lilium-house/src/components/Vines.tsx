@@ -142,7 +142,7 @@ function Vine({ shape, curve, scrub, side }: { shape: VineShape; curve: Curve; s
       ref={ref}
       viewBox={`0 0 ${VW} ${VH}`}
       preserveAspectRatio={side === 'right' ? 'xMaxYMax meet' : 'xMinYMax meet'}
-      className={`pointer-events-none fixed top-0 z-30 h-[100lvh] w-auto ${side === 'right' ? 'right-0' : 'left-0'}`}
+      className={`pointer-events-none fixed top-0 z-30 h-[100lvh] w-auto will-change-transform ${side === 'right' ? 'right-0' : 'left-0'}`}
       aria-hidden="true"
     >
       {/* el espejo va dentro del SVG: un transform CSS en el <svg> choca con el de GSAP */}

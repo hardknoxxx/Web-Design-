@@ -22,6 +22,18 @@ export function useGsap(scope: RefObject<Element | null>, setup: (ctx: gsap.Cont
   }, deps)
 }
 
+/**
+ * Pausa animaciones en bucle (vaivén, aleteo) mientras su escena no está en pantalla:
+ * en el teléfono cada una repinta en cada frame aunque nadie la vea.
+ */
+export function pauseOffscreen(trigger: Element | null, anims: (gsap.core.Animation | undefined)[]) {
+  const list = anims.filter(Boolean) as gsap.core.Animation[]
+  const set = (on: boolean) => list.forEach((a) => (on ? a.resume() : a.pause()))
+  const st = ScrollTrigger.create({ trigger, start: 'top bottom', end: 'bottom top', onToggle: (self) => set(self.isActive) })
+  set(st.isActive)
+  return st
+}
+
 // Recalcula posiciones cuando cargan fuentes e imágenes (los pins dependen de alturas reales)
 if (typeof window !== 'undefined') {
   window.addEventListener('load', () => ScrollTrigger.refresh())

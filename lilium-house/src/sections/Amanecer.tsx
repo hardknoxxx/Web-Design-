@@ -3,7 +3,7 @@ import { Leaf, Monstera } from '../components/Botanica'
 import { BananaLeaf, Calathea, Fern, HeartLeaf, PalmFrond } from '../components/Flora'
 import { LilyMark } from '../components/Icons'
 import { SelvaLejana, Sotobosque } from '../components/Paisaje'
-import { gsap, MOTION_OK, useGsap } from '../lib/gsap'
+import { gsap, MOTION_OK, pauseOffscreen, useGsap } from '../lib/gsap'
 
 // three.js se carga en un chunk aparte: el texto pinta primero
 const LilyCanvas = lazy(() => import('../components/three/LilyCanvas'))
@@ -83,7 +83,7 @@ export function Amanecer() {
 
     // cada planta respira a su ritmo (nunca dos iguales)
     gsap.matchMedia().add(MOTION_OK, () => {
-      q('[data-sway]').forEach((el, i) => {
+      const loops = q('[data-sway]').map((el, i) =>
         gsap.to(el, {
           rotation: gsap.utils.random(1.5, 3.5) * (i % 2 ? 1 : -1),
           duration: gsap.utils.random(3, 7),
@@ -92,9 +92,10 @@ export function Amanecer() {
           repeat: -1,
           delay: i * 0.37,
           transformOrigin: '50% 100%',
-        })
-      })
-      gsap.to(q('[data-sprout]'), { rotation: 8, duration: 1.3, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 100%' })
+        }),
+      )
+      loops.push(gsap.to(q('[data-sprout]'), { rotation: 8, duration: 1.3, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 100%' }))
+      pauseOffscreen(ref.current, loops)
     })
   })
 
@@ -129,8 +130,13 @@ export function Amanecer() {
         </div>
 
         <div data-title="" className="relative z-10 pt-[max(5.5rem,12svh)] text-center">
-          <p className="text-[0.7rem] font-semibold tracking-[0.3em] text-turquesa-dark uppercase">Coffee Lounge · Puerto Iguazú</p>
-          <h1 className="mt-1 font-script text-[clamp(4.6rem,21vw,10rem)] leading-[1.05] text-madera">Lilium</h1>
+          {/* como en el logo: el nombre arriba y "Coffee Lounge" debajo */}
+          <h1 className="font-script text-[clamp(4.6rem,21vw,10rem)] leading-[1.05] text-madera">
+            Lilium
+            <span className="mt-1 block font-sans text-[0.7rem] font-semibold tracking-[0.34em] text-turquesa-dark uppercase sm:text-xs">
+              Coffee Lounge · Puerto Iguazú
+            </span>
+          </h1>
         </div>
 
         {/* lirio 3D */}

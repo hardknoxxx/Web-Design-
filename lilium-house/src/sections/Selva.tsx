@@ -41,17 +41,17 @@ export function Selva() {
       <Edge color="#415521" flip />
       <div className="sticky top-0 h-[100svh] overflow-hidden text-crema">
         {/* bruma de las cataratas: velos suaves, sin bordes duros */}
-        <m.div style={{ y: mistY }} className="absolute inset-x-0 top-0 flex h-[85%] justify-around px-2 [mask-image:linear-gradient(to_bottom,black,transparent_85%)]">
+        <m.div style={{ y: mistY }} className="absolute inset-x-0 top-0 flex h-[85%] justify-around px-2 will-change-transform [mask-image:linear-gradient(to_bottom,black,transparent_85%)]">
           {[0.07, 0.11, 0.06, 0.09, 0.05].map((o, i) => (
             <div
               key={i}
-              className="h-full w-[18%] rounded-b-full bg-[linear-gradient(to_right,transparent,white_45%,white_55%,transparent)] blur-[6px]"
+              className="h-full w-[22%] rounded-b-full bg-[linear-gradient(to_right,transparent,white_40%,white_60%,transparent)]"
               style={{ opacity: o, height: `${70 + (i % 3) * 10}%` }}
             />
           ))}
         </m.div>
 
-        <m.div style={{ y: backY }} className="absolute inset-0">
+        <m.div style={{ y: backY }} className="absolute inset-0 will-change-transform">
           <Leaf className="absolute top-[18%] -left-6 w-28 -rotate-[30deg]" color="#5E7A2A" />
           <Leaf className="absolute top-[10%] -right-4 w-24 rotate-[40deg]" color="#5E7A2A" />
           <Leaf className="absolute top-[58%] right-[12%] w-16 rotate-[70deg]" color="#97AD3D" />
@@ -61,7 +61,7 @@ export function Selva() {
           style={{ opacity: textOpacity, y: textY }}
           className="relative z-10 mx-auto flex h-full w-full max-w-3xl flex-col justify-center px-9 pb-[18svh] text-center sm:px-14"
         >
-          <p className="inline-block -rotate-2 font-hand text-3xl text-helecho">18:00 · Puerto Iguazú</p>
+          <p className="inline-block -rotate-2 font-hand text-3xl text-[#D4E09B]">18:00 · Puerto Iguazú</p>
           <h2 className="mt-4 font-display text-[clamp(2rem,7.4vw,4rem)] leading-[1.08] font-semibold text-balance">
             En la ciudad de las Cataratas, la selva siempre está cerca.
           </h2>
@@ -70,23 +70,27 @@ export function Selva() {
           </p>
         </m.div>
 
-        <m.div style={{ x: toucanX, y: toucanY }} className="absolute top-[16%] left-0 z-20 w-[min(42vw,260px)]">
+        <m.div style={{ x: toucanX, y: toucanY }} className="absolute top-[16%] left-0 z-20 w-[min(42vw,260px)] will-change-transform">
           <Toucan className="w-full" />
         </m.div>
         <m.div style={{ x: b1x, y: b1y }} className="absolute bottom-[30%] left-[20%] z-[5] w-10">
-          <Butterfly className="w-full" color="#64BCB0" />
+          <div className="animate-flutter will-change-transform">
+            <Butterfly className="w-full" color="#64BCB0" />
+          </div>
         </m.div>
         <m.div style={{ x: b2x, y: b2y }} className="absolute right-[18%] bottom-[22%] z-[5] w-8">
-          <Butterfly className="w-full" color="#B4472B" />
+          <div className="animate-flutter will-change-transform [animation-delay:-0.13s]">
+            <Butterfly className="w-full" color="#B4472B" />
+          </div>
         </m.div>
 
         <CoatiPaseo className="bottom-[17%] z-[25] w-[min(40vw,230px)]" />
 
         {/* hojas de frente: cada lado con su especie y su ritmo */}
-        <m.div style={{ y: frontLY, rotate: frontL }} className="absolute -bottom-[8%] -left-[24%] z-30 w-[70vw] max-w-[540px] origin-bottom-left">
+        <m.div style={{ y: frontLY, rotate: frontL }} className="absolute -bottom-[8%] -left-[24%] z-30 w-[70vw] max-w-[540px] origin-bottom-left will-change-transform">
           <Monstera color="#2C3A14" stem={140} className="w-full" />
         </m.div>
-        <m.div style={{ y: frontRY }} className="absolute inset-x-0 bottom-0 z-30 h-[55%]">
+        <m.div style={{ y: frontRY }} className="absolute inset-x-0 bottom-0 z-30 h-[55%] will-change-transform">
           <m.div style={{ rotate: palmR }} className="absolute -right-[30%] -bottom-[6%] w-[80vw] max-w-[600px] origin-bottom">
             <PalmFrond color="#2F4A22" stem={140} className="w-full -scale-x-100" />
           </m.div>
@@ -96,7 +100,7 @@ export function Selva() {
         </m.div>
 
         {/* sotobosque donde termina la escena: matas, helechos y hojas al ras del suelo */}
-        <m.div style={{ y: sotoY }} className="pointer-events-none absolute inset-x-0 bottom-0 z-[35] h-[24%]" aria-hidden="true">
+        <m.div style={{ y: sotoY }} className="pointer-events-none absolute inset-x-0 bottom-0 z-[35] h-[24%] will-change-transform" aria-hidden="true">
           <div className="absolute bottom-0 left-[6%] w-[22vw] max-w-[170px] -rotate-12 origin-bottom">
             <Fern color="#4A5E22" stem={60} className="w-full" />
           </div>

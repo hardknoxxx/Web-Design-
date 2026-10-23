@@ -80,7 +80,7 @@ export function Toucan({ className, style }: ArtProps) {
 export function Butterfly({ className, style, color = '#64BCB0' }: ArtProps) {
   return (
     <svg viewBox="-24 -22 48 40" className={className} style={style} aria-hidden="true">
-      <g className="origin-center animate-flutter [transform-box:fill-box]">
+      <g>
         <ellipse cx="-9" cy="-4" rx="10" ry="14" transform="rotate(-25 -9 -4)" fill={color} />
         <ellipse cx="9" cy="-4" rx="10" ry="14" transform="rotate(25 9 -4)" fill={color} />
         <ellipse cx="-6" cy="10" rx="6" ry="8" fill={color} opacity=".75" />

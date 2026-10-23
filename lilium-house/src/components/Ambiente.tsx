@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { gsap, MOTION_OK, useGsap } from '../lib/gsap'
+import { gsap, MOTION_OK, pauseOffscreen, useGsap } from '../lib/gsap'
 import { Leaf } from './Botanica'
 import { Fern, HangingPothos, HeartLeaf, Hummingbird, LeafShadow, PottedPlant } from './Flora'
 import { CeiboRama } from './Paisaje'
@@ -27,8 +27,10 @@ export function RitualDecor() {
     leaves.forEach((l, i) => tl.to(l, { scale: 1, duration: 0.12, ease: 'back.out(2)' }, 0.08 + i * 0.1))
     gsap.to(q('[data-shade]'), { yPercent: -14, xPercent: 4, ease: 'none', scrollTrigger: { trigger: section, scrub: 2 } })
     gsap.matchMedia().add(MOTION_OK, () => {
-      gsap.to(q('[data-pothos]'), { rotation: 2.4, duration: 4.6, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 0%' })
-      gsap.to(q('[data-pot] [data-sway]'), { rotation: -2, skewX: 1.5, duration: 5.3, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 100%' })
+      pauseOffscreen(section, [
+        gsap.to(q('[data-pothos]'), { rotation: 2.4, duration: 4.6, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 0%' }),
+        gsap.to(q('[data-pot] [data-sway]'), { rotation: -2, skewX: 1.5, duration: 5.3, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 100%' }),
+      ])
     })
   })
   return (
@@ -54,7 +56,7 @@ export function Picaflor({ className = '' }: { className?: string }) {
     const bird = q('[data-picaflor]')[0]
     gsap.matchMedia().add(MOTION_OK, () => {
       // aleteo: las alas se vuelven un borrón que va y viene
-      gsap.to(q('[data-wing]'), { scaleY: 0.35, skewX: -8, duration: 0.06, ease: 'none', yoyo: true, repeat: -1, transformOrigin: '50% 100%', stagger: 0.03 })
+      const wings = gsap.to(q('[data-wing]'), { scaleY: 0.35, skewX: -8, duration: 0.06, ease: 'none', yoyo: true, repeat: -1, transformOrigin: '50% 100%', stagger: 0.03 })
       const hover = gsap.to(bird, { y: -6, x: 3, rotation: -3, duration: 1.1, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: true })
       gsap.fromTo(
         bird,
@@ -71,7 +73,8 @@ export function Picaflor({ className = '' }: { className?: string }) {
           onReverseComplete: () => void hover.pause(),
         },
       )
-      gsap.to(q('[data-ceibo]'), { rotation: 2, duration: 4.2, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '0% 80%' })
+      const ceibo = gsap.to(q('[data-ceibo]'), { rotation: 2, duration: 4.2, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '0% 80%' })
+      pauseOffscreen(ref.current, [wings, ceibo])
     })
   })
   return (
@@ -124,11 +127,13 @@ export function Hornero({ className = '' }: { className?: string }) {
     const q = gsap.utils.selector(ref)
     gsap.from(ref.current, { xPercent: 30, autoAlpha: 0, duration: 1.4, ease: 'power3.out', scrollTrigger: { trigger: ref.current, start: 'top 90%', toggleActions: 'play none none reverse' } })
     gsap.matchMedia().add(MOTION_OK, () => {
-      gsap.to(q('[data-head]'), { rotation: -12, duration: 0.18, ease: 'power1.inOut', yoyo: true, repeat: -1, repeatDelay: 1.6, transformOrigin: '30% 90%' })
-      gsap
-        .timeline({ repeat: -1, repeatDelay: 3.4, delay: 1 })
-        .to(q('[data-bird]'), { y: -7, duration: 0.16, ease: 'power2.out' })
-        .to(q('[data-bird]'), { y: 0, duration: 0.2, ease: 'bounce.out' })
+      pauseOffscreen(ref.current, [
+        gsap.to(q('[data-head]'), { rotation: -12, duration: 0.18, ease: 'power1.inOut', yoyo: true, repeat: -1, repeatDelay: 1.6, transformOrigin: '30% 90%' }),
+        gsap
+          .timeline({ repeat: -1, repeatDelay: 3.4, delay: 1 })
+          .to(q('[data-bird]'), { y: -7, duration: 0.16, ease: 'power2.out' })
+          .to(q('[data-bird]'), { y: 0, duration: 0.2, ease: 'bounce.out' }),
+      ])
     })
   })
   return (

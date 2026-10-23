@@ -176,13 +176,17 @@ export function CupButton() {
                 </m.g>
               </m.g>
             </g>
-            {/* vapor */}
-            <g fill="none" stroke="#FAF7F2" strokeOpacity=".7" strokeWidth="1.8" strokeLinecap="round" className="animate-steam [transform-box:fill-box]">
-              <path d="M-8-16C-12-24-4-28-8-36" />
-              <path d="M2-18C-2-28 7-32 2-44" />
-              <path d="M11-16C7-23 14-27 11-34" />
-            </g>
           </m.svg>
+          {/* vapor: capa aparte que se anima sin repintar la taza */}
+          <span className="pointer-events-none absolute top-[2%] left-1/2 w-[26%] -translate-x-1/2 animate-steam will-change-transform" aria-hidden="true">
+            <svg viewBox="-14 -46 28 32" className="w-full overflow-visible">
+              <g fill="none" stroke="#FAF7F2" strokeOpacity=".7" strokeWidth="1.8" strokeLinecap="round">
+                <path d="M-8-16C-12-24-4-28-8-36" />
+                <path d="M2-18C-2-28 7-32 2-44" />
+                <path d="M11-16C7-23 14-27 11-34" />
+              </g>
+            </svg>
+          </span>
           {/* etiqueta de WhatsApp, como un sello sobre la mesa */}
           <span className="absolute -top-2 -left-3 grid h-7 w-7 -rotate-12 place-items-center rounded-[4%_70%_4%_70%] bg-turquesa text-crema shadow-[0_4px_8px_-3px_rgb(0_0_0/0.5)] ring-2 ring-crema/80">
             <WhatsAppIcon className="h-3.5 w-3.5" />
