@@ -2,6 +2,8 @@ import { useRef } from 'react'
 import { gsap, MOTION_OK, useGsap } from '../lib/gsap'
 import { Leaf } from './Botanica'
 import { Fern, HangingPothos, HeartLeaf, Hummingbird, LeafShadow, PottedPlant } from './Flora'
+import { CeiboRama } from './Paisaje'
+import { Coati, HorneroNido } from './Fauna'
 
 /*
  * Capas de ambiente: vida de fondo (sombras de follaje, plantas, fauna) siempre detrás del
@@ -44,35 +46,42 @@ export function RitualDecor() {
   )
 }
 
-/** Mantel: un picaflor entra volando, se queda suspendido y aletea. */
+/** Mantel: un picaflor llega volando a una rama de ceibo y se queda libando, suspendido. */
 export function Picaflor({ className = '' }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
   useGsap(ref, () => {
-    const bird = ref.current!
-    const wing = bird.querySelector('[data-wing]')
+    const q = gsap.utils.selector(ref)
+    const bird = q('[data-picaflor]')[0]
     gsap.matchMedia().add(MOTION_OK, () => {
-      gsap.to(wing, { rotation: -38, duration: 0.07, ease: 'none', yoyo: true, repeat: -1, transformOrigin: '100% 100%' })
-      const hover = gsap.to(bird, { y: -10, x: 4, duration: 1.4, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: true })
+      // aleteo: las alas se vuelven un borrón que va y viene
+      gsap.to(q('[data-wing]'), { scaleY: 0.35, skewX: -8, duration: 0.06, ease: 'none', yoyo: true, repeat: -1, transformOrigin: '50% 100%', stagger: 0.03 })
+      const hover = gsap.to(bird, { y: -6, x: 3, rotation: -3, duration: 1.1, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: true })
       gsap.fromTo(
         bird,
-        { x: '60vw', y: -120, rotation: -14, autoAlpha: 0 },
+        { x: '55vw', y: -160, rotation: -18, autoAlpha: 0 },
         {
           x: 0,
           y: 0,
           rotation: 0,
           autoAlpha: 1,
-          duration: 1.8,
+          duration: 1.9,
           ease: 'power2.out',
-          scrollTrigger: { trigger: sectionOf(bird), start: 'top 55%', toggleActions: 'play none none reverse' },
+          scrollTrigger: { trigger: ref.current, start: 'top 85%', toggleActions: 'play none none reverse' },
           onComplete: () => void hover.play(),
           onReverseComplete: () => void hover.pause(),
         },
       )
+      gsap.to(q('[data-ceibo]'), { rotation: 2, duration: 4.2, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '0% 80%' })
     })
   })
   return (
-    <div ref={ref} className={`pointer-events-none absolute z-10 w-16 sm:w-20 ${className}`} aria-hidden="true">
-      <Hummingbird className="w-full" />
+    <div ref={ref} className={`pointer-events-none absolute z-10 h-36 w-72 sm:h-44 sm:w-96 ${className}`} aria-hidden="true">
+      <div data-ceibo="" className="absolute bottom-0 left-0 w-[78%]">
+        <CeiboRama className="w-full" />
+      </div>
+      <div data-picaflor="" className="absolute top-[20%] left-[60%] w-24 sm:w-28">
+        <Hummingbird className="w-full -scale-x-100" />
+      </div>
     </div>
   )
 }
@@ -104,6 +113,62 @@ export function HojasCayendo() {
       <div data-fall="" className="absolute top-[30%] left-[55%] w-8 opacity-75">
         <Leaf color="#9A5B2E" className="w-full" />
       </div>
+    </div>
+  )
+}
+
+/** Opiniones: el hornero en su rama, junto al horno de barro; cabecea y de vez en cuando salta. */
+export function Hornero({ className = '' }: { className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useGsap(ref, () => {
+    const q = gsap.utils.selector(ref)
+    gsap.from(ref.current, { xPercent: 30, autoAlpha: 0, duration: 1.4, ease: 'power3.out', scrollTrigger: { trigger: ref.current, start: 'top 90%', toggleActions: 'play none none reverse' } })
+    gsap.matchMedia().add(MOTION_OK, () => {
+      gsap.to(q('[data-head]'), { rotation: -12, duration: 0.18, ease: 'power1.inOut', yoyo: true, repeat: -1, repeatDelay: 1.6, transformOrigin: '30% 90%' })
+      gsap
+        .timeline({ repeat: -1, repeatDelay: 3.4, delay: 1 })
+        .to(q('[data-bird]'), { y: -7, duration: 0.16, ease: 'power2.out' })
+        .to(q('[data-bird]'), { y: 0, duration: 0.2, ease: 'bounce.out' })
+    })
+  })
+  return (
+    <div ref={ref} className={`pointer-events-none absolute z-[1] ${className}`} aria-hidden="true">
+      <HorneroNido className="w-full -scale-x-100" />
+    </div>
+  )
+}
+
+/** Selva: un coatí cruza al ritmo del scroll; las patas se mueven con el paso. */
+export function CoatiPaseo({ className = '' }: { className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useGsap(ref, () => {
+    const q = gsap.utils.selector(ref)
+    const a = q('[data-leg="a"]')
+    const b = q('[data-leg="b"]')
+    gsap.set([...a, ...b], { transformOrigin: '50% 0%' })
+    gsap.fromTo(
+      ref.current,
+      { x: '-45vw' },
+      {
+        x: '115vw',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionOf(ref.current),
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+          onUpdate: (self) => {
+            const r = Math.sin(self.progress * 120) * 22
+            gsap.set(a, { rotation: r })
+            gsap.set(b, { rotation: -r })
+          },
+        },
+      },
+    )
+  })
+  return (
+    <div ref={ref} className={`pointer-events-none absolute left-0 ${className}`} aria-hidden="true">
+      <Coati className="w-full" />
     </div>
   )
 }

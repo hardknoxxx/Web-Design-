@@ -1,7 +1,7 @@
 import { m, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import { Monstera } from '../components/Botanica'
-import { HojasCayendo } from '../components/Ambiente'
+import { HojasCayendo, Hornero } from '../components/Ambiente'
 import { Edge } from '../components/Edge'
 import { ArrowIcon } from '../components/Icons'
 import { SITE } from '../data/site'
@@ -35,6 +35,7 @@ export function Opiniones() {
     >
       <Edge color="#64BCB0" />
       <HojasCayendo />
+      <Hornero className="top-4 -right-2 w-56 sm:top-8 sm:right-[4%] sm:w-72 lg:w-80" />
       <div className="relative z-10 mx-auto max-w-3xl text-center">
         <p className="inline-block -rotate-2 font-hand text-3xl text-laguna">19:30 · lo que dicen</p>
         <p className="mt-4 font-display text-[clamp(7rem,34vw,13rem)] leading-none font-semibold text-white tabular-nums [text-shadow:0_2px_0_rgb(23_63_59/0.18)]" aria-hidden="true">

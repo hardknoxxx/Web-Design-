@@ -22,12 +22,12 @@ npm run preview  # servir el build
 
 | Sección | Hora | Qué pasa al scrollear |
 | --- | --- | --- |
-| `sections/Amanecer.tsx` | 08:00 | Escena fijada: lirio 3D; la cortina de hojas se abre, sube el sol, aparece la bajada |
+| `sections/Amanecer.tsx` | 08:00 | Escena fijada: abre limpio con el lirio 3D y el sotobosque; sube la selva lejana (palmeras pindó), las plantas brotan del suelo y la cámara atraviesa el follaje hasta la taza |
 | `sections/Ritual.tsx` | 09:00–11:00 | Escena fijada de 3 actos: la taza entra y cambia de lugar, llega la chipa, se levanta la campana de la torta |
 | `sections/Carta.tsx` | 11:45 | Pestañas Desayunos / Almuerzos / Meriendas (abre la que corresponde a la hora); platos ilustrados y fotos del Instagram se sirven sobre la mesa (datos en `CARTA`, `src/data/site.ts`) |
-| `sections/Mantel.tsx` | 17:00 | El mantel de papel se despliega y se colorea (mandala interactivo, descarga PNG) |
-| `sections/Selva.tsx` | 18:00 | Parallax: bruma de cataratas, tucán que cruza, mariposas, hojas de frente |
-| `sections/Opiniones.tsx` | 19:30 | Contador 0 → 4,5 (Google), chips, las hojas empiezan a cerrarse |
+| `sections/Mantel.tsx` | 17:00 | El mantel de papel se despliega y se colorea (mandala interactivo, descarga PNG); abajo, un picaflor liba en una rama de ceibo |
+| `sections/Selva.tsx` | 18:00 | Parallax: bruma de cataratas, tucán que cruza, un coatí que camina con el scroll, mariposas, hojas de frente |
+| `sections/Opiniones.tsx` | 19:30 | Contador 0 → 4,5 (Google), chips, el hornero junto a su horno de barro, las hojas empiezan a cerrarse |
 | `sections/Noche.tsx` | 21:00 | El cartel “Lilium” se enciende, luciérnagas, horarios, dirección y teléfono |
 
 Piezas globales: `day/DayProvider.tsx` (scroll → hora y color de la barra), `components/Vines.tsx` (enredaderas),
@@ -49,6 +49,12 @@ Color de marca: la **menta del logo** `#64BCB0` (token `turquesa`), con `turques
 sobre claro y `laguna` `#1C4A45` para superficies oscuras (menú, noche). Acompañan madera, crema, miel y los
 verdes de la selva (musgo `#415521`, yerba `#6F7F2E`, helecho `#97AD3D`); la tierra colorada `#B4472B` queda
 como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
+
+## Ilustración
+
+- `components/Flora.tsx`: cada hoja tiene volumen (luz sobre la nervadura central, sombra hacia bordes y base),
+  nervaduras recortadas al contorno y un tallo que puede seguir por debajo del borde (`stem`) para nacer del suelo.
+- `components/Paisaje.tsx`: selva lejana, sotobosque y rama de ceibo. `components/Fauna.tsx`: hornero con su nido y coatí.
 
 ## Animación
 

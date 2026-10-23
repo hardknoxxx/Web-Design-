@@ -11,11 +11,11 @@ export function Mantel() {
     <section
       id="mantel"
       data-phase="#E6D7BC|#3D2314|17:00"
-      className="relative z-[4] overflow-x-clip bg-kraft px-9 pt-28 pb-32 sm:px-14 lg:px-24"
+      className="relative z-[4] overflow-x-clip bg-kraft px-9 pt-28 pb-44 sm:px-14 sm:pb-52 lg:px-24"
       aria-label="El mantel para colorear"
     >
       <Edge color="#E6D7BC" />
-      <Picaflor className="top-[30%] right-[4%] lg:top-[22%] lg:right-[8%]" />
+      <Picaflor className="bottom-2 left-0 sm:bottom-6 lg:bottom-10" />
       <div className="mx-auto max-w-6xl">
         <MandalaColoring
           intro={

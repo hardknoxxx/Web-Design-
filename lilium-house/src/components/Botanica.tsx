@@ -1,5 +1,6 @@
 import { m, type MotionValue } from 'framer-motion'
 import { useId, type CSSProperties } from 'react'
+import { LeafBody, LeafGradients, safeId, shade } from './Flora'
 
 /* Ilustraciones del storyboard de Figma ("Lilium Coffee Lounge — Storyboard de scroll"). */
 
@@ -7,17 +8,17 @@ const MONSTERA =
   'M0 0C-80-6-120-80-86-150C-62-194-22-208 0-212C22-208 62-194 86-150C120-80 80-6 0 0Z'
 const LEAF = 'M0 0C-40-10-50-60-10-92C-4-96 4-96 10-92C50-60 40-10 0 0Z'
 
-const safeId = (id: string) => id.replace(/[^a-zA-Z0-9_-]/g, '')
-
-type ArtProps = { className?: string; style?: CSSProperties; color?: string }
+type ArtProps = { className?: string; style?: CSSProperties; color?: string; stem?: number }
 
 /** Hoja de monstera con cortes reales (máscara), apoyada en su base (0,0). */
-export function Monstera({ className, style, color = '#415521' }: ArtProps) {
+export function Monstera({ className, style, color = '#415521', stem = 0 }: ArtProps) {
   const id = safeId(useId())
+  const dark = shade(color, -0.45)
   return (
-    <svg viewBox="-130 -222 260 232" className={className} style={style} aria-hidden="true">
+    <svg viewBox="-130 -222 260 232" overflow="visible" className={className} style={style} aria-hidden="true">
       <defs>
-        <mask id={id}>
+        <LeafGradients id={id} color={color} />
+        <mask id={`${id}-m`}>
           <path d={MONSTERA} fill="#fff" />
           <g stroke="#000" strokeWidth="9" strokeLinecap="round">
             {[1, 2, 3, 4].map((k) => (
@@ -31,17 +32,30 @@ export function Monstera({ className, style, color = '#415521' }: ArtProps) {
           <ellipse cx="28" cy="-130" rx="6" ry="11" fill="#000" />
         </mask>
       </defs>
-      <path d={MONSTERA} fill={color} mask={`url(#${id})`} />
-      <path d="M0 2V-206" stroke="#000" strokeOpacity=".2" strokeWidth="5" fill="none" />
+      {stem > 0 && <path d={`M0 ${stem}V0`} stroke={shade(color, -0.3)} strokeWidth="8" strokeLinecap="round" />}
+      <g mask={`url(#${id}-m)`}>
+        <path d={MONSTERA} fill={`url(#${id}-x)`} />
+        <path d={MONSTERA} fill={`url(#${id}-y)`} />
+        {/* nervaduras laterales: corren entre los cortes */}
+        <g stroke={dark} strokeOpacity=".35" strokeWidth="2" fill="none" strokeLinecap="round">
+          {[0, 1, 2, 3, 4].map((k) => (
+            <g key={k}>
+              <path d={`M-2 ${-18 - 36 * k}C-40 ${-14 - 36 * k} -80 ${-2 - 36 * k} -118 ${8 - 36 * k}`} />
+              <path d={`M2 ${-26 - 36 * k}C40 ${-24 - 36 * k} 80 ${-14 - 36 * k} 118 ${-4 - 36 * k}`} />
+            </g>
+          ))}
+        </g>
+        <path d="M0 0V-206" stroke={shade(color, 0.3)} strokeOpacity=".6" strokeWidth="4" fill="none" />
+        <path d={MONSTERA} fill="none" stroke={dark} strokeOpacity=".5" strokeWidth="1.6" />
+      </g>
     </svg>
   )
 }
 
 export function Leaf({ className, style, color = '#6F7F2E' }: ArtProps) {
   return (
-    <svg viewBox="-50 -98 100 100" className={className} style={style} aria-hidden="true">
-      <path d={LEAF} fill={color} />
-      <path d="M0 -4V-86" stroke="#000" strokeOpacity=".16" strokeWidth="3" fill="none" />
+    <svg viewBox="-50 -98 100 100" overflow="visible" className={className} style={style} aria-hidden="true">
+      <LeafBody d={LEAF} color={color} midrib="M0-4V-90" veins="M0-22C-10-26-20-30-30-40M0-22C10-26 20-30 30-40M0-46C-8-50-16-56-22-66M0-46C8-50 16-56 22-66" />
     </svg>
   )
 }

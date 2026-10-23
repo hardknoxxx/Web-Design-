@@ -2,6 +2,7 @@ import { m, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import { Butterfly, Leaf, Monstera, Toucan } from '../components/Botanica'
 import { Edge } from '../components/Edge'
+import { CoatiPaseo } from '../components/Ambiente'
 
 /**
  * 07 · La selva entra. Escena fijada con capas parallax a distinta velocidad:
@@ -71,6 +72,8 @@ export function Selva() {
         <m.div style={{ x: b2x, y: b2y }} className="absolute right-[18%] bottom-[22%] z-[5] w-8">
           <Butterfly className="w-full" color="#B4472B" />
         </m.div>
+
+        <CoatiPaseo className="bottom-[17%] z-[25] w-[min(40vw,230px)]" />
 
         {/* hojas de frente: la capa más rápida */}
         <m.div style={{ y: frontY }} className="absolute inset-x-0 bottom-0 z-30 h-[45%]">
