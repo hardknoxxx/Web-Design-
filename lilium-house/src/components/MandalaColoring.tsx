@@ -1,13 +1,15 @@
-import { m } from 'framer-motion'
+import { m, useScroll, useTransform } from 'framer-motion'
 import { memo, useCallback, useMemo, useRef, useState, type ReactNode } from 'react'
+import { PencilJar } from './Botanica'
 
 const PALETTE = [
-  { name: 'Turquesa', value: '#00A896' },
-  { name: 'Rosa', value: '#E07A5F' },
-  { name: 'Mostaza', value: '#E9B44C' },
-  { name: 'Salvia', value: '#5B7B5A' },
-  { name: 'Terracota', value: '#B5532F' },
-  { name: 'Lavanda', value: '#9C89B8' },
+  { name: 'Turquesa', value: '#64BCB0' },
+  { name: 'Tierra colorada', value: '#B4472B' },
+  { name: 'Miel', value: '#D9A441' },
+  { name: 'Yerba', value: '#6F7F2E' },
+  { name: 'Helecho', value: '#97AD3D' },
+  { name: 'Selva', value: '#22351E' },
+  { name: 'Canela', value: '#9A5B2E' },
   { name: 'Madera', value: '#3D2314' },
   { name: 'Crema', value: '#FFFDF9' },
 ] as const
@@ -90,6 +92,12 @@ export function MandalaColoring({ intro }: { intro?: ReactNode }) {
   const [symmetric, setSymmetric] = useState(true)
   const [fills, setFills] = useState<Record<string, string>>({})
   const svgRef = useRef<SVGSVGElement>(null)
+  const paperRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress: unfold } = useScroll({ target: paperRef, offset: ['start end', 'center center'] })
+  const unfoldX = useTransform(unfold, [0, 0.85], [82, 0])
+  const tilt = useTransform(unfold, [0, 1], [6, -2])
+  const spin = useTransform(unfold, [0, 1], [-40, 0])
+  const jarX = useTransform(unfold, [0.45, 1], ['160%', '0%'])
 
   const paint = useCallback(
     (region: Region) => {
@@ -143,24 +151,32 @@ export function MandalaColoring({ intro }: { intro?: ReactNode }) {
   return (
     <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_460px] lg:gap-x-14 lg:gap-y-8">
       {intro && <div className="lg:col-start-1 lg:row-start-1 lg:self-end">{intro}</div>}
-      <m.div
-        initial={{ opacity: 0, scale: 0.94, rotate: -8 }}
-        whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-        className="relative mx-auto w-full max-w-[min(100%,520px)] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center"
+      <div
+        ref={paperRef}
+        className="relative mx-auto w-full max-w-[min(100%,520px)] [perspective:1400px] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center"
       >
-        <div className="absolute -inset-3 rounded-full border border-dashed border-madera/20" />
-        <svg
-          ref={svgRef}
-          viewBox="-100 -100 200 200"
-          className="relative w-full touch-manipulation drop-shadow-[0_18px_30px_rgb(61_35_20/0.18)]"
-          role="group"
-          aria-label="Mandala para colorear: tocá una zona para pintarla"
+        {/* mantel de papel que se despliega con el scroll */}
+        <m.div
+          style={{ rotateX: unfoldX, rotate: tilt, transformOrigin: '50% 0%' }}
+          className="relative rounded-[3px] bg-[#FFFDF9] p-[6%] shadow-[0_30px_50px_-28px_rgb(61_35_20/0.55),0_2px_0_rgb(61_35_20/0.06)]"
         >
-          <MandalaShape fills={fills} onPaint={paint} />
-        </svg>
-      </m.div>
+          <span className="pointer-events-none absolute inset-x-0 top-1/2 border-t border-dashed border-madera/15" />
+          <span className="pointer-events-none absolute top-3 left-4 font-script text-xl text-madera/40">Lilium</span>
+          <m.svg
+            ref={svgRef}
+            viewBox="-100 -100 200 200"
+            style={{ rotate: spin }}
+            className="relative w-full touch-manipulation"
+            role="group"
+            aria-label="Mandala para colorear: tocá una zona para pintarla"
+          >
+            <MandalaShape fills={fills} onPaint={paint} />
+          </m.svg>
+        </m.div>
+        <m.div style={{ x: jarX }} className="pointer-events-none absolute right-0 -bottom-10 w-[20%] sm:-right-8">
+          <PencilJar className="w-full" />
+        </m.div>
+      </div>
 
       <div className="lg:col-start-1 lg:row-start-2 lg:self-start">
         <fieldset>
