@@ -201,3 +201,49 @@
   }
 
 }
+
+/* Comanda: bola de papel arrugado que se desenvuelve (clip-path con bordes irregulares) */
+@keyframes paper-unfold {
+  0% { clip-path: polygon(65.2% 78.4%, 71.0% 81.3%, 71.4% 75.9%, 75.8% 76.6%, 80.3% 76.0%, 81.1% 77.8%, 85.6% 76.3%, 91.3% 81.6%, 90.8% 93.7%, 74.5% 101.6%, 61.5% 93.1%, 61.4% 90.6%, 65.2% 89.3%, 58.6% 85.7%, 66.9% 84.5%, 63.2% 79.8%); transform: scale(0.3) rotate(-28deg); opacity: 0; }
+  12% { opacity: 1; }
+  38% { clip-path: polygon(36.6% 47.1%, 39.1% 35.3%, 54.9% 36.7%, 70.9% 31.6%, 84.4% 37.1%, 96.3% 37.5%, 104.0% 51.0%, 104.0% 74.8%, 93.8% 90.1%, 81.9% 104.0%, 48.5% 97.1%, 25.8% 93.5%, 30.1% 82.3%, 19.1% 72.8%, 5.8% 55.5%, 29.7% 51.2%); transform: scale(0.8) rotate(10deg); }
+  68% { clip-path: polygon(-1.6% 2.6%, 28.8% -4.0%, 53.5% 3.0%, 79.5% -4.0%, 95.7% -1.1%, 95.9% 24.0%, 102.3% 48.9%, 103.9% 78.3%, 101.7% 102.9%, 70.7% 99.7%, 52.3% 102.9%, 24.9% 104.0%, -2.1% 99.7%, 2.3% 72.0%, 4.1% 52.7%, 1.1% 28.7%); transform: scale(1.04) rotate(-4deg); }
+  100% { clip-path: polygon(0.0% 0.0%, 25.0% 0.0%, 50.0% 0.0%, 75.0% 0.0%, 100.0% 0.0%, 100.0% 25.0%, 100.0% 50.0%, 100.0% 75.0%, 100.0% 100.0%, 75.0% 100.0%, 50.0% 100.0%, 25.0% 100.0%, 0.0% 100.0%, 0.0% 75.0%, 0.0% 50.0%, 0.0% 25.0%); transform: scale(1) rotate(-2deg); opacity: 1; }
+}
+@keyframes paper-crumple {
+  0% { clip-path: polygon(0.0% 0.0%, 25.0% 0.0%, 50.0% 0.0%, 75.0% 0.0%, 100.0% 0.0%, 100.0% 25.0%, 100.0% 50.0%, 100.0% 75.0%, 100.0% 100.0%, 75.0% 100.0%, 50.0% 100.0%, 25.0% 100.0%, 0.0% 100.0%, 0.0% 75.0%, 0.0% 50.0%, 0.0% 25.0%); transform: scale(1) rotate(-2deg); opacity: 1; }
+  35% { clip-path: polygon(-1.6% 2.6%, 28.8% -4.0%, 53.5% 3.0%, 79.5% -4.0%, 95.7% -1.1%, 95.9% 24.0%, 102.3% 48.9%, 103.9% 78.3%, 101.7% 102.9%, 70.7% 99.7%, 52.3% 102.9%, 24.9% 104.0%, -2.1% 99.7%, 2.3% 72.0%, 4.1% 52.7%, 1.1% 28.7%); transform: scale(1.02) rotate(-5deg); }
+  65% { clip-path: polygon(36.6% 47.1%, 39.1% 35.3%, 54.9% 36.7%, 70.9% 31.6%, 84.4% 37.1%, 96.3% 37.5%, 104.0% 51.0%, 104.0% 74.8%, 93.8% 90.1%, 81.9% 104.0%, 48.5% 97.1%, 25.8% 93.5%, 30.1% 82.3%, 19.1% 72.8%, 5.8% 55.5%, 29.7% 51.2%); transform: scale(0.75) rotate(12deg); }
+  100% { clip-path: polygon(65.2% 78.4%, 71.0% 81.3%, 71.4% 75.9%, 75.8% 76.6%, 80.3% 76.0%, 81.1% 77.8%, 85.6% 76.3%, 91.3% 81.6%, 90.8% 93.7%, 74.5% 101.6%, 61.5% 93.1%, 61.4% 90.6%, 65.2% 89.3%, 58.6% 85.7%, 66.9% 84.5%, 63.2% 79.8%); transform: scale(0.28) rotate(-30deg); opacity: 0; }
+}
+@keyframes paper-creases {
+  0%, 30% { opacity: 1; }
+  100% { opacity: 0.2; }
+}
+@layer components {
+  .paper-ball {
+    transform-origin: 76% 88%;
+    will-change: clip-path, transform;
+  }
+  .paper-ball[data-state='open'] {
+    animation: paper-unfold 0.6s cubic-bezier(0.2, 0.9, 0.25, 1.05) both;
+  }
+  .paper-ball[data-state='closing'] {
+    animation: paper-crumple 0.38s cubic-bezier(0.55, 0, 0.75, 0.4) both;
+  }
+  /* arrugas: quedan marcadas apenas cuando el papel ya se alisó */
+  .paper-ball::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background-image:
+      linear-gradient(32deg, transparent 46%, rgb(61 35 20 / 0.1) 49%, rgb(255 255 255 / 0.7) 50.5%, transparent 53%),
+      linear-gradient(-52deg, transparent 38%, rgb(61 35 20 / 0.09) 41%, rgb(255 255 255 / 0.6) 42.5%, transparent 45%),
+      linear-gradient(78deg, transparent 62%, rgb(61 35 20 / 0.08) 64%, rgb(255 255 255 / 0.55) 65.5%, transparent 68%),
+      linear-gradient(-14deg, transparent 70%, rgb(61 35 20 / 0.08) 72%, rgb(255 255 255 / 0.5) 73%, transparent 75%),
+      linear-gradient(125deg, transparent 24%, rgb(61 35 20 / 0.07) 26%, rgb(255 255 255 / 0.5) 27%, transparent 29%);
+    animation: paper-creases 0.9s ease-out both;
+  }
+}

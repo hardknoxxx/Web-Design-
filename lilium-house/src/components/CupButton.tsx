@@ -1,4 +1,4 @@
-import { AnimatePresence, m, useSpring, useTransform } from 'framer-motion'
+import { m, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useId, useRef, useState } from 'react'
 import { WHATSAPP_OPTIONS, whatsappLink } from '../data/site'
 import { useDay } from '../day/DayProvider'
@@ -20,16 +20,19 @@ export function CupButton() {
   const coffeeY = useTransform(level, [0, 1], [5, -1.5])
   const coffeeS = useTransform(level, [0, 1], [0.78, 1])
   const latte = useTransform(level, [0.86, 0.98], [0, 1])
-  const [open, setOpen] = useState(false)
+  // closed → open (la bola se desenvuelve) → closing (se vuelve a arrugar) → closed
+  const [paper, setPaper] = useState<'closed' | 'open' | 'closing'>('closed')
+  const open = paper === 'open'
+  const close = () => setPaper((p) => (p === 'open' ? 'closing' : p))
   const [bump, setBump] = useState(0)
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '')
   const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!open) return
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close()
     const onDown = (e: PointerEvent) => {
-      if (!panelRef.current?.contains(e.target as Node)) setOpen(false)
+      if (!panelRef.current?.contains(e.target as Node)) close()
     }
     window.addEventListener('keydown', onKey)
     window.addEventListener('pointerdown', onDown)
@@ -40,43 +43,24 @@ export function CupButton() {
   }, [open])
 
   const toggle = () => {
-    setOpen((v) => !v)
+    setPaper((p) => (p === 'open' ? 'closing' : 'open'))
     setBump((n) => n + 1)
   }
 
   return (
     <div ref={panelRef} className="pointer-events-none fixed right-0 bottom-0 z-50 flex flex-col items-end">
-      <AnimatePresence>
-        {open && (
-          <m.div
-            id="comanda"
-            role="dialog"
-            aria-label="Escribinos por WhatsApp"
-            initial={{ opacity: 0, y: 70, x: 10, rotate: 9, scale: 0.55 }}
-            animate={{ opacity: 1, y: 0, x: 0, rotate: -2, scale: 1 }}
-            exit={{ opacity: 0, y: 60, x: 6, rotate: 7, scale: 0.6, transition: { duration: 0.35, ease: [0.4, 0, 1, 1] } }}
-            transition={{ type: 'spring', stiffness: 170, damping: 19, mass: 0.9 }}
-            style={{ transformOrigin: '82% 100%', perspective: 900 }}
-            className="pointer-events-auto relative mr-4 -mb-6 w-[min(18rem,calc(100vw-2rem))] sm:mr-8"
+      {paper !== 'closed' && (
+        <div
+          id="comanda"
+          role="dialog"
+          aria-label="Escribinos por WhatsApp"
+          className="pointer-events-auto relative mr-4 -mb-6 w-[min(18rem,calc(100vw-2rem))] [filter:drop-shadow(0_18px_22px_rgb(0_0_0/0.4))] sm:mr-8"
+        >
+          <div
+            data-state={paper}
+            onAnimationEnd={(e) => e.animationName === 'paper-crumple' && setPaper('closed')}
+            className="paper-ball relative rounded-[3px] bg-[#FFFDF9] p-5 pb-8 text-madera [background-image:repeating-linear-gradient(transparent_0_27px,rgb(100_188_176/0.14)_27px_28px)]"
           >
-            <div className="relative rounded-[3px] bg-[#FFFDF9] p-5 pb-8 text-madera shadow-[0_24px_50px_-18px_rgb(0_0_0/0.5)] [background-image:repeating-linear-gradient(transparent_0_27px,rgb(100_188_176/0.14)_27px_28px)] [transform-style:preserve-3d]">
-              {/* pliegue del medio: se ve marcado al abrir y se va aplanando */}
-              <m.span
-                aria-hidden="true"
-                initial={{ opacity: 0.9 }}
-                animate={{ opacity: 0.25 }}
-                transition={{ delay: 0.35, duration: 0.6 }}
-                className="pointer-events-none absolute inset-x-0 top-1/2 h-6 -translate-y-1/2 bg-[linear-gradient(to_bottom,transparent,rgb(61_35_20/0.1)_48%,rgb(255_255_255/0.7)_52%,transparent)]"
-              />
-              {/* solapa doblada: gira sobre el pliegue y desaparece al quedar abierta */}
-              <m.span
-                aria-hidden="true"
-                initial={{ rotateX: 0 }}
-                animate={{ rotateX: -180 }}
-                transition={{ delay: 0.12, duration: 0.7, ease: EASE }}
-                style={{ transformOrigin: '50% 100%', backfaceVisibility: 'hidden' }}
-                className="pointer-events-none absolute inset-x-0 top-0 z-10 h-1/2 rounded-t-[3px] bg-[#F3EBDD] shadow-[0_6px_10px_-6px_rgb(0_0_0/0.35)]"
-              />
               <div className="flex items-start justify-between gap-3 border-b border-dashed border-madera/25 pb-3">
                 <div>
                   <p className="text-[0.65rem] font-semibold tracking-[0.25em] text-turquesa-dark uppercase">Comanda</p>
@@ -84,7 +68,7 @@ export function CupButton() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={close}
                   className="grid h-8 w-8 shrink-0 place-items-center rounded-full hover:bg-madera/10"
                   aria-label="Cerrar"
                 >
@@ -97,7 +81,7 @@ export function CupButton() {
                     key={o.label}
                     initial={{ opacity: 0, x: -8, clipPath: 'inset(0 100% 0 0)' }}
                     animate={{ opacity: 1, x: 0, clipPath: 'inset(0 0% 0 0)' }}
-                    transition={{ delay: 0.45 + i * 0.09, duration: 0.45, ease: EASE }}
+                    transition={{ delay: 0.4 + i * 0.07, duration: 0.4, ease: EASE }}
                   >
                     <a
                       href={whatsappLink(o.message)}
@@ -114,10 +98,9 @@ export function CupButton() {
                   </m.li>
                 ))}
               </ul>
-            </div>
-          </m.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
 
       {/* esquina de la mesa */}
       <div className="relative h-[124px] w-[150px] sm:h-[150px] sm:w-[184px]">
