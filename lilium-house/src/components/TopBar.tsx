@@ -54,10 +54,11 @@ function shapePath({ x0, y0, x1, y1, r, b }: Shape) {
   ].join('')
 }
 
-// hoja cerrada: puntas arriba-izq y abajo-der, lomos redondeados, bordes apenas panzones
-const leafShape = (w: number): Shape => ({ x0: w - LEAF, y0: 0, x1: w, y1: LEAF, r: [2, 30, 2, 30], b: [1.5, 1.5, 1.5, 1.5] })
-// hoja abierta: la misma hoja hecha panel, con la punta inferior marcada y bordes ondulados
-const openShape = (w: number, h: number): Shape => ({ x0: 0, y0: 0, x1: w, y1: h, r: [22, 64, 14, 88], b: [3, 5, 6, 4] })
+// hoja cerrada: nace arriba a la derecha (pecíolo) y termina en punta abajo a la izquierda
+const leafShape = (w: number): Shape => ({ x0: w - LEAF, y0: 0, x1: w, y1: LEAF, r: [30, 2, 30, 2], b: [1.5, 1.5, 1.5, 1.5] })
+// hoja abierta: la misma hoja en grande, con la base firme donde está el botón (la X nunca
+// se corta), lomos bien redondos y la punta marcada abajo a la izquierda
+const openShape = (w: number, h: number): Shape => ({ x0: 0, y0: 0, x1: w, y1: h, r: [Math.min(104, w * 0.32), 8, Math.min(120, w * 0.36), 6], b: [7, 4, 9, 7] })
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
@@ -131,11 +132,12 @@ function LeafMenu() {
       first.current = false
       return
     }
-    gsap.killTweensOf([morph.current, q('[data-item]'), q('[data-line]'), q('[data-vein]')])
+    gsap.killTweensOf([morph.current, q('[data-item]'), q('[data-line]'), q('[data-vein]'), q('[data-nerve]')])
     if (open) {
       const tl = gsap.timeline()
       tl.to(morph.current, { t: 1, duration: reduce ? 0 : 0.95, ease: 'none', onUpdate: paint })
         .to(q('[data-vein]'), { autoAlpha: 0, duration: reduce ? 0 : 0.2 }, 0)
+        .to(q('[data-nerve]'), { autoAlpha: 1, duration: reduce ? 0 : 0.6, ease: 'power2.out' }, reduce ? 0 : 0.35)
         .to(q('[data-line="a"]'), { y: 6, rotation: 45, duration: reduce ? 0 : 0.45, ease: 'power3.inOut' }, 0)
         .to(q('[data-line="b"]'), { autoAlpha: 0, duration: reduce ? 0 : 0.2 }, 0)
         .to(q('[data-line="c"]'), { y: -6, rotation: -45, width: 18, duration: reduce ? 0 : 0.45, ease: 'power3.inOut' }, 0)
@@ -144,6 +146,7 @@ function LeafMenu() {
     } else {
       const tl = gsap.timeline()
       tl.to(q('[data-item]'), { autoAlpha: 0, y: 8, duration: reduce ? 0 : 0.18, stagger: -0.02, ease: 'power2.in' })
+        .to(q('[data-nerve]'), { autoAlpha: 0, duration: reduce ? 0 : 0.2 }, 0)
         .to(morph.current, { t: 0, duration: reduce ? 0 : 0.8, ease: 'none', onUpdate: paint }, reduce ? 0 : 0.1)
         .to(q('[data-vein]'), { autoAlpha: 1, duration: reduce ? 0 : 0.2 }, '>-0.15')
         .to(q('[data-line]'), { y: 0, rotation: 0, autoAlpha: 1, width: (i: number) => (i === 2 ? 12 : 18), duration: reduce ? 0 : 0.4, ease: 'power3.inOut' }, 0)
@@ -182,7 +185,7 @@ function LeafMenu() {
           aria-controls="menu-escenas"
           onClick={() => setOpen((v) => !v)}
         >
-          <span data-vein="" className="absolute inset-[16%] rotate-45 border-t border-crema/25" aria-hidden="true" />
+          <span data-vein="" className="absolute inset-[16%] -rotate-45 border-t border-crema/25" aria-hidden="true" />
           <span className="relative flex h-4 w-[18px] flex-col items-end justify-between" aria-hidden="true">
             <span data-line="a" className="block h-[2px] w-[18px] rounded-full bg-crema" />
             <span data-line="b" className="block h-[2px] w-[18px] rounded-full bg-crema" />
@@ -190,7 +193,26 @@ function LeafMenu() {
           </span>
         </button>
 
-        <div inert={!open} className="px-7 pt-4 pb-9">
+        {/* nervaduras de la hoja: la central va del pecíolo (botón) a la punta */}
+        <svg data-nerve="" viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full opacity-0" aria-hidden="true">
+          <g fill="none" stroke="#FAF7F2" strokeLinecap="round" vectorEffect="non-scaling-stroke">
+            <path d="M97 3C74 26 44 58 3 97" strokeOpacity=".16" strokeWidth="2.2" vectorEffect="non-scaling-stroke" />
+            <g strokeOpacity=".08" strokeWidth="1.2">
+              {[18, 36, 54, 72].map((t) => {
+                const x = 97 - t * 0.95
+                const y = 3 + t * 0.95
+                return (
+                  <g key={t}>
+                    <path d={`M${x} ${y}C${x - 14} ${y - 4} ${x - 26} ${y - 14} ${x - 30} ${y - 26}`} vectorEffect="non-scaling-stroke" />
+                    <path d={`M${x} ${y}C${x + 4} ${y + 14} ${x + 14} ${y + 26} ${x + 26} ${y + 30}`} vectorEffect="non-scaling-stroke" />
+                  </g>
+                )
+              })}
+            </g>
+          </g>
+        </svg>
+
+        <div inert={!open} className="relative pt-5 pr-10 pb-12 pl-10">
           <p data-item="" className="font-script text-3xl leading-none">Lilium</p>
           <ul className="mt-5 border-t border-crema/15">
             {SCENES.map((s) => (

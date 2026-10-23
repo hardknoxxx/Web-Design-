@@ -2,6 +2,8 @@ import { m, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import { Butterfly, Leaf, Monstera, Toucan } from '../components/Botanica'
 import { Edge } from '../components/Edge'
+import { BananaLeaf, Calathea, Fern, HeartLeaf, PalmFrond } from '../components/Flora'
+import { Sotobosque } from '../components/Paisaje'
 import { CoatiPaseo } from '../components/Ambiente'
 
 /**
@@ -14,9 +16,14 @@ export function Selva() {
 
   const mistY = useTransform(p, [0, 1], ['-8%', '12%'])
   const backY = useTransform(p, [0, 1], ['18%', '-12%'])
-  const frontY = useTransform(p, [0, 1], ['40%', '-30%'])
-  const frontL = useTransform(p, [0, 1], [-18, 6])
-  const frontR = useTransform(p, [0, 1], [18, -6])
+  // hojas de frente asimétricas: a la izquierda una monstera que sube rápido y se abre;
+  // a la derecha banano y pindó, más lentos, que se inclinan hacia adentro tarde
+  const frontLY = useTransform(p, [0, 1], ['42%', '-28%'])
+  const frontL = useTransform(p, [0, 1], [-22, 8])
+  const frontRY = useTransform(p, [0, 0.35, 1], ['70%', '40%', '-6%'])
+  const bananaR = useTransform(p, [0, 1], [34, 10])
+  const palmR = useTransform(p, [0.2, 1], [-6, -30])
+  const sotoY = useTransform(p, [0, 1], ['30%', '0%'])
 
   const toucanX = useTransform(p, [0.12, 0.88], ['-45vw', '115vw'])
   const toucanY = useTransform(p, (v) => `${Math.sin(v * Math.PI * 3) * 5}vh`)
@@ -75,14 +82,34 @@ export function Selva() {
 
         <CoatiPaseo className="bottom-[17%] z-[25] w-[min(40vw,230px)]" />
 
-        {/* hojas de frente: la capa más rápida */}
-        <m.div style={{ y: frontY }} className="absolute inset-x-0 bottom-0 z-30 h-[45%]">
-          <m.div style={{ rotate: frontL }} className="absolute -bottom-[10%] -left-[22%] w-[72vw] max-w-[560px] origin-bottom-left">
-            <Monstera color="#2C3A14" className="w-full" />
+        {/* hojas de frente: cada lado con su especie y su ritmo */}
+        <m.div style={{ y: frontLY, rotate: frontL }} className="absolute -bottom-[8%] -left-[24%] z-30 w-[70vw] max-w-[540px] origin-bottom-left">
+          <Monstera color="#2C3A14" stem={140} className="w-full" />
+        </m.div>
+        <m.div style={{ y: frontRY }} className="absolute inset-x-0 bottom-0 z-30 h-[55%]">
+          <m.div style={{ rotate: palmR }} className="absolute -right-[30%] -bottom-[6%] w-[80vw] max-w-[600px] origin-bottom">
+            <PalmFrond color="#2F4A22" stem={140} className="w-full -scale-x-100" />
           </m.div>
-          <m.div style={{ rotate: frontR }} className="absolute -right-[22%] -bottom-[14%] w-[76vw] max-w-[600px] origin-bottom-right">
-            <Monstera color="#33441A" className="w-full -scale-x-100" />
+          <m.div style={{ rotate: bananaR }} className="absolute right-[2%] -bottom-[4%] w-[34vw] max-w-[260px] origin-bottom">
+            <BananaLeaf color="#34451A" stem={140} className="w-full" />
           </m.div>
+        </m.div>
+
+        {/* sotobosque donde termina la escena: matas, helechos y hojas al ras del suelo */}
+        <m.div style={{ y: sotoY }} className="pointer-events-none absolute inset-x-0 bottom-0 z-[35] h-[24%]" aria-hidden="true">
+          <div className="absolute bottom-0 left-[6%] w-[22vw] max-w-[170px] -rotate-12 origin-bottom">
+            <Fern color="#4A5E22" stem={60} className="w-full" />
+          </div>
+          <div className="absolute bottom-0 left-[30%] w-[13vw] max-w-[100px] rotate-6 origin-bottom">
+            <HeartLeaf color="#2C3A14" stem={60} className="w-full" />
+          </div>
+          <div className="absolute right-[30%] bottom-0 w-[11vw] max-w-[90px] -rotate-[18deg] origin-bottom">
+            <Calathea color="#22351E" stem={60} className="w-full" />
+          </div>
+          <div className="absolute right-[12%] bottom-0 w-[18vw] max-w-[140px] rotate-[22deg] origin-bottom">
+            <Fern color="#6F7F2E" stem={60} className="w-full -scale-x-100" />
+          </div>
+          <Sotobosque className="absolute inset-x-0 -bottom-1 h-[46%] w-full" />
         </m.div>
       </div>
     </section>
