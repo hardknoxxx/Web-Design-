@@ -2,7 +2,6 @@ import { m, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import { Monstera } from '../components/Botanica'
 import { HojasCayendo, Hornero } from '../components/Ambiente'
-import { Edge } from '../components/Edge'
 import { ArrowIcon } from '../components/Icons'
 import { SITE } from '../data/site'
 
@@ -30,10 +29,9 @@ export function Opiniones() {
       ref={ref}
       id="opiniones"
       data-phase="#64BCB0|#173F3B|19:30"
-      className="relative z-[6] overflow-x-clip bg-turquesa px-9 pt-32 pb-48 text-laguna-deep sm:px-14"
+      className="relative z-[6] overflow-x-clip px-9 pt-32 pb-48 text-laguna-deep sm:px-14"
       aria-label="Opiniones en Google"
     >
-      <Edge color="#64BCB0" />
       <HojasCayendo />
       <Hornero className="top-4 -right-2 w-56 sm:top-8 sm:right-[4%] sm:w-72 lg:w-80" />
       <div className="relative z-10 mx-auto max-w-3xl text-center">

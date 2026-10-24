@@ -102,7 +102,8 @@ function Vine({ shape, curve, scrub, side }: { shape: VineShape; curve: Curve; s
     // trazo manual: dasharray = largo total, el offset controla cuánto se ve
     const len = stem.getTotalLength()
     const drawn = (f: number) => ({ strokeDashoffset: len * (1 - f) })
-    gsap.set(stem, { strokeDasharray: len })
+    // estado inicial ya aplicado: si no, el tallo se ve entero hasta que ScrollTrigger mide la página
+    gsap.set(stem, { strokeDasharray: len, ...drawn(curve[0][1]) })
     const buds = gsap.utils.toArray<SVGGElement>('[data-bud]', svg)
     gsap.set(buds, { scale: 0, transformOrigin: '50% 100%' })
 
@@ -142,7 +143,7 @@ function Vine({ shape, curve, scrub, side }: { shape: VineShape; curve: Curve; s
       ref={ref}
       viewBox={`0 0 ${VW} ${VH}`}
       preserveAspectRatio={side === 'right' ? 'xMaxYMax meet' : 'xMinYMax meet'}
-      className={`pointer-events-none fixed top-0 z-30 h-[100lvh] w-auto ${side === 'right' ? 'right-0' : 'left-0'}`}
+      className={`pointer-events-none fixed top-0 z-30 h-[100lvh] w-auto will-change-transform ${side === 'right' ? 'right-0' : 'left-0'}`}
       aria-hidden="true"
     >
       {/* el espejo va dentro del SVG: un transform CSS en el <svg> choca con el de GSAP */}

@@ -1,12 +1,10 @@
-import { lazy, Suspense, useRef, type ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { Leaf, Monstera } from '../components/Botanica'
 import { BananaLeaf, Calathea, Fern, HeartLeaf, PalmFrond } from '../components/Flora'
-import { LilyMark } from '../components/Icons'
 import { SelvaLejana, Sotobosque } from '../components/Paisaje'
-import { gsap, MOTION_OK, useGsap } from '../lib/gsap'
+import { gsap, MOTION_OK, pauseOffscreen, useGsap } from '../lib/gsap'
 
-// three.js se carga en un chunk aparte: el texto pinta primero
-const LilyCanvas = lazy(() => import('../components/three/LilyCanvas'))
+import { Lirio } from '../components/Lirio'
 
 /**
  * Plantas que nacen del suelo (el tallo sigue por debajo del borde): cada una con especie,
@@ -55,8 +53,7 @@ export function Amanecer() {
       defaults: { ease: 'none' },
       scrollTrigger: { trigger: ref.current, start: 'top top', end: 'bottom bottom', scrub: 0.9 },
     })
-    tl.to(ref.current, { backgroundColor: '#FAF7F2', duration: 0.5 }, 0)
-      .to(q('[data-hint]'), { autoAlpha: 0, duration: 0.1 }, 0)
+    tl.to(q('[data-hint]'), { autoAlpha: 0, duration: 0.1 }, 0)
       .to(q('[data-sun]'), { yPercent: -60, scale: 1.35, duration: 0.7 }, 0)
       .to(q('[data-title]'), { y: '-4vh', scale: 0.82, duration: 0.4 }, 0)
       .fromTo(q('[data-tagline]'), { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.12 }, 0.05)
@@ -77,13 +74,14 @@ export function Amanecer() {
       .to(q('[data-layer="front"]'), { autoAlpha: 0, duration: 0.06 }, 0.9)
       // el suelo pasa por debajo de la cámara
       .to(q('[data-layer="soto"]'), { scale: 1.6, yPercent: 110, duration: 0.26, ease: 'power2.in' }, 0.72)
+      .to(q('[data-sun]'), { autoAlpha: 0, duration: 0.14 }, 0.8)
       .fromTo(q('[data-shade]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.14 }, 0.68)
       .to(q('[data-shade]'), { autoAlpha: 0, duration: 0.14 }, 0.86)
       .set({}, {}, 1)
 
     // cada planta respira a su ritmo (nunca dos iguales)
     gsap.matchMedia().add(MOTION_OK, () => {
-      q('[data-sway]').forEach((el, i) => {
+      const loops = q('[data-sway]').map((el, i) =>
         gsap.to(el, {
           rotation: gsap.utils.random(1.5, 3.5) * (i % 2 ? 1 : -1),
           duration: gsap.utils.random(3, 7),
@@ -92,9 +90,10 @@ export function Amanecer() {
           repeat: -1,
           delay: i * 0.37,
           transformOrigin: '50% 100%',
-        })
-      })
-      gsap.to(q('[data-sprout]'), { rotation: 8, duration: 1.3, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 100%' })
+        }),
+      )
+      loops.push(gsap.to(q('[data-sprout]'), { rotation: 8, duration: 1.3, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 100%' }))
+      pauseOffscreen(ref.current, loops)
     })
   })
 
@@ -112,7 +111,7 @@ export function Amanecer() {
       ref={ref}
       id="amanecer"
       data-phase="#F4E4CC|#3D2314|08:00"
-      className="relative z-[1] h-[250svh] bg-[#F4E4CC]"
+      className="relative z-[2] h-[250svh]"
       aria-label="Amanecer en Lilium"
     >
       <div className="absolute top-[55%]" data-phase="#FAF7F2|#3D2314|08:40" />
@@ -129,26 +128,21 @@ export function Amanecer() {
         </div>
 
         <div data-title="" className="relative z-10 pt-[max(5.5rem,12svh)] text-center">
-          <p className="text-[0.7rem] font-semibold tracking-[0.3em] text-turquesa-dark uppercase">Coffee Lounge · Puerto Iguazú</p>
-          <h1 className="mt-1 font-script text-[clamp(4.6rem,21vw,10rem)] leading-[1.05] text-madera">Lilium</h1>
+          {/* como en el logo: el nombre arriba y "Coffee Lounge" debajo */}
+          <h1 className="font-script text-[clamp(4.6rem,21vw,10rem)] leading-[1.05] text-madera">
+            Lilium
+            <span className="mt-1 block font-sans text-[0.7rem] font-semibold tracking-[0.34em] text-turquesa-dark uppercase sm:text-xs">
+              Coffee Lounge · Puerto Iguazú
+            </span>
+          </h1>
         </div>
 
-        {/* lirio 3D */}
+        {/* lirio ilustrado en capas */}
         <div
           data-lily=""
           className="absolute top-[52%] left-1/2 z-[5] aspect-square w-[min(96vw,64svh,640px)] -translate-x-1/2 -translate-y-1/2"
         >
-          <Suspense
-            fallback={
-              <div className="grid h-full place-items-center">
-                <LilyMark className="h-24 w-24 animate-pulse text-turquesa" />
-              </div>
-            }
-          >
-            <div className="h-full w-full [mask-image:linear-gradient(to_bottom,black_60%,transparent_92%)]">
-              <LilyCanvas />
-            </div>
-          </Suspense>
+          <Lirio />
         </div>
 
         <div data-layer="mid" className="pointer-events-none absolute inset-0 z-[6] origin-[50%_82%]" aria-hidden="true">

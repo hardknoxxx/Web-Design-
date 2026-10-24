@@ -65,7 +65,7 @@ export function Toucan({ className, style }: ArtProps) {
     <svg viewBox="-80 -60 190 110" className={className} style={style} aria-hidden="true">
       <path d="M-14 26C-60 40-78 14-70-8L-24 2Z" fill="#1A1A1A" />
       <ellipse cx="0" cy="0" rx="28" ry="34" fill="#1A1A1A" />
-      <g className="origin-bottom-right animate-wing [transform-box:fill-box]">
+      <g>
         <path d="M-6 -6C-40 -40 -70 -36 -78 -24C-56 -18 -34 -6 -6 6Z" fill="#2B2B2B" />
       </g>
       <ellipse cx="11" cy="-12" rx="14" ry="16" fill="#F7E2A9" />
@@ -80,7 +80,7 @@ export function Toucan({ className, style }: ArtProps) {
 export function Butterfly({ className, style, color = '#64BCB0' }: ArtProps) {
   return (
     <svg viewBox="-24 -22 48 40" className={className} style={style} aria-hidden="true">
-      <g className="origin-center animate-flutter [transform-box:fill-box]">
+      <g>
         <ellipse cx="-9" cy="-4" rx="10" ry="14" transform="rotate(-25 -9 -4)" fill={color} />
         <ellipse cx="9" cy="-4" rx="10" ry="14" transform="rotate(25 9 -4)" fill={color} />
         <ellipse cx="-6" cy="10" rx="6" ry="8" fill={color} opacity=".75" />
