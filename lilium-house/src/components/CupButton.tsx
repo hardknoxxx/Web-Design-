@@ -119,7 +119,7 @@ export function CupButton() {
           aria-controls="comanda"
           aria-label="Escribinos por WhatsApp"
           whileTap={{ scale: 0.94 }}
-          className="pointer-events-auto absolute top-[7%] left-[25%] h-[92px] w-[104px] sm:h-[110px] sm:w-[124px]"
+          className="pointer-events-auto absolute top-[12%] left-[25%] h-[92px] w-[104px] sm:h-[110px] sm:w-[124px]"
         >
           <m.svg
             key={bump}
@@ -197,25 +197,43 @@ export function CupButton() {
           >
             <m.span
               key={bump}
-              className="block [filter:drop-shadow(0_4px_6px_rgb(0_0_0/0.3))]"
+              className="block"
               initial={false}
               animate={bump ? { scale: [1, 1.32, 0.9, 1.06, 1], rotate: [0, -10, 6, -2, 0] } : undefined}
               transition={{ duration: 0.6, ease: 'easeOut' }}
             >
-              <svg viewBox="0 0 44 36" className="block w-full -scale-x-100">
+              {/* trazo de lápiz: línea de grafito temblorosa y repasada, sobre papel */}
+              <svg viewBox="0 0 44 36" className="block w-full -scale-x-100 overflow-visible">
+                <defs>
+                  <filter id={`${uid}-lapiz`} x="-10%" y="-10%" width="120%" height="120%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n" />
+                    <feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" xChannelSelector="R" yChannelSelector="G" />
+                  </filter>
+                </defs>
                 <path
                   d="M7 2.5h30a5 5 0 0 1 5 5v15a5 5 0 0 1-5 5h-5.5l2.5 7-9.5-7H7a5 5 0 0 1-5-5v-15a5 5 0 0 1 5-5Z"
-                  fill="#FFFDF9"
-                  stroke="#1C4A45"
-                  strokeWidth="1.8"
-                  strokeLinejoin="round"
+                  fill="#FFFDF7"
                 />
+                <g filter={`url(#${uid}-lapiz)`} fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <path
+                    d="M7 2.5h30a5 5 0 0 1 5 5v15a5 5 0 0 1-5 5h-5.5l2.5 7-9.5-7H7a5 5 0 0 1-5-5v-15a5 5 0 0 1 5-5Z"
+                    stroke="#3A3631"
+                    strokeWidth="1.5"
+                    strokeOpacity=".85"
+                  />
+                  <path
+                    d="M7.6 3.1h29.2a4.6 4.6 0 0 1 4.8 4.9v14.6a4.8 4.8 0 0 1-5 4.7h-5.2l2.2 6.6-9.1-6.8H7.2a4.6 4.6 0 0 1-4.7-4.9V7.8a4.7 4.7 0 0 1 5.1-4.7Z"
+                    stroke="#3A3631"
+                    strokeWidth=".7"
+                    strokeOpacity=".45"
+                  />
+                </g>
               </svg>
-              <span className="absolute inset-x-0 top-[34%] flex justify-center gap-[3px]">
+              <span className="absolute inset-x-0 top-[33%] flex justify-center gap-[4px]">
                 {[0, 1, 2].map((i) => (
                   <span
                     key={i}
-                    className="block h-[5px] w-[5px] animate-typing rounded-full bg-turquesa-dark will-change-transform"
+                    className="block h-[5px] w-[5px] animate-typing rounded-[45%_55%_50%_48%] bg-[#3A3631]/80 ring-1 ring-[#3A3631]/30 will-change-transform"
                     style={{ animationDelay: `${i * 0.16}s` }}
                   />
                 ))}

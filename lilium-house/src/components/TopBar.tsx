@@ -24,7 +24,6 @@ function SunMoon() {
   )
 }
 
-const LEAF = 44
 const K = 0.5523 // manijas de bezier para un cuarto de círculo
 
 type Shape = {
@@ -54,102 +53,89 @@ function shapePath({ x0, y0, x1, y1, r, b }: Shape) {
   ].join('')
 }
 
-// hoja cerrada: nace arriba a la derecha (pecíolo) y termina en punta abajo a la izquierda
-const leafShape = (w: number): Shape => ({ x0: w - LEAF, y0: 0, x1: w, y1: LEAF, r: [30, 2, 30, 2], b: [1.5, 1.5, 1.5, 1.5] })
 // hoja abierta: la misma hoja en grande, con la base firme donde está el botón (la X nunca
 // se corta), lomos bien redondos y la punta marcada abajo a la izquierda
 const openShape = (w: number, h: number): Shape => ({ x0: 0, y0: 0, x1: w, y1: h, r: [Math.min(104, w * 0.32), 8, Math.min(120, w * 0.36), 6], b: [7, 4, 9, 7] })
 
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 
-// cuánto "lente" es la hoja cerrada: radios enormes en los lomos la vuelven finita a lo largo
-// de la nervadura (diagonal del pecíolo a la punta)
-const LENS = 0.68
-// ondulación de los bordes mientras las dos mitades se despliegan (arriba, der., abajo, izq.)
-const UNFURL: [number, number, number, number] = [9, -3, 12, 8]
+// ancho de la hoja todavía enrollada (fracción del panel)
+const ROLL = 0.07
 
 /**
- * Como una hoja real: primero crece a lo largo de la nervadura (del botón hacia la punta,
- * en diagonal, todavía finita y cerrada) y después las dos mitades se abren hacia afuera,
- * con los bordes ondulando mientras se aplanan. Al cerrar, el mismo gesto al revés.
- */
-function morphAt(w: number, h: number, t: number): string {
-  const from = leafShape(w)
-  const to = openShape(w, h)
-  const grow = gsap.parseEase('power3.inOut')(clamp01(t / 0.62))
-  const open = gsap.parseEase('power2.out')(clamp01((t - 0.36) / 0.64))
-  const x0 = lerp(from.x0, to.x0, grow)
-  const y1 = lerp(from.y1, to.y1, grow)
-  const bw = w - x0
-  const tips: [number, number] = [lerp(from.r[1], to.r[1], grow), lerp(from.r[3], to.r[3], grow)]
-  const lens = LENS * Math.min(bw, y1)
-  const fit = (r: number) => Math.min(r, bw - Math.max(...tips) - 0.5, y1 - Math.max(...tips) - 0.5)
-  const ripple = Math.sin(Math.PI * open)
-  return shapePath({
-    x0,
-    y0: 0,
-    x1: w,
-    y1,
-    r: [fit(lerp(lens, to.r[0], open)), tips[0], fit(lerp(lens, to.r[2], open)), tips[1]],
-    b: from.b.map((v, i) => lerp(v, to.b[i], open) + UNFURL[i] * ripple) as Shape['b'],
-  })
-}
-
-/**
- * Menú-hoja: la hoja y el panel son un solo elemento. El panel existe siempre, recortado
- * con un contorno orgánico (clip-path: path) que en la esquina dibuja la hoja; al tocarla
- * la hoja cambia de forma hasta volverse panel, y al cerrar vuelve a ser hoja.
+ * Menú-hoja, como una hoja nueva de una planta: brota enrollada como un tubo desde el botón
+ * (pecíolo), crece hacia abajo y después se desenrolla de costado hasta quedar abierta; al
+ * cerrar se vuelve a enrollar y se retrae. El contorno de hoja es fijo y la animación es solo
+ * transform (scale/translate): la GPU la compone sin repintar, sin trabas.
  */
 function LeafMenu() {
   const [open, setOpen] = useState(false)
   const wrap = useRef<HTMLDivElement>(null)
   const panel = useRef<HTMLElement>(null)
-  const morph = useRef({ t: 0 })
+  const roll = useRef<HTMLSpanElement>(null)
   const first = useRef(true)
 
-  const paint = () => {
-    const el = panel.current
-    if (!el) return
-    const d = `path('${morphAt(el.offsetWidth, el.offsetHeight, morph.current.t)}')`
-    el.style.clipPath = d
-    el.style.setProperty('-webkit-clip-path', d)
-  }
-
-  // estado inicial (y al cambiar el ancho de pantalla): la hoja en su esquina
+  // contorno de hoja fijo (se calcula una vez y al cambiar el tamaño)
   useEffect(() => {
-    paint()
-    const ro = new ResizeObserver(paint)
-    ro.observe(panel.current!)
+    const el = panel.current!
+    const set = () => {
+      const d = `path('${shapePath(openShape(el.offsetWidth, el.offsetHeight))}')`
+      el.style.clipPath = d
+      el.style.setProperty('-webkit-clip-path', d)
+      if (roll.current) roll.current.style.height = `${el.offsetHeight * 0.92}px`
+    }
+    set()
+    gsap.set(el, { scaleX: ROLL, scaleY: 0, autoAlpha: 0, transformOrigin: '100% 0%' })
+    gsap.set(roll.current, { autoAlpha: 0, scaleY: 0, transformOrigin: '50% 0%' })
+    const ro = new ResizeObserver(set)
+    ro.observe(el)
     return () => ro.disconnect()
   }, [])
 
   useEffect(() => {
     const el = panel.current!
+    const band = roll.current!
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const q = gsap.utils.selector(el)
+    const q = gsap.utils.selector(wrap)
     if (first.current) {
       first.current = false
       return
     }
-    gsap.killTweensOf([morph.current, q('[data-item]'), q('[data-line]'), q('[data-vein]'), q('[data-nerve]')])
+    const w = el.offsetWidth
+    // el borde que se desenrolla: el panel se abre hacia la izquierda y el rollo viaja con su borde
+    const unroll = { s: Number(gsap.getProperty(el, 'scaleX')) }
+    const place = () => {
+      gsap.set(el, { scaleX: unroll.s })
+      gsap.set(band, { x: -w * unroll.s + 7, autoAlpha: unroll.s < 0.85 ? 1 : (1 - unroll.s) / 0.15 })
+    }
+    gsap.killTweensOf([el, band, unroll, q('[data-item]'), q('[data-line]'), q('[data-bud]'), q('[data-nerve]')])
+    const d = (v: number) => (reduce ? 0 : v)
+    const tl = gsap.timeline({
+      onStart: () => wrap.current?.setAttribute('data-moving', ''),
+      onComplete: () => wrap.current?.removeAttribute('data-moving'),
+    })
     if (open) {
-      const tl = gsap.timeline({ onStart: () => wrap.current?.setAttribute('data-moving', ''), onComplete: () => wrap.current?.removeAttribute('data-moving') })
-      tl.to(morph.current, { t: 1, duration: reduce ? 0 : 0.95, ease: 'none', onUpdate: paint })
-        .to(q('[data-vein]'), { autoAlpha: 0, duration: reduce ? 0 : 0.2 }, 0)
-        .to(q('[data-nerve]'), { autoAlpha: 1, duration: reduce ? 0 : 0.6, ease: 'power2.out' }, reduce ? 0 : 0.35)
-        .to(q('[data-line="a"]'), { y: 6, rotation: 45, duration: reduce ? 0 : 0.45, ease: 'power3.inOut' }, 0)
-        .to(q('[data-line="b"]'), { autoAlpha: 0, duration: reduce ? 0 : 0.2 }, 0)
-        .to(q('[data-line="c"]'), { y: -6, rotation: -45, width: 18, duration: reduce ? 0 : 0.45, ease: 'power3.inOut' }, 0)
-        .fromTo(q('[data-item]'), { y: 14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: reduce ? 0 : 0.045, duration: reduce ? 0 : 0.5, ease: 'power3.out' }, reduce ? 0 : 0.42)
-      ;(q('a')[0] as HTMLElement | undefined)?.focus({ preventScroll: true })
+      tl.set(el, { autoAlpha: 1 })
+        .set(band, { autoAlpha: 1, x: -w * unroll.s + 7 })
+        // 1 · brota enrollada, hacia abajo
+        .to([el, band], { scaleY: 1, duration: d(0.5), ease: 'power3.out' })
+        // 2 · se desenrolla de costado
+        .to(unroll, { s: 1, duration: d(0.62), ease: 'power2.inOut', onUpdate: place }, d(0.34))
+        .to(q('[data-bud]'), { autoAlpha: 0, duration: d(0.3) }, d(0.6))
+        .to(q('[data-nerve]'), { autoAlpha: 1, duration: d(0.5) }, d(0.7))
+        .to(q('[data-line="a"]'), { y: 6, rotation: 45, duration: d(0.45), ease: 'power3.inOut' }, 0)
+        .to(q('[data-line="b"]'), { autoAlpha: 0, duration: d(0.2) }, 0)
+        .to(q('[data-line="c"]'), { y: -6, rotation: -45, width: 18, duration: d(0.45), ease: 'power3.inOut' }, 0)
+        .fromTo(q('[data-item]'), { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: d(0.04), duration: d(0.45), ease: 'power3.out' }, d(0.8))
+      ;(gsap.utils.selector(el)('a')[0] as HTMLElement | undefined)?.focus({ preventScroll: true })
     } else {
-      const tl = gsap.timeline({ onStart: () => wrap.current?.setAttribute('data-moving', ''), onComplete: () => wrap.current?.removeAttribute('data-moving') })
-      tl.to(q('[data-item]'), { autoAlpha: 0, y: 8, duration: reduce ? 0 : 0.18, stagger: -0.02, ease: 'power2.in' })
-        .to(q('[data-nerve]'), { autoAlpha: 0, duration: reduce ? 0 : 0.2 }, 0)
-        .to(morph.current, { t: 0, duration: reduce ? 0 : 0.8, ease: 'none', onUpdate: paint }, reduce ? 0 : 0.1)
-        .to(q('[data-vein]'), { autoAlpha: 1, duration: reduce ? 0 : 0.2 }, '>-0.15')
-        .to(q('[data-line]'), { y: 0, rotation: 0, autoAlpha: 1, width: (i: number) => (i === 2 ? 12 : 18), duration: reduce ? 0 : 0.4, ease: 'power3.inOut' }, 0)
+      tl.to(q('[data-item]'), { autoAlpha: 0, y: 6, duration: d(0.16), stagger: -0.015, ease: 'power2.in' })
+        .to(q('[data-nerve]'), { autoAlpha: 0, duration: d(0.15) }, 0)
+        .to(q('[data-bud]'), { autoAlpha: 1, duration: d(0.25) }, d(0.1))
+        // se vuelve a enrollar y se retrae hacia el pecíolo
+        .to(unroll, { s: ROLL, duration: d(0.45), ease: 'power2.inOut', onUpdate: place }, d(0.12))
+        .to([el, band], { scaleY: 0, duration: d(0.32), ease: 'power3.in' }, '>-0.05')
+        .set([el, band], { autoAlpha: 0 })
+        .to(q('[data-line]'), { y: 0, rotation: 0, autoAlpha: 1, width: (i: number) => (i === 2 ? 12 : 18), duration: d(0.4), ease: 'power3.inOut' }, 0)
     }
   }, [open])
 
@@ -172,30 +158,11 @@ function LeafMenu() {
         ref={panel}
         id="menu-escenas"
         aria-label="Escenas"
-        className={`absolute top-0 right-0 w-[min(86vw,340px)] bg-laguna text-crema [background-image:radial-gradient(120%_70%_at_100%_0%,rgb(100_188_176/0.45),transparent_62%),radial-gradient(90%_60%_at_0%_100%,rgb(65_85_33/0.35),transparent_70%)] ${
-          open ? '' : 'transition-transform duration-300 hover:-rotate-6'
-        }`}
-        style={{ clipPath: 'inset(0 0 100% 100%)', transformOrigin: '100% 0%' }}
+        className="invisible absolute top-0 right-0 w-[min(86vw,340px)] bg-laguna text-crema will-change-transform [background-image:radial-gradient(120%_70%_at_100%_0%,rgb(100_188_176/0.45),transparent_62%),radial-gradient(90%_60%_at_0%_100%,rgb(65_85_33/0.35),transparent_70%)]"
       >
-        <button
-          type="button"
-          className="absolute top-0 right-0 z-10 grid h-11 w-11 place-items-center"
-          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
-          aria-expanded={open}
-          aria-controls="menu-escenas"
-          onClick={() => setOpen((v) => !v)}
-        >
-          <span data-vein="" className="absolute inset-[16%] -rotate-45 border-t border-crema/25" aria-hidden="true" />
-          <span className="relative flex h-4 w-[18px] flex-col items-end justify-between" aria-hidden="true">
-            <span data-line="a" className="block h-[2px] w-[18px] rounded-full bg-crema" />
-            <span data-line="b" className="block h-[2px] w-[18px] rounded-full bg-crema" />
-            <span data-line="c" className="block h-[2px] w-[12px] rounded-full bg-crema" />
-          </span>
-        </button>
-
         {/* nervaduras de la hoja: la central va del pecíolo (botón) a la punta */}
         <svg data-nerve="" viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full opacity-0" aria-hidden="true">
-          <g fill="none" stroke="#FAF7F2" strokeLinecap="round" vectorEffect="non-scaling-stroke">
+          <g fill="none" stroke="#FAF7F2" strokeLinecap="round">
             <path d="M97 3C74 26 44 58 3 97" strokeOpacity=".16" strokeWidth="2.2" vectorEffect="non-scaling-stroke" />
             <g strokeOpacity=".08" strokeWidth="1.2">
               {[18, 36, 54, 72].map((t) => {
@@ -211,7 +178,6 @@ function LeafMenu() {
             </g>
           </g>
         </svg>
-
         <div inert={!open} className="relative pt-5 pr-10 pb-12 pl-10">
           <p data-item="" className="font-script text-3xl leading-none">Lilium</p>
           <ul className="mt-5 border-t border-crema/15">
@@ -240,6 +206,36 @@ function LeafMenu() {
           </dl>
         </div>
       </nav>
+
+      {/* el rollo: la parte de la hoja que todavía está enrollada, viaja con el borde que se abre */}
+      <span
+        ref={roll}
+        aria-hidden="true"
+        className="pointer-events-none invisible absolute top-[4%] right-0 w-[16px] rounded-full bg-[linear-gradient(to_right,#173F3B,#5FA89C_40%,#BFE3DC_55%,#2B6E65_80%,#173F3B)] will-change-transform"
+      />
+
+      <button
+        type="button"
+        className={`group absolute top-0 right-0 z-10 grid h-11 w-11 place-items-center ${open ? '' : 'transition-transform duration-300 hover:-rotate-6'}`}
+        aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+        aria-expanded={open}
+        aria-controls="menu-escenas"
+        onClick={() => setOpen((v) => !v)}
+      >
+        {/* la hoja cerrada (el brote): pecíolo arriba a la derecha, punta abajo a la izquierda */}
+        <span
+          data-bud=""
+          className="absolute inset-0 rounded-[30px_3px_30px_3px] bg-laguna [background-image:radial-gradient(120%_90%_at_100%_0%,rgb(100_188_176/0.5),transparent_65%)]"
+          aria-hidden="true"
+        >
+          <span className="absolute inset-[16%] rotate-45 border-t border-crema/25" />
+        </span>
+        <span className="relative flex h-4 w-[18px] flex-col items-end justify-between" aria-hidden="true">
+          <span data-line="a" className="block h-[2px] w-[18px] rounded-full bg-crema" />
+          <span data-line="b" className="block h-[2px] w-[18px] rounded-full bg-crema" />
+          <span data-line="c" className="block h-[2px] w-[12px] rounded-full bg-crema" />
+        </span>
+      </button>
     </div>
   )
 }
