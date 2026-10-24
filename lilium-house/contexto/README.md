@@ -20,6 +20,14 @@ pedido por pedido, está en [historial.md](./historial.md).
 - Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP + ScrollTrigger ·
   Lenis (scroll suave solo con rueda/trackpad) · three.js puro (lirio 3D, `components/three/lily.ts`). Comanda en stop-motion hecha con **Remotion** (`animaciones/`).
 
+### Dirección visual vigente: "Vitrina" (propuesta A, ref. LATTE de label.std)
+
+Títulos en Bricolage Grotesque condensada (ancho 75 %, peso 800, mayúsculas: `.titulo-vitrina`), cintas menta y
+lima que corren cruzadas (`Cinta`), stickers de borde ondulado a mano (`Sticker`), manchas onduladas detrás de las
+fotos (`Mancha`) y botones píldora (`.pildora-*`). Cabecera fija crema con el logo oficial vectorizado
+(`LogoLilium.tsx`, calcado del archivo del sitio oficial) y menú a pantalla completa en menta (`Cabecera.tsx`).
+Fotos reales (sitio oficial, autorizadas por el cliente) en `public/fotos/oficial/`.
+
 ### Concepto vigente: "La mesa giratoria" (portada, `src/nuevo/`)
 
 Referencias: Madie (carta en láminas, color de marca fuerte, mapa con horario), TAB Kitchen & Bakery

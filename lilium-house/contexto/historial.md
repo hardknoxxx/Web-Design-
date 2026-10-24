@@ -162,3 +162,12 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - Yellowtail auto-alojado (Apache 2.0, licencia en `public/fonts/licencias`); sin Google Fonts en la portada.
 - Horario único (`HORARIO` en `site.ts`) para el estado, la tabla y el JSON-LD generado.
 - Medición local (Playwright, 390×844, 4G lento + CPU 4×): primer contenido 1,75 s → 0,83 s. Capturas idénticas.
+
+## 20. Dirección "Vitrina" (propuesta A, referencia LATTE)
+
+- Cliente: prototipo para presentar al negocio; usar las 3 fotos del sitio oficial (autorizado); horario y teléfono
+  se confirman más adelante (fuentes públicas no coinciden: Visit Iguazú y Tripadvisor).
+- Logo oficial vectorizado a SVG (calco propio con Python: umbral, contornos, curvas) + "COFFEE LOUNGE" en Raleway Bold.
+- Bricolage Grotesque reemplazada por la variable completa (ancho 75–100, peso 200–800) para los títulos condensados.
+- Nuevo: cabecera fija y menú overlay; hero con título condensado, sticker y cinta; sección "Elegí tu favorito" con
+  las fotos reales; carta, visita y botones con el mismo sistema. Primer contenido local 0,87 s (4G lento + CPU 4×).

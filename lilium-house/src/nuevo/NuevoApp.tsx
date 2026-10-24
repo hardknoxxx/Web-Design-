@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import { SITE } from '../data/site'
+import { Cabecera } from './Cabecera'
 import { Carta } from './Carta'
 import { Friso } from './Friso'
+import { LogoDefs } from './LogoLilium'
 import { MesaGiratoria } from './MesaGiratoria'
+import { Vitrina } from './Vitrina'
 import { Visita } from './Visita'
 
 /** "Cómo llegar" siempre a mano: cuando la mesa queda atrás, el botón baja a la esquina. */
@@ -26,7 +29,7 @@ function LlegarFlotante() {
     return () => io.disconnect()
   }, [])
   return (
-    <a href={SITE.mapsHref} target="_blank" rel="noopener" className="boton llegar-flotante" data-visible={visible || undefined} tabIndex={visible ? 0 : -1} aria-hidden={!visible}>
+    <a href={SITE.mapsHref} target="_blank" rel="noopener" className="pildora pildora-laguna llegar-flotante" data-visible={visible || undefined} tabIndex={visible ? 0 : -1} aria-hidden={!visible}>
       Cómo llegar
     </a>
   )
@@ -35,8 +38,11 @@ function LlegarFlotante() {
 export function NuevoApp() {
   return (
     <>
+      <LogoDefs />
+      <Cabecera />
       <main>
         <MesaGiratoria />
+        <Vitrina />
         <Carta />
         <Visita />
       </main>

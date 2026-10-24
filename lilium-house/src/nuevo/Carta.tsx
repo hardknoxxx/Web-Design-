@@ -86,7 +86,7 @@ export function Carta() {
         </Pieza>
       <div className="relative z-10 mx-auto max-w-5xl">
         <div className="flex items-start gap-3">
-          <h2 id="carta-titulo" className="font-display text-[2.6rem] leading-none font-semibold text-laguna-deep md:text-[4.5rem]">
+          <h2 id="carta-titulo" className="titulo-vitrina text-[3.4rem] leading-[0.88] text-laguna-deep md:text-[6.5rem]">
             La carta
           </h2>
           <Pieza clase="mariposa" fase={0.35} className="relative mt-1 ml-12 h-14 max-md:hidden" style={{ aspectRatio: '48/40' }}>
@@ -120,7 +120,7 @@ export function Carta() {
               <li key={item.name} className="especimen">
                 <Lamina item={item} />
                 <div className="min-w-0">
-                  <h3 className="font-display text-[1.35rem] leading-tight font-semibold text-laguna-deep">{item.name}</h3>
+                  <h3 className="titulo-vitrina text-[1.6rem] leading-[0.95] text-laguna-deep md:text-[1.9rem]">{item.name}</h3>
                   <p className="font-hand text-[1.3rem] leading-tight text-turquesa-dark">{item.note}</p>
                   <p className="mt-1 text-base leading-snug text-madera-soft">{item.desc}</p>
                 </div>
@@ -130,10 +130,10 @@ export function Carta() {
         </div>
 
         <div className="mt-14 flex flex-wrap items-center gap-3">
-          <a href={SITE.instagramHref} target="_blank" rel="noopener" className="boton">
+          <a href={SITE.instagramHref} target="_blank" rel="noopener" className="pildora pildora-laguna">
             Ver la vitrina de hoy en Instagram
           </a>
-          <a href={whatsappLink('Hola Lilium! Quería hacer un pedido para llevar: ')} target="_blank" rel="noopener" className="boton boton-claro">
+          <a href={whatsappLink('Hola Lilium! Quería hacer un pedido para llevar: ')} target="_blank" rel="noopener" className="pildora pildora-kraft">
             Pedir para llevar
           </a>
         </div>

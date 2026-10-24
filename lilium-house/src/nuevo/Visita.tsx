@@ -69,8 +69,8 @@ export function Visita() {
       </Pieza>
       <div className="relative z-10 mx-auto grid max-w-5xl gap-14 md:grid-cols-[1fr_1.1fr] md:gap-16">
         <div>
-          <h2 id="visita-titulo" className="font-display text-[2.6rem] leading-none font-semibold md:text-[4.5rem]">
-            Te esperamos
+          <h2 id="visita-titulo" className="titulo-vitrina text-[3.4rem] leading-[0.88] md:text-[6.5rem]">
+            Te <span className="text-turquesa">esperamos</span>
           </h2>
           <p className="mt-5 flex items-center gap-2 font-elegante text-lg" data-open={status?.open ?? undefined}>
             <span aria-hidden="true" className="estado-punto" />
@@ -82,13 +82,13 @@ export function Visita() {
             {SITE.city}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href={SITE.mapsHref} target="_blank" rel="noopener" className="boton boton-menta">
+            <a href={SITE.mapsHref} target="_blank" rel="noopener" className="pildora pildora-lima">
               Cómo llegar
             </a>
-            <a href={whatsappLink('Hola Lilium! Quería reservar una mesa para … personas, el día … a las …')} target="_blank" rel="noopener" className="boton boton-linea">
+            <a href={whatsappLink('Hola Lilium! Quería reservar una mesa para … personas, el día … a las …')} target="_blank" rel="noopener" className="pildora pildora-linea">
               Reservar por WhatsApp
             </a>
-            <a href={SITE.phoneHref} className="boton boton-linea">
+            <a href={SITE.phoneHref} className="pildora pildora-linea">
               <PhoneIcon className="h-5 w-5" />
               Llamar
             </a>
@@ -99,7 +99,7 @@ export function Visita() {
               <div key={dia} className="horario-fila" data-hoy={dia === hoy || undefined}>
                 <dt className="font-semibold">
                   {dia}
-                  {dia === hoy && <span className="ml-2 font-hand text-[1.3rem] font-normal text-turquesa">hoy</span>}
+                  {dia === hoy && <span className="ml-2 font-hand text-[1.3rem] font-normal text-menta">hoy</span>}
                 </dt>
                 <dd className="tabular-nums">{hora}</dd>
               </div>

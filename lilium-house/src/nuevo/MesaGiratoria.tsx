@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type ComponentType, type CSSProperties } from 'react'
 import { ArrowIcon } from '../components/Icons'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
-import { CARTA, SITE } from '../data/site'
-import { useOpenStatus, type OpenStatus } from '../hooks/useOpenStatus'
-import { Logo } from './Logo'
+import { CARTA } from '../data/site'
+import { useOpenStatus } from '../hooks/useOpenStatus'
+import { Cinta, Estado, Sticker } from './Piezas'
 
 /*
  * La mesa giratoria (referencia: el carrusel de frascos de Agrumea Farm).
@@ -32,7 +32,6 @@ const PLATOS = CARTA.flatMap((momento) =>
 const N = PLATOS.length
 // giro propio de cada plato, para que no queden todos alineados
 const GIRO = [-14, 22, -6, 31, -24, 9, -18]
-const RONDA = ['Café de especialidad', 'Chipa recién horneada', 'Pastelería', 'Plantas en cada rincón', 'Manteles para colorear', ''].join(' · ')
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
 /** distancia de un plato al frente, por el lado más corto de la mesa: [-N/2, N/2) */
@@ -58,22 +57,6 @@ function posicionInicial(i: number): CSSProperties {
 const colorInicial = (i: number): CSSProperties => {
   const c = clamp(1.5 - Math.abs(wrap(i)) * 1.5, 0, 1)
   return { clipPath: c >= 1 ? 'none' : `circle(${(c * 72).toFixed(1)}% at 50% 50%)` }
-}
-
-/** Estado del local en una píldora: punto (verde si está abierto) y la próxima hora que importa. */
-function Estado({ status, className = '' }: { status: OpenStatus | null; className?: string }) {
-  return (
-    <a href="#visita" className={`estado ${className}`} data-open={status?.open ?? undefined}>
-      <span aria-hidden="true" className="estado-punto" />
-      {status ? (
-        <span>
-          <span className="font-semibold">{status.state}</span> {status.detail}
-        </span>
-      ) : (
-        'Horario'
-      )}
-    </a>
-  )
 }
 
 export function MesaGiratoria() {
@@ -283,38 +266,30 @@ export function MesaGiratoria() {
       }}
     >
       <div className="sticky top-0 h-svh overflow-hidden bg-crema">
-        <header className="relative z-30 flex items-center justify-between gap-3 px-4 pt-4 md:px-8 md:pt-6">
-          <Logo />
-          <div className="flex items-center gap-3">
-            <Estado status={status} className="max-md:hidden" />
-            <a href={SITE.mapsHref} target="_blank" rel="noopener" className="boton">
-              Cómo llegar
-            </a>
+        {/* la vitrina: título condensado enorme, el sticker del mantel y el estado del local */}
+        <div className="mesa-portada">
+          <Sticker className="mesa-sticker" giro={-9}>
+            ¡Pedí lápices
+            <br />y pintá el mantel!
+          </Sticker>
+          <h1 className="titulo-vitrina mesa-titulo">
+            Cafés especiales <span className="block">y delicias caseras</span>
+          </h1>
+          <p className="mesa-bajada">
+            En Puerto Iguazú, sobre Av. Tres Fronteras. <span className="max-md:hidden">Desayunos, almuerzos y meriendas.</span>
+          </p>
+          <div className="mt-4 flex justify-center md:hidden">
+            <Estado status={status} />
           </div>
-        </header>
-
-        <h1 className="relative z-30 mx-auto mt-7 max-w-[17ch] px-4 text-center font-display text-[1.75rem] leading-[1.05] font-semibold text-balance text-laguna-deep md:mt-6 md:max-w-none md:text-[2.6rem]">
-          Un café verde por dentro, <span className="md:block">en Puerto Iguazú</span>
-        </h1>
-        <p className="relative z-30 mx-auto mt-3 max-w-[30ch] px-4 text-center font-elegante text-base text-madera-soft md:mt-4 md:max-w-none md:text-lg">
-          Desayunos, almuerzos y meriendas sobre Av. Tres Fronteras.
-        </p>
-        <div className="relative z-30 mt-4 flex justify-center md:hidden">
-          <Estado status={status} />
         </div>
+
+        <Cinta className="mesa-cinta" items={['Café de especialidad', 'Delicias caseras', 'Puerto Iguazú', status ? `${status.state} ${status.detail}` : 'Martes a domingo']} />
 
         {/* la mesa: un disco enorme que asoma desde abajo y gira con los platos */}
         <div aria-hidden="true" className="mesa-wrap">
           <div ref={mesaRef} className="mesa">
             <svg viewBox="-500 -500 1000 1000" className="h-full w-full">
               <circle r="500" className="fill-laguna-deep" />
-              <path id="mesa-ronda" d="M0,-450a450,450 0 1,1 0,900a450,450 0 1,1 0,-900" fill="none" />
-              <text className="mesa-texto">
-                <textPath href="#mesa-ronda" textLength="2820" lengthAdjust="spacing">
-                  {RONDA.toUpperCase()}
-                  {RONDA.toUpperCase()}
-                </textPath>
-              </text>
             </svg>
           </div>
         </div>
@@ -340,11 +315,14 @@ export function MesaGiratoria() {
             <span className="pista" data-oculta={tocada || undefined} aria-hidden="true">
               Tocá un plato o deslizá la mesa
             </span>
-            <span className="block font-display text-[1.9rem] leading-tight font-semibold text-balance text-crema md:text-[2.6rem]">{plato.name}</span>
-            <span className="block font-hand text-[1.4rem] leading-tight text-menta">
+            <span className="titulo-vitrina block text-[2.3rem] leading-[0.95] text-crema md:text-[3.4rem]">{plato.name}</span>
+            <span className="mt-1 block font-hand text-[1.4rem] leading-tight text-menta">
               {plato.momento.toLowerCase()} · {plato.note}
             </span>
-            <span className="mt-1 block text-[0.95rem] text-menta/85 max-md:hidden">{plato.desc}</span>
+            <a href="#carta" className="pildora pildora-lima mt-3">
+              Ver la carta
+              <ArrowIcon className="h-4 w-4" />
+            </a>
           </p>
           <button type="button" className="flecha" aria-label="Plato siguiente" onClick={() => nudgeRef.current(1)}>
             <ArrowIcon className="h-5 w-5" />

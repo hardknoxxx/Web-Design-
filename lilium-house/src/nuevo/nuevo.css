@@ -1,45 +1,154 @@
-/* La nueva Lilium (src/nuevo): estilos propios. Fuentes y colores de marca vienen de index.css. */
+/* La nueva Lilium (src/nuevo): estilos propios. Fuentes y colores de marca vienen de base.css.
+   Dirección "Vitrina": títulos condensados enormes, cintas que corren, stickers ondulados y píldoras (ref. LATTE). */
 
-/* Curvas de movimiento (emil-design-eng): salida fuerte para la UI, ida y vuelta para lo que se desplaza */
 :root {
+  /* Curvas de movimiento (emil-design-eng): salida fuerte para la UI, ida y vuelta para lo que se desplaza */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  /* lima: el verde helecho de la paleta (#97AD3D) aclarado para fondos de botón y manchas */
+  --lima: #c7d87e;
+  --lima-suave: #e2ebbd;
+  --alto-cabecera: 4rem;
+}
+@media (min-width: 768px) {
+  :root {
+    --alto-cabecera: 5rem;
+  }
 }
 
 /* En la capa de componentes: las utilidades de Tailwind (max-md:hidden, z-10…) pueden pisarlas */
 @layer components {
-/* ---------- Marca ---------- */
-.logo {
+/* las anclas del menú no quedan tapadas por la cabecera fija */
+main section[id] {
+  scroll-margin-top: var(--alto-cabecera);
+}
+
+/* ---------- Tipografía de la vitrina ---------- */
+.titulo-vitrina {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-variation-settings: 'opsz' 96;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* ---------- Cabecera y menú ---------- */
+.cabecera {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  height: var(--alto-cabecera);
+  padding-inline: 1rem;
+  background: var(--color-crema);
+}
+.cabecera-logo {
+  display: block;
+  height: 2.75rem;
+  color: var(--color-laguna-deep);
+  transition: transform 160ms var(--ease-out);
+}
+.cabecera-logo:active {
+  transform: scale(0.98);
+}
+@media (min-width: 768px) {
+  .cabecera {
+    padding-inline: 2rem;
+  }
+  .cabecera-logo {
+    height: 3.4rem;
+  }
+}
+.menu-boton {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
+  min-height: 2.75rem;
+  padding: 0 1.1rem 0 0.9rem;
   border-radius: 999px;
-  transition: transform 160ms var(--ease-out);
-}
-.logo:active {
-  transform: scale(0.98);
-}
-.logo-sello {
-  width: 2.75rem;
-  height: 2.75rem;
-  flex: none;
-}
-.logo-bajada {
-  margin-top: 0.15rem;
-  font-family: var(--font-elegante);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
+  background: var(--color-turquesa);
+  color: var(--color-laguna-deep);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 1.05rem;
   text-transform: uppercase;
-  color: var(--color-turquesa-dark);
+  transition: transform 160ms var(--ease-out), background-color 200ms ease;
+}
+.menu-boton:active {
+  transform: scale(0.97);
+}
+.menu-rayas {
+  display: grid;
+  gap: 5px;
+  width: 1.1rem;
+}
+.menu-rayas span {
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 200ms var(--ease-out);
+}
+.menu-rayas[data-abierto] span:first-child {
+  transform: translateY(3.5px) rotate(45deg);
+}
+.menu-rayas[data-abierto] span:last-child {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+/* panel a pantalla completa: nace como un círculo en el botón del menú */
+.menu-panel {
+  position: fixed;
+  inset: var(--alto-cabecera) 0 0;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem 1rem max(1.5rem, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  background: var(--color-turquesa);
+  clip-path: circle(0% at var(--origen, 100% 0));
+  visibility: hidden;
+  transition: clip-path 260ms var(--ease-in-out), visibility 0s linear 260ms;
+}
+.menu-panel[data-abierto] {
+  clip-path: circle(150% at var(--origen, 100% 0));
+  visibility: visible;
+  transition: clip-path 420ms var(--ease-out), visibility 0s;
+}
+.menu-secciones {
+  display: grid;
+  gap: 0.25rem;
+}
+.menu-enlace {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: clamp(3.4rem, 16vw, 8.5rem);
+  line-height: 0.92;
+  text-transform: uppercase;
+  color: var(--color-laguna-deep);
+  opacity: 0;
+  translate: 0 0.4em;
+  transition: opacity 200ms ease, translate 360ms var(--ease-out), color 200ms ease;
+}
+.menu-panel[data-abierto] .menu-enlace {
+  opacity: 1;
+  translate: 0 0;
+}
+.menu-pie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
 }
 @media (min-width: 768px) {
-  .logo {
-    gap: 0.75rem;
-  }
-  .logo-sello {
-    width: 3.4rem;
-    height: 3.4rem;
+  .menu-panel {
+    padding: 3rem 2rem 2.5rem;
   }
 }
 
@@ -72,34 +181,44 @@
   background: var(--color-helecho);
 }
 
-.boton {
+/* píldora: el botón de la casa (mayúsculas condensadas, como la referencia) */
+.pildora {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   min-height: 2.75rem;
-  padding: 0 1.25rem;
+  padding: 0 1.3rem;
   border-radius: 999px;
-  background: var(--color-laguna-deep);
-  color: var(--color-crema);
-  font-family: var(--font-elegante);
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
   white-space: nowrap;
-  transition: transform 160ms var(--ease-out), background-color 200ms ease;
+  transition: transform 160ms var(--ease-out), background-color 200ms ease, color 200ms ease;
 }
-.boton:active {
+.pildora:active {
   transform: scale(0.97);
 }
-.boton-claro {
-  background: var(--color-estuco);
+.pildora-laguna {
+  background: var(--color-laguna-deep);
+  color: var(--color-crema);
+}
+.pildora-lima {
+  background: var(--lima);
   color: var(--color-laguna-deep);
 }
-.boton-menta {
-  background: var(--color-turquesa);
+.pildora-kraft {
+  background: var(--color-kraft);
   color: var(--color-laguna-deep);
 }
-.boton-linea {
+.pildora-crema {
+  background: var(--color-crema);
+  color: var(--color-laguna-deep);
+}
+.pildora-linea {
   background: transparent;
   color: var(--color-crema);
   box-shadow: inset 0 0 0 1.5px var(--color-menta);
@@ -122,12 +241,15 @@
 
 .pestana {
   min-height: 2.75rem;
-  padding: 0 1.1rem;
+  padding: 0 1.2rem;
   border-radius: 999px;
   background: var(--color-estuco);
   color: var(--color-laguna-deep);
-  font-family: var(--font-elegante);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 1.1rem;
+  text-transform: uppercase;
   transition: background-color 200ms ease, color 200ms ease, transform 160ms var(--ease-out);
 }
 .pestana:active {
@@ -141,20 +263,84 @@
 /* hover solo con mouse: en el teléfono un toque no deja el botón "encendido" */
 @media (hover: hover) and (pointer: fine) {
   .estado:hover,
-  .boton-claro:hover,
   .pestana:not([aria-selected='true']):hover {
     background: var(--color-kraft);
   }
-  .boton:not(.boton-claro, .boton-menta, .boton-linea):hover,
+  .pildora-laguna:hover,
   .flecha:hover {
     background: var(--color-turquesa-dark);
   }
-  .boton-menta:hover {
-    background: var(--color-menta);
+  .pildora-lima:hover {
+    background: var(--lima-suave);
   }
-  .boton-linea:hover {
+  .pildora-kraft:hover,
+  .pildora-crema:hover {
+    background: var(--lima-suave);
+  }
+  .pildora-linea:hover {
     background: var(--color-laguna);
   }
+  .menu-boton:hover {
+    background: var(--color-menta);
+  }
+  .menu-enlace:hover {
+    color: var(--color-crema);
+  }
+}
+
+/* ---------- Cinta y sticker ---------- */
+.cinta {
+  overflow: hidden;
+  background: var(--color-turquesa);
+  color: var(--color-laguna-deep);
+  pointer-events: none;
+}
+.cinta-pista {
+  display: flex;
+  width: max-content;
+  animation: cinta 34s linear infinite;
+}
+.cinta[data-inversa] .cinta-pista {
+  animation-direction: reverse;
+}
+.cinta-tramo {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 0.5rem 0.55rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.cinta-estrella {
+  font-size: 0.8em;
+}
+@keyframes cinta {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.sticker {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  padding: 1.1rem 1.4rem;
+  font-family: var(--font-hand);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.02;
+  text-align: center;
+  color: var(--color-laguna-deep);
+}
+.sticker-fondo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /* ---------- La mesa ---------- */
@@ -171,14 +357,6 @@
   width: 100%;
   height: 100%;
   will-change: transform;
-}
-.mesa-texto {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  fill: var(--color-turquesa);
-  fill-opacity: 0.55;
 }
 
 .escenario {
@@ -255,10 +433,7 @@
     top: 66svh;
     width: 230vw;
   }
-  .mesa-texto {
-    font-size: 30px;
-  }
-  .plato {
+    .plato {
     --sp: 60vw;
     --yk: 0.12;
     --size: min(62vw, 34svh);
@@ -435,6 +610,169 @@
   .lamina-plato .plato-color,
   .lamina-foto img {
     transition-duration: 200ms;
+  }
+}
+
+/* ---------- Portada de la mesa ---------- */
+.mesa-portada {
+  position: relative;
+  z-index: 30;
+  padding: calc(var(--alto-cabecera) + 1.25rem) 1rem 0;
+  text-align: center;
+}
+.mesa-titulo {
+  margin-inline: auto;
+  font-size: clamp(2.9rem, 12vw, 6.4rem);
+  line-height: 0.86;
+  color: var(--color-laguna-deep);
+}
+.mesa-bajada {
+  margin-top: 0.9rem;
+  font-family: var(--font-elegante);
+  font-size: 1rem;
+  color: var(--color-madera-soft);
+}
+.mesa-sticker {
+  position: absolute;
+  left: max(0.5rem, calc(50% - 37rem));
+  top: calc(var(--alto-cabecera) + 0.25rem);
+  z-index: 2;
+}
+.mesa-cinta {
+  position: absolute;
+  inset-inline: -5vw;
+  top: 55svh;
+  z-index: 5;
+  rotate: -3deg;
+}
+@media (max-width: 767px) {
+  .mesa-sticker {
+    display: none;
+  }
+  .mesa-cinta {
+    top: 50svh;
+  }
+}
+@media (min-width: 768px) {
+  .mesa-bajada {
+    font-size: 1.15rem;
+  }
+}
+
+/* ---------- La vitrina ---------- */
+.vitrina {
+  position: relative;
+  overflow: hidden;
+  padding: 6rem 1rem 9rem;
+  background: var(--color-crema);
+}
+.vitrina-grilla {
+  display: grid;
+  gap: 2.5rem 1rem;
+  max-width: 72rem;
+  margin-inline: auto;
+  grid-template-columns: 1fr 1fr;
+}
+.vitrina-texto {
+  position: relative;
+  grid-column: 1 / -1;
+}
+.lamina-sticker {
+  position: absolute;
+  left: -0.5rem;
+  top: -0.5rem;
+  z-index: 2;
+}
+.lamina-foto-vitrina {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+.lamina-foto-vitrina img {
+  position: relative;
+  width: 100%;
+  height: auto;
+  border-radius: 1.75rem;
+  border: 6px solid var(--color-crema);
+}
+.lamina-mancha {
+  position: absolute;
+  left: -9%;
+  top: 4%;
+  width: 112%;
+  height: 100%;
+  rotate: -8deg;
+}
+.lamina-1 .lamina-mancha {
+  left: 0;
+  top: -4%;
+  rotate: 12deg;
+}
+.lamina-2 .lamina-mancha {
+  left: -4%;
+  top: 8%;
+  rotate: -18deg;
+}
+.lamina-nota {
+  position: relative;
+  margin-top: 0.5rem;
+  font-family: var(--font-hand);
+  font-size: 1.35rem;
+  color: var(--color-turquesa-dark);
+}
+.lamina-0 {
+  grid-column: 1 / -1;
+  width: 86%;
+  justify-self: center;
+}
+.lamina-2 {
+  margin-top: 3rem;
+}
+.vitrina-cinta {
+  position: absolute;
+  inset-inline: -5vw;
+  bottom: 2.5rem;
+  rotate: 2deg;
+  background: var(--lima);
+}
+@media (min-width: 768px) {
+  .vitrina {
+    padding: 8rem 2rem 11rem;
+  }
+  .vitrina-grilla {
+    grid-template-columns: 1.15fr 1fr 0.8fr;
+    align-items: start;
+    gap: 2rem;
+  }
+  .vitrina-texto {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+  .lamina-sticker {
+    left: -2.5rem;
+    top: -1rem;
+  }
+  .lamina-0 {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 100%;
+  }
+  .lamina-1 {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .lamina-2 {
+    grid-column: 3;
+    grid-row: 2;
+    margin-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinta-pista {
+    animation: none;
   }
 }
 }
