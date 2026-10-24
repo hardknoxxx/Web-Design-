@@ -1,8 +1,8 @@
-import { LazyMotion, MotionConfig, domAnimation } from 'framer-motion'
+import { LazyMotion, MotionConfig, domAnimation, m } from 'framer-motion'
 import { CupButton } from './components/CupButton'
 import { TopBar } from './components/TopBar'
 import { Vines } from './components/Vines'
-import { DayProvider } from './day/DayProvider'
+import { DayProvider, useDay } from './day/DayProvider'
 import { Amanecer } from './sections/Amanecer'
 import { Carta } from './sections/Carta'
 import { Mantel } from './sections/Mantel'
@@ -16,11 +16,18 @@ function Stucco() {
   return <div aria-hidden="true" className="stucco pointer-events-none fixed inset-0 z-[35] opacity-50 [will-change:transform]" />
 }
 
+/** Fondo único del día: vira de color con el scroll, de una escena a la siguiente. */
+function DayBackground() {
+  const { bg } = useDay()
+  return <m.div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10" style={{ backgroundColor: bg }} />
+}
+
 export default function App() {
   return (
     <LazyMotion features={domAnimation} strict>
       <MotionConfig reducedMotion="user">
         <DayProvider>
+          <DayBackground />
           <Stucco />
           <TopBar />
           <Vines />

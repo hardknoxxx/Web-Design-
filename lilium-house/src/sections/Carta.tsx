@@ -1,6 +1,5 @@
 import { m } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import { Edge } from '../components/Edge'
 import { Fern, HeartLeaf } from '../components/Flora'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, whatsappLink, type CartaItem } from '../data/site'
@@ -106,10 +105,11 @@ export function Carta() {
       ref={ref}
       id="carta"
       data-phase="#3B2416|#FAF7F2|11:45"
-      className="wood-table relative z-[3] overflow-x-clip px-7 pt-24 pb-28 text-crema sm:px-14"
+      className="relative z-[3] overflow-x-clip px-7 pt-24 pb-28 text-crema sm:px-14"
       aria-label="La carta"
     >
-      <Edge color="#3B2416" flip />
+      {/* vetas de la mesa: aparecen y se van con degradé, sobre el fondo del día */}
+      <div aria-hidden="true" className="wood-table pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]" />
       <div data-table-leaf="a" className="pointer-events-none absolute -top-6 -left-16 w-48 rotate-[120deg] opacity-80 sm:w-64">
         <Fern color="#415521" className="w-full" />
       </div>

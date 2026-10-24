@@ -63,36 +63,36 @@ const openShape = (w: number, h: number): Shape => ({ x0: 0, y0: 0, x1: w, y1: h
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 
-/**
- * Cada parte de la hoja crece a su ritmo: primero se estira hacia la izquierda, después cae,
- * las puntas se ablandan tarde y los bordes se ondulan en el medio del gesto (y vuelven).
- */
-const GROW = {
-  x0: { at: 0, len: 0.62, ease: 'power3.inOut' },
-  y1: { at: 0.18, len: 0.82, ease: 'expo.inOut' },
-  r: [
-    { at: 0.3, len: 0.7, ease: 'power2.inOut' },
-    { at: 0.05, len: 0.6, ease: 'power2.out' },
-    { at: 0.45, len: 0.55, ease: 'power2.inOut' },
-    { at: 0.2, len: 0.8, ease: 'power3.inOut' },
-  ],
-} as const
-const WOBBLE: [number, number, number, number] = [10, 16, 26, 22]
+// cuánto "lente" es la hoja cerrada: radios enormes en los lomos la vuelven finita a lo largo
+// de la nervadura (diagonal del pecíolo a la punta)
+const LENS = 0.68
+// ondulación de los bordes mientras las dos mitades se despliegan (arriba, der., abajo, izq.)
+const UNFURL: [number, number, number, number] = [9, -3, 12, 8]
 
+/**
+ * Como una hoja real: primero crece a lo largo de la nervadura (del botón hacia la punta,
+ * en diagonal, todavía finita y cerrada) y después las dos mitades se abren hacia afuera,
+ * con los bordes ondulando mientras se aplanan. Al cerrar, el mismo gesto al revés.
+ */
 function morphAt(w: number, h: number, t: number): string {
   const from = leafShape(w)
   const to = openShape(w, h)
-  const step = (g: { at: number; len: number; ease: string }) => gsap.parseEase(g.ease)(clamp01((t - g.at) / g.len))
-  const tx = step(GROW.x0)
-  const ty = step(GROW.y1)
-  const wave = Math.sin(Math.PI * t)
+  const grow = gsap.parseEase('power3.inOut')(clamp01(t / 0.62))
+  const open = gsap.parseEase('power2.out')(clamp01((t - 0.36) / 0.64))
+  const x0 = lerp(from.x0, to.x0, grow)
+  const y1 = lerp(from.y1, to.y1, grow)
+  const bw = w - x0
+  const tips: [number, number] = [lerp(from.r[1], to.r[1], grow), lerp(from.r[3], to.r[3], grow)]
+  const lens = LENS * Math.min(bw, y1)
+  const fit = (r: number) => Math.min(r, bw - Math.max(...tips) - 0.5, y1 - Math.max(...tips) - 0.5)
+  const ripple = Math.sin(Math.PI * open)
   return shapePath({
-    x0: lerp(from.x0, to.x0, tx),
+    x0,
     y0: 0,
     x1: w,
-    y1: lerp(from.y1, to.y1, ty),
-    r: from.r.map((r, i) => lerp(r, to.r[i], step(GROW.r[i]))) as Shape['r'],
-    b: from.b.map((b, i) => lerp(b, to.b[i], t) + WOBBLE[i] * wave * (i % 2 ? -0.6 : 1)) as Shape['b'],
+    y1,
+    r: [fit(lerp(lens, to.r[0], open)), tips[0], fit(lerp(lens, to.r[2], open)), tips[1]],
+    b: from.b.map((v, i) => lerp(v, to.b[i], open) + UNFURL[i] * ripple) as Shape['b'],
   })
 }
 

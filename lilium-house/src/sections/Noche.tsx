@@ -1,6 +1,5 @@
 import { m, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
-import { Edge } from '../components/Edge'
 import { ArrowIcon, CupHoursIcon, InstagramIcon, LilyMark, LilyPinIcon, RotaryPhoneIcon } from '../components/Icons'
 import { SITE } from '../data/site'
 import { useOpenStatus } from '../hooks/useOpenStatus'
@@ -26,10 +25,9 @@ export function Noche() {
       ref={ref}
       id="visitanos"
       data-phase="#0F2220|#FAF7F2|21:00"
-      className="relative z-[7] overflow-x-clip bg-[#0F2220] px-9 pt-28 pb-12 text-crema sm:px-14"
+      className="relative z-[7] overflow-x-clip px-9 pt-28 pb-12 text-crema sm:px-14"
       aria-label="Visitanos"
     >
-      <Edge color="#0F2220" flip />
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         {FIREFLIES.map((f, i) => (
           <span

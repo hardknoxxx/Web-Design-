@@ -1,7 +1,6 @@
 import { m, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import { Butterfly, Leaf, Monstera, Toucan } from '../components/Botanica'
-import { Edge } from '../components/Edge'
 import { BananaLeaf, Calathea, Fern, HeartLeaf, PalmFrond } from '../components/Flora'
 import { Sotobosque } from '../components/Paisaje'
 import { CoatiPaseo } from '../components/Ambiente'
@@ -36,10 +35,10 @@ export function Selva() {
   const textY = useTransform(p, [0.05, 0.2], [40, 0])
 
   return (
-    <section ref={ref} id="selva" className="relative z-[5] h-[240svh] bg-musgo" aria-label="La selva de Puerto Iguazú">
+    <section ref={ref} id="selva" className="relative z-[5] h-[240svh]" aria-label="La selva de Puerto Iguazú">
       <div className="absolute top-0" data-phase="#415521|#FAF7F2|18:00" />
-      <Edge color="#415521" flip />
-      <div className="sticky top-0 h-[100svh] overflow-hidden text-crema">
+      {/* el borde inferior se funde con el fondo del día: sin cortes al pasar a la escena siguiente */}
+      <div className="sticky top-0 h-[100svh] overflow-hidden text-crema [mask-image:linear-gradient(to_bottom,black_84%,transparent)]">
         {/* bruma de las cataratas: velos suaves, sin bordes duros */}
         <m.div style={{ y: mistY }} className="absolute inset-x-0 top-0 flex h-[85%] justify-around px-2 will-change-transform [mask-image:linear-gradient(to_bottom,black,transparent_85%)]">
           {[0.07, 0.11, 0.06, 0.09, 0.05].map((o, i) => (

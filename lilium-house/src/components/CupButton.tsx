@@ -1,4 +1,4 @@
-import { m, useSpring, useTransform } from 'framer-motion'
+import { m, useScroll, useSpring, useTransform, useVelocity } from 'framer-motion'
 import { useEffect, useId, useRef, useState } from 'react'
 import { WHATSAPP_OPTIONS, whatsappLink } from '../data/site'
 import { useDay } from '../day/DayProvider'
@@ -17,6 +17,11 @@ const INK = '#3D2314'
 export function CupButton() {
   const { progress } = useDay()
   const level = useSpring(progress, { stiffness: 110, damping: 28 })
+  // el globo de mensaje se mece con la velocidad del scroll y vuelve con un resorte
+  const { scrollY } = useScroll()
+  const speed = useVelocity(scrollY)
+  const sway = useSpring(useTransform(speed, [-2500, 0, 2500], [-16, 0, 16], { clamp: true }), { stiffness: 260, damping: 11 })
+  const lift = useSpring(useTransform(speed, [-2500, 0, 2500], [-5, 0, -5], { clamp: true }), { stiffness: 260, damping: 14 })
   // el café sube dentro de la taza: la superficie se agranda y se acerca al borde
   const coffeeY = useTransform(level, [0, 1], [5, -1.5])
   const coffeeS = useTransform(level, [0, 1], [0.78, 1])
@@ -82,7 +87,7 @@ export function CupButton() {
                     key={o.label}
                     initial={{ opacity: 0, x: -8, clipPath: 'inset(0 100% 0 0)' }}
                     animate={{ opacity: 1, x: 0, clipPath: 'inset(0 0% 0 0)' }}
-                    transition={{ delay: 0.4 + i * 0.07, duration: 0.4, ease: EASE }}
+                    transition={{ delay: 0.72 + i * 0.08, duration: 0.4, ease: EASE }}
                   >
                     <a
                       href={whatsappLink(o.message)}
@@ -187,10 +192,39 @@ export function CupButton() {
               </g>
             </svg>
           </span>
-          {/* etiqueta de WhatsApp, como un sello sobre la mesa */}
-          <span className="absolute -top-2 -left-3 grid h-7 w-7 -rotate-12 place-items-center rounded-[4%_70%_4%_70%] bg-turquesa text-crema shadow-[0_4px_8px_-3px_rgb(0_0_0/0.5)] ring-2 ring-crema/80">
-            <WhatsAppIcon className="h-3.5 w-3.5" />
-          </span>
+          {/* globo de mensaje: escribe (tres puntitos), se mece al scrollear y salta al tocar */}
+          <m.span
+            style={{ rotate: sway, y: lift }}
+            className="pointer-events-none absolute -top-4 -left-5 w-11 origin-[85%_95%] will-change-transform sm:w-12"
+            aria-hidden="true"
+          >
+            <m.span
+              key={bump}
+              className="block [filter:drop-shadow(0_4px_6px_rgb(0_0_0/0.3))]"
+              initial={false}
+              animate={bump ? { scale: [1, 1.32, 0.9, 1.06, 1], rotate: [0, -10, 6, -2, 0] } : undefined}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+            >
+              <svg viewBox="0 0 44 36" className="block w-full">
+                <path
+                  d="M7 2.5h30a5 5 0 0 1 5 5v15a5 5 0 0 1-5 5h-5.5l2.5 7-9.5-7H7a5 5 0 0 1-5-5v-15a5 5 0 0 1 5-5Z"
+                  fill="#FFFDF9"
+                  stroke="#1C4A45"
+                  strokeWidth="1.8"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="absolute inset-x-0 top-[34%] flex justify-center gap-[3px]">
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    className="block h-[5px] w-[5px] animate-typing rounded-full bg-turquesa-dark will-change-transform"
+                    style={{ animationDelay: `${i * 0.16}s` }}
+                  />
+                ))}
+              </span>
+            </m.span>
+          </m.span>
         </m.button>
       </div>
     </div>

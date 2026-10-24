@@ -88,18 +88,21 @@ export function Ritual() {
   const dome = useTransform(p, [0.8, 0.95], [0, -62])
   const cakeOpacity = useTransform(p, [0.6, 0.66], [0, 1])
 
-  const bg = useTransform(p, [0.28, 0.4, 0.62, 0.74], ['#FAF7F2', '#F0EAE1', '#F0EAE1', '#F1DCC4'])
+  // entra por debajo del final del amanecer: aparece mientras se abre el follaje (sin pantalla vacía)
+  const { scrollYProgress: enter } = useScroll({ target: ref, offset: ['start end', 'start start'] })
+  const enterOpacity = useTransform(enter, [0.76, 1], [0, 1])
+  const enterY = useTransform(enter, [0.76, 1], [36, 0])
 
   // hojas que acompañan
   const leafR = useTransform(p, [0, 1], [-20, 30])
 
   return (
-    <m.section ref={ref} style={{ backgroundColor: bg }} id="ritual" className="relative z-[2] h-[340svh]" aria-label="El ritual: café, chipa y pastelería">
+    <section ref={ref} id="ritual" className="relative z-[1] -mt-[100svh] h-[340svh]" aria-label="El ritual: café, chipa y pastelería">
       <div className="absolute top-0" data-phase="#FAF7F2|#3D2314|09:00" />
       <div className="absolute top-[33%]" data-phase="#F0EAE1|#3D2314|10:00" />
       <div className="absolute top-[66%]" data-phase="#F1DCC4|#3D2314|11:00" />
 
-      <div className="sticky top-0 grid h-[100svh] grid-rows-[auto_1fr] overflow-hidden px-9 pt-24 pb-10 sm:px-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:grid-rows-1 lg:items-center lg:gap-10 lg:px-24 lg:pt-16">
+      <m.div style={{ opacity: enterOpacity, y: enterY }} className="sticky top-0 grid h-[100svh] grid-rows-[auto_1fr] overflow-hidden [mask-image:linear-gradient(to_bottom,black_88%,transparent)] px-9 pt-24 pb-10 sm:px-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:grid-rows-1 lg:items-center lg:gap-10 lg:px-24 lg:pt-16">
         <RitualDecor />
         {/* textos de los 3 actos */}
         <div className="relative z-10 h-[13.5rem] sm:h-[15rem] lg:h-[22rem]">
@@ -135,7 +138,7 @@ export function Ritual() {
             <ChipaBasket className="w-full" />
           </m.div>
         </div>
-      </div>
-    </m.section>
+      </m.div>
+    </section>
   )
 }

@@ -55,8 +55,7 @@ export function Amanecer() {
       defaults: { ease: 'none' },
       scrollTrigger: { trigger: ref.current, start: 'top top', end: 'bottom bottom', scrub: 0.9 },
     })
-    tl.to(ref.current, { backgroundColor: '#FAF7F2', duration: 0.5 }, 0)
-      .to(q('[data-hint]'), { autoAlpha: 0, duration: 0.1 }, 0)
+    tl.to(q('[data-hint]'), { autoAlpha: 0, duration: 0.1 }, 0)
       .to(q('[data-sun]'), { yPercent: -60, scale: 1.35, duration: 0.7 }, 0)
       .to(q('[data-title]'), { y: '-4vh', scale: 0.82, duration: 0.4 }, 0)
       .fromTo(q('[data-tagline]'), { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.12 }, 0.05)
@@ -77,6 +76,7 @@ export function Amanecer() {
       .to(q('[data-layer="front"]'), { autoAlpha: 0, duration: 0.06 }, 0.9)
       // el suelo pasa por debajo de la cámara
       .to(q('[data-layer="soto"]'), { scale: 1.6, yPercent: 110, duration: 0.26, ease: 'power2.in' }, 0.72)
+      .to(q('[data-sun]'), { autoAlpha: 0, duration: 0.14 }, 0.8)
       .fromTo(q('[data-shade]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.14 }, 0.68)
       .to(q('[data-shade]'), { autoAlpha: 0, duration: 0.14 }, 0.86)
       .set({}, {}, 1)
@@ -113,7 +113,7 @@ export function Amanecer() {
       ref={ref}
       id="amanecer"
       data-phase="#F4E4CC|#3D2314|08:00"
-      className="relative z-[1] h-[250svh] bg-[#F4E4CC]"
+      className="relative z-[2] h-[250svh]"
       aria-label="Amanecer en Lilium"
     >
       <div className="absolute top-[55%]" data-phase="#FAF7F2|#3D2314|08:40" />
