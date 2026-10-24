@@ -1,0 +1,59 @@
+# Historial de pedidos y cambios
+
+Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxxx/Web-Design-`.
+
+## 1. Primera versión (rama original → `main` inicial)
+
+- Landing con React, Tailwind, Framer Motion y R3F; lirio 3D en el hero que reacciona a cursor/toque/scroll.
+- Datos del local desde Google Maps; botón de WhatsApp; optimización móvil.
+
+## 2. Rediseño "Un día en Lilium" (PR #2)
+
+- Fuera alojamientos: solo cafetería. Sin CTAs genéricos en el hero; WhatsApp no genérico.
+- Animaciones de scroll que abren/cierran/mueven cosas; enredaderas que trepan (asimétricas).
+- Storyboard de scroll en Figma. Tipografías y paletas buscadas en GitHub y auditadas antes de usarlas.
+- GSAP, cortina de hojas asimétrica, más vida de fondo, platos de la carta, menú-hoja de un solo elemento.
+- Datos de Instagram (WhatsApp, horario real), paleta menta del logo, carta con desayunos/almuerzos/
+  meriendas y fotos del perfil.
+- Plantas con volumen (nervaduras recortadas, tallos que nacen del suelo), entrada a la selva en el
+  hero, picaflor redibujado en un ceibo, hornero con nido, coatí.
+
+## 3. PR #3
+
+- Selva asimétrica con sotobosque; menú con forma de hoja; taza sobre la mesa.
+- Comanda que se desenvuelve como bola de papel (clip-path en CSS, stop-motion).
+- Base de ramas cruzadas → después tabla de madera diagonal; globo de mensaje animado.
+- Rendimiento: pausa de bucles fuera de pantalla, capas compuestas, lirio a 30 fps en teléfonos.
+- Terminaciones premium (logo como el real, contraste, barra de scroll y cursor con la paleta).
+- Fondo único del día (transiciones encadenadas, sin cortes), hoja que se abre por la nervadura.
+- Arreglos: lianas sin destello al cargar, carta de altura fija (la hora no salta), selva sin franjas,
+  fuente del cierre Playfair, luciérnagas que vagan, lirio ilustrado (probado) en lugar del 3D.
+
+## 4. PR #4
+
+- Lirio 3D de vuelta, optimizado (Lambert, sin luz puntual, tallo completo, zoom suave).
+- Papel en stop-motion real (10 cuadros); platos que entran girando al cambiar de pestaña.
+- Madera que cubre toda la esquina; hojas en cada transición; bruma que aparece con la escena fija.
+- Datos del cierre en Raleway.
+
+## 5. PR #5
+
+- Menú que brota enrollado y se desenrolla (solo transform: sin trabas).
+- Papel que nace en la boca de la taza; tronco de árbol irregular; globo dibujado a lápiz.
+- "Lilium" se desvanece en un tramo largo; las plantas se abren hacia los costados.
+
+## 6. PR #6 — Remotion
+
+- Proyecto `animaciones/` con `HojaMenu` (20 cuadros) y `PapelComanda` (12 cuadros), replicando los
+  videos de referencia del cliente (planta que se desenrolla, papel que se desenvuelve).
+- Exportados como sprites WebP y reproducidos en los dos menús.
+
+## 7. PR #7
+
+- Opciones del menú-hoja que se abren como hojas de una planta en cámara rápida (CSS, rebote elástico,
+  cascada de 50 ms), según especificación técnica del cliente.
+
+## 8. Herramientas
+
+- Playwright MCP instalado a nivel proyecto (auditado). Puppeteer MCP descartado (paquete deprecado).
+- Contexto de la conversación exportado a esta carpeta.
