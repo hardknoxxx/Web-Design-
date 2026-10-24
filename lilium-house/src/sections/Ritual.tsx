@@ -2,7 +2,8 @@ import { m, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useRef } from 'react'
 import { RitualDecor } from '../components/Ambiente'
 import { Fundido } from '../components/Fundido'
-import { CakeStand, ChipaBasket, Cup } from '../components/Botanica'
+import { ChipaBasket } from '../components/Botanica'
+import { CakeStand, Cup } from '../components/BotanicaAnimada'
 
 /**
  * 03–05 · El ritual. Escena fijada de 3 actos: la taza entra, cambia de lugar cuando

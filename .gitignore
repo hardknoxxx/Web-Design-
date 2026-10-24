@@ -9,3 +9,6 @@
 
 # Taste Skill: hoja de dirección y archivos de trabajo de cada sesión
 .taste-skill/
+
+# cachés de Python de los scripts de skills
+__pycache__/

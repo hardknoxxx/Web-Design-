@@ -152,3 +152,13 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   quedaba siempre verde por un selector roto: corregido).
 - Curvas de emil-design-eng (`--ease-out`, `--ease-in-out`), `:active` en todo lo presionable, hover solo con mouse.
 - Rendimiento (Playwright, 390×844, GL por software): scroll 58 fps; con CPU 4× más lenta, 52 fps.
+
+## 19. Auditoría (Fase 1 de CLAUDE.md) y etapa 1: base técnica
+
+- `CLAUDE.md` movido a la raíz del repo. UI UX Pro Max instalado tras auditarlo. Figma MCP: falta autorizar (`/mcp`).
+- Portada prerenderizada en el build (HTML real antes de JS; se ve completa sin JavaScript) e hidratada en el navegador.
+- La portada ya no carga Framer Motion (Cup/CakeStand pasaron a `components/BotanicaAnimada.tsx`) ni el CSS del
+  sitio archivado (`src/nuevo/base.css` propio, Tailwind limitado a sus archivos): CSS 75 kB → 25 kB sin comprimir.
+- Yellowtail auto-alojado (Apache 2.0, licencia en `public/fonts/licencias`); sin Google Fonts en la portada.
+- Horario único (`HORARIO` en `site.ts`) para el estado, la tabla y el JSON-LD generado.
+- Medición local (Playwright, 390×844, 4G lento + CPU 4×): primer contenido 1,75 s → 0,83 s. Capturas idénticas.

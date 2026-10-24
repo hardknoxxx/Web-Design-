@@ -1,20 +1,12 @@
 import { useEffect, useState } from 'react'
+import { HORARIO as SCHEDULE, hhmm as fmt } from '../data/site'
 
-// Martes a sábado corrido; domingo mañana y tarde; lunes cerrado.
-const FULL: [number, number][] = [[8 * 60, 21 * 60]]
-const SPLIT: [number, number][] = [
-  [8 * 60, 12 * 60],
-  [17 * 60, 21 * 60],
-]
-const SCHEDULE: [number, number][][] = [SPLIT, [], FULL, FULL, FULL, FULL, FULL]
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const DAY_NAMES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
 const DAY_SHORT = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
 
 /** `label` es la frase completa; `state` y `detail`, la versión corta del cartel de madera (dos líneas). */
 export type OpenStatus = { open: boolean; label: string; state: string; detail: string }
-
-const fmt = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
 
 function argentinaNow() {
   const parts = new Intl.DateTimeFormat('en-US', {
