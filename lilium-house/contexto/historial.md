@@ -140,3 +140,15 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - Mapa de la visita redibujado con calles reales de OpenStreetMap (Overpass, geocodificado el 489 con Nominatim):
   `src/nuevo/croquisDatos.ts` con río Iguazú, Costanera, Av. Tres Fronteras, Entre Ríos, Urquiza y Corrientes.
   El local queda casi esquina Entre Ríos, a unos 200 m de la Costanera. Crédito OSM (ODbL) en el pie del mapa.
+
+## 18. Marca, mesa infinita y fauna viva en three.js (con emil-design-eng)
+
+- Header con el logo de la marca (disco menta `#64BCB0` con el lirio blanco + "Lilium" en Yellowtail + "Coffee
+  Lounge"); en el teléfono solo logo y "Cómo llegar", y el estado (Abierto hasta 21:00) baja bajo la bajada.
+- La mesa vuelve a ser infinita (pedido del cliente, como Agrumea): una vuelta por scroll y giro sin tope.
+- Sin flora en la mesa; la flora y la fauna viven en la carta, la visita y el friso (`src/nuevo/vida/`).
+- El friso del cierre ya no repite dirección y horario.
+- CSS propio en `@layer components` (antes pisaba utilidades como `max-md:hidden`; además el punto del estado
+  quedaba siempre verde por un selector roto: corregido).
+- Curvas de emil-design-eng (`--ease-out`, `--ease-in-out`), `:active` en todo lo presionable, hover solo con mouse.
+- Rendimiento (Playwright, 390×844, GL por software): scroll 58 fps; con CPU 4× más lenta, 52 fps.

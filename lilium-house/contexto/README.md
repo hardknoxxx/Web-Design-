@@ -27,10 +27,11 @@ Referencias: Madie (carta en láminas, color de marca fuerte, mapa con horario),
 
 | Sección | Qué pasa |
 | --- | --- |
-| Mesa (`MesaGiratoria.tsx`) | Mesa verde que gira con el scroll (el scroll es la hora: sin vuelta infinita); arrastre, flechas y ←/→; tocar un plato lo trae al frente y lo hace girar; los platos se colorean desde el centro al llegar al frente. Lirios, monstera y picaflor detrás |
+| Mesa (`MesaGiratoria.tsx`) | Mesa verde infinita como la referencia: el scroll le da una vuelta entera y el arrastre, las flechas y ←/→ siguen sin tope; tocar un plato lo trae al frente por el lado más corto y lo hace girar; los platos se colorean desde el centro. Sin flora en la mesa. Logo de marca (disco menta con lirio blanco, `Logo.tsx`) |
 | Carta (`Carta.tsx`) | Láminas por momento (pestañas según la hora en Iguazú); dibujos y fotos se pintan al entrar |
 | Visita (`Visita.tsx`) | Mapa con calles reales de OpenStreetMap (`croquisDatos.ts`, generado), horario con "hoy", Cómo llegar / WhatsApp / Llamar; hornero y coatí |
-| Friso (`Friso.tsx`) | Franja botánica con lirios, tucán y mariposa; Instagram y WhatsApp |
+| Friso (`Friso.tsx`) | Solo la franja de selva (sin repetir dirección ni horario) y el © |
+| Vida (`vida/`) | Flora y fauna en three.js: cada `<Pieza>` es el SVG de respaldo; el motor lo rasteriza a textura y lo anima (plantas al viento con vertex shader, mariposa que bate las alas, picaflor que se desplaza, tucán y hornero que saltan, coatí que camina). Carga diferida, solo en pantalla, lienzo recortado a la franja de las piezas y 30 fps en teléfono |
 
 "Cómo llegar" flotante cuando la mesa queda atrás.
 

@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState, type ComponentType } from 'react'
-import { Monstera } from '../components/Botanica'
-import { Hummingbird } from '../components/Flora'
 import { ArrowIcon } from '../components/Icons'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, SITE } from '../data/site'
-import { useOpenStatus } from '../hooks/useOpenStatus'
-import { Lirio } from './Lirio'
+import { useOpenStatus, type OpenStatus } from '../hooks/useOpenStatus'
+import { Logo } from './Logo'
 
 /*
  * La mesa giratoria (referencia: el carrusel de frascos de Agrumea Farm).
- * El scroll recorre el día sobre una mesa verde: los platos pasan de la mañana a la noche, sin dar la vuelta,
- * para que la posición del scroll sea siempre la hora. El arrastre y las flechas adelantan o atrasan; el
- * siguiente scroll los devuelve con suavidad al ritmo del día. Tocar un plato lo hace girar sobre la mesa.
+ * Una mesa verde que no termina: el scroll le da una vuelta entera (de la mañana a la noche y otra vez al café)
+ * y el arrastre o las flechas la siguen girando sin tope, como el carrusel de la referencia. Tocar un plato lo
+ * trae al frente por el camino más corto y lo hace girar sobre la mesa.
  * Como en los manteles de Lilium, los platos esperan sin pintar (solo el trazo) y se colorean al pasar
  * frente a vos. Todo corre en un rAF a demanda que escribe estilos: sin re-render por cuadro.
  */
@@ -32,12 +30,30 @@ const PLATOS = CARTA.flatMap((momento) =>
   ),
 )
 const N = PLATOS.length
-const LAST = N - 1
 // giro propio de cada plato, para que no queden todos alineados
 const GIRO = [-14, 22, -6, 31, -24, 9, -18]
 const RONDA = ['Café de especialidad', 'Chipa recién horneada', 'Pastelería', 'Plantas en cada rincón', 'Manteles para colorear', ''].join(' · ')
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
+/** distancia de un plato al frente, por el lado más corto de la mesa: [-N/2, N/2) */
+const wrap = (d: number) => ((((d + N / 2) % N) + N) % N) - N / 2
+const mod = (i: number) => ((i % N) + N) % N
+
+/** Estado del local en una píldora: punto (verde si está abierto) y la próxima hora que importa. */
+function Estado({ status, className = '' }: { status: OpenStatus | null; className?: string }) {
+  return (
+    <a href="#visita" className={`estado ${className}`} data-open={status?.open ?? undefined}>
+      <span aria-hidden="true" className="estado-punto" />
+      {status ? (
+        <span>
+          <span className="font-semibold">{status.state}</span> {status.detail}
+        </span>
+      ) : (
+        'Horario'
+      )}
+    </a>
+  )
+}
 
 export function MesaGiratoria() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -75,7 +91,7 @@ export function MesaGiratoria() {
 
     const render = () => {
       for (let i = 0; i < N; i++) {
-        const d = i - current
+        const d = wrap(i - current)
         const a = Math.abs(d)
         const x = d * spacing * (1 - 0.06 * Math.min(a, 3))
         const y = -Math.min(a, 3) * spacing * (narrow ? 0.12 : 0.07)
@@ -89,7 +105,7 @@ export function MesaGiratoria() {
         colorRefs.current[i]!.style.clipPath = c >= 1 ? 'none' : `circle(${(c * 72).toFixed(1)}% at 50% 50%)`
       }
       mesaRef.current!.style.transform = `rotate(${(-current * (360 / N)).toFixed(2)}deg)`
-      const idx = clamp(Math.round(current), 0, LAST)
+      const idx = mod(Math.round(current))
       if (idx !== shown) {
         shown = idx
         setFocus(idx)
@@ -99,7 +115,7 @@ export function MesaGiratoria() {
 
     const frame = () => {
       raf = 0
-      const target = clamp(scrollPart + offset, 0, LAST)
+      const target = scrollPart + offset
       current = reduced ? target : current + (target - current) * 0.12
       if (Math.abs(target - current) < 1e-3) current = target
       let spinning = false
@@ -124,9 +140,8 @@ export function MesaGiratoria() {
     const onScroll = () => {
       const r = section.getBoundingClientRect()
       const run = r.height - innerHeight
-      scrollPart = run > 0 ? clamp(-r.top / run, 0, 1) * LAST : 0
-      // el scroll vuelve a mandar: lo que se adelantó con el dedo se acomoda de a poco a la hora del día
-      offset = Math.abs(offset) < 0.02 ? 0 : offset * 0.85
+      // una vuelta entera de mesa a lo largo del scroll: al final vuelve a estar el café al frente
+      scrollPart = run > 0 ? clamp(-r.top / run, 0, 1) * N : 0
       announce = false
       invalidate()
     }
@@ -182,14 +197,14 @@ export function MesaGiratoria() {
         if (!hit) return
         const i = Number(hit.dataset.i)
         spinTarget[i] += 360 * (e.clientX < hit.getBoundingClientRect().left + hit.offsetWidth / 2 ? -1 : 1)
-        offset = i - scrollPart
+        offset = Math.round(current + wrap(i - current)) - scrollPart
         firstTouch()
         invalidate()
         return
       }
       // inercia corta y encaje en el plato más cercano (el total, no solo el arrastre)
-      const fling = clamp(velocity * 180, -2, 2)
-      offset = clamp(Math.round(scrollPart + offset + fling), 0, LAST) - scrollPart
+      const fling = clamp(velocity * 180, -3, 3)
+      offset = Math.round(scrollPart + offset + fling) - scrollPart
       invalidate()
     }
     const onCancel = () => {
@@ -198,9 +213,9 @@ export function MesaGiratoria() {
     }
     nudgeRef.current = (step) => {
       announce = true
-      offset = clamp(Math.round(scrollPart + offset) + step, 0, LAST) - scrollPart
+      offset = Math.round(scrollPart + offset) + step - scrollPart
       // un giro corto del plato que llega, como si lo acomodaran en la mesa
-      spinTarget[clamp(Math.round(scrollPart + offset), 0, LAST)] += 40 * step
+      spinTarget[mod(Math.round(scrollPart + offset))] += 40 * step
       firstTouch()
       invalidate()
     }
@@ -247,42 +262,24 @@ export function MesaGiratoria() {
       }}
     >
       <div className="sticky top-0 h-svh overflow-hidden bg-crema">
-        <header className="relative z-30 grid grid-cols-[1fr_auto_1fr] items-start gap-1.5 px-3 pt-4 md:gap-2 md:px-7 md:pt-6">
-          <a href="#visita" className="estado justify-self-start" data-open={status?.open ?? undefined}>
-            <span aria-hidden="true" className="estado-punto" />
-            {status ? (
-              <span>
-                <span className="font-semibold">{status.state}</span> <span className="max-[359px]:hidden">{status.detail}</span>
-              </span>
-            ) : (
-              'Horario'
-            )}
-          </a>
-          <a href="#visita" className="flex flex-col items-center text-laguna-deep" aria-label="Lilium Coffee Lounge, horario y dirección">
-            <span className="font-script text-[2.1rem] leading-[0.9] md:text-[3.2rem]">Lilium</span>
-            <span className="font-elegante text-[0.8rem] font-semibold tracking-[0.18em] uppercase max-md:hidden">Coffee Lounge</span>
-          </a>
-          <a href={SITE.mapsHref} target="_blank" rel="noopener" className="boton justify-self-end">
-            Cómo llegar
-          </a>
+        <header className="relative z-30 flex items-center justify-between gap-3 px-4 pt-4 md:px-8 md:pt-6">
+          <Logo />
+          <div className="flex items-center gap-3">
+            <Estado status={status} className="max-md:hidden" />
+            <a href={SITE.mapsHref} target="_blank" rel="noopener" className="boton">
+              Cómo llegar
+            </a>
+          </div>
         </header>
 
-        <h1 className="relative z-30 mx-auto mt-5 max-w-[17ch] px-4 text-center font-display text-[1.75rem] leading-[1.05] font-semibold text-balance text-laguna-deep md:mt-6 md:max-w-none md:text-[2.6rem]">
+        <h1 className="relative z-30 mx-auto mt-7 max-w-[17ch] px-4 text-center font-display text-[1.75rem] leading-[1.05] font-semibold text-balance text-laguna-deep md:mt-6 md:max-w-none md:text-[2.6rem]">
           Un café verde por dentro, <span className="md:block">en Puerto Iguazú</span>
         </h1>
         <p className="relative z-30 mx-auto mt-3 max-w-[30ch] px-4 text-center font-elegante text-base text-madera-soft md:mt-4 md:max-w-none md:text-lg">
           Desayunos, almuerzos y meriendas sobre Av. Tres Fronteras.
         </p>
-        <p className="pista relative z-30" data-oculta={tocada || undefined} aria-hidden="true">
-          Tocá un plato o deslizá la mesa
-        </p>
-
-        {/* lo verde de adentro: lirios y una monstera asoman detrás de la mesa, con un picaflor que visita la flor */}
-        <div aria-hidden="true" className="pointer-events-none">
-          <Monstera className="planta planta-monstera" />
-          <Lirio className="planta planta-lirio-a" tilt={-8} bud />
-          <Lirio className="planta planta-lirio-b" tilt={10} />
-          <Hummingbird className="picaflor" />
+        <div className="relative z-30 mt-4 flex justify-center md:hidden">
+          <Estado status={status} />
         </div>
 
         {/* la mesa: un disco enorme que asoma desde abajo y gira con los platos */}
@@ -315,17 +312,20 @@ export function MesaGiratoria() {
         </div>
 
         <div className="pie-mesa">
-          <button type="button" className="flecha" aria-label="Plato anterior" aria-disabled={focus === 0} onClick={() => nudgeRef.current(-1)}>
+          <button type="button" className="flecha" aria-label="Plato anterior" onClick={() => nudgeRef.current(-1)}>
             <ArrowIcon className="h-5 w-5 rotate-180" />
           </button>
           <p className="min-w-0 flex-1 text-center">
+            <span className="pista" data-oculta={tocada || undefined} aria-hidden="true">
+              Tocá un plato o deslizá la mesa
+            </span>
             <span className="block font-display text-[1.9rem] leading-tight font-semibold text-balance text-crema md:text-[2.6rem]">{plato.name}</span>
             <span className="block font-hand text-[1.4rem] leading-tight text-menta">
               {plato.momento.toLowerCase()} · {plato.note}
             </span>
             <span className="mt-1 block text-[0.95rem] text-menta/85 max-md:hidden">{plato.desc}</span>
           </p>
-          <button type="button" className="flecha" aria-label="Plato siguiente" aria-disabled={focus === LAST} onClick={() => nudgeRef.current(1)}>
+          <button type="button" className="flecha" aria-label="Plato siguiente" onClick={() => nudgeRef.current(1)}>
             <ArrowIcon className="h-5 w-5" />
           </button>
         </div>
