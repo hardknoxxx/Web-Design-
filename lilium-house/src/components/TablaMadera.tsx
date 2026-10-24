@@ -61,7 +61,6 @@ export function TablaMadera({ className, style }: { className?: string; style?: 
   const cut = axis(S0)
   const knot = at(34, 28)
   const stub = at(92, 44)
-  const spoon = at(66, 20)
   const deg = (ANG * 180) / Math.PI
   return (
     <svg viewBox="0 0 170 150" overflow="visible" className={className} style={style} aria-hidden="true">
@@ -156,14 +155,6 @@ export function TablaMadera({ className, style }: { className?: string; style?: 
           />
         ))}
         <path d={`M${f(cut[0] - 1)} ${f(cut[1])}L${f(cut[0] - 3)} ${f(cut[1] - 30)}M${f(cut[0] - 1)} ${f(cut[1])}L${f(cut[0] + 4)} ${f(cut[1] + 22)}`} stroke="#5A3C28" strokeWidth=".9" />
-      </g>
-
-      {/* cucharita acostada sobre el tronco, al costado de la taza */}
-      <g transform={`rotate(${deg + 8} ${f(spoon[0])} ${f(spoon[1])})`}>
-        <ellipse cx={f(spoon[0] + 1)} cy={f(spoon[1] + 2.5)} rx="7.5" ry="3.4" fill="#1A0F08" opacity=".3" />
-        <path d={`M${f(spoon[0] + 4)} ${f(spoon[1] - 1.2)}H${f(spoon[0] + 28)}C${f(spoon[0] + 29.6)} ${f(spoon[1] - 1)} ${f(spoon[0] + 29.6)} ${f(spoon[1] + 1.6)} ${f(spoon[0] + 28)} ${f(spoon[1] + 1.8)}H${f(spoon[0] + 4)}Z`} fill="#D8C7A2" stroke="#A8916A" strokeWidth=".5" />
-        <ellipse cx={f(spoon[0])} cy={f(spoon[1])} rx="7" ry="3.8" fill="#E2D3B2" stroke="#A8916A" strokeWidth=".6" />
-        <ellipse cx={f(spoon[0] - 0.8)} cy={f(spoon[1] - 0.5)} rx="4.6" ry="2.2" fill="#F4EBD8" opacity=".8" />
       </g>
     </svg>
   )

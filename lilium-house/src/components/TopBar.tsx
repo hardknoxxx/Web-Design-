@@ -3,7 +3,6 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { SCENES, SITE } from '../data/site'
 import { useDay } from '../day/DayProvider'
 import { gsap } from '../lib/gsap'
-import { HOJA, playSprite } from '../lib/sprite'
 import { LilyMark } from './Icons'
 
 /** Dial sol/luna: gira 180° a lo largo del día. */
@@ -60,16 +59,16 @@ const openShape = (w: number, h: number): Shape => ({ x0: 0, y0: 0, x1: w, y1: h
 
 
 /**
- * Menú-hoja, como la hoja nueva de la referencia: brota enrollada desde el botón (pecíolo),
- * crece por la nervadura y se desenrolla hacia los dos lados. La animación está hecha con
- * Remotion (animaciones/HojaMenu) y se reproduce como sprite; su último cuadro es idéntico al
- * panel, que aparece encima con el contenido. Al cerrar, la misma película al revés.
+ * Menú-hoja: se abre como una hoja de verdad o un abanico, desde el pecíolo (el botón, arriba a
+ * la derecha). La hoja nace chica y girada contra el tallo, se revela en un círculo que crece
+ * desde la esquina y se despliega con un rebote suave al asentarse. Giro, escala y revelado
+ * llevan tiempos distintos, así la punta dibuja un arco en vez de estirarse en línea recta.
+ * Todo en CSS (`.hoja-panel`, index.css); acá solo se marca el estado y se anima el botón.
  */
 function LeafMenu() {
   const [open, setOpen] = useState(false)
   const wrap = useRef<HTMLDivElement>(null)
   const panel = useRef<HTMLElement>(null)
-  const sprite = useRef<HTMLSpanElement>(null)
   const first = useRef(true)
 
   // contorno de hoja fijo (se calcula una vez y al cambiar el tamaño)
@@ -79,54 +78,36 @@ function LeafMenu() {
       const d = `path('${shapePath(openShape(el.offsetWidth, el.offsetHeight))}')`
       el.style.clipPath = d
       el.style.setProperty('-webkit-clip-path', d)
-      if (sprite.current) {
-        sprite.current.style.width = `${el.offsetWidth}px`
-        sprite.current.style.height = `${el.offsetHeight}px`
-      }
     }
     set()
-    gsap.set(el, { autoAlpha: 0 })
-    gsap.set(sprite.current, { autoAlpha: 0 })
     const ro = new ResizeObserver(set)
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
 
+  // el botón: el brote se funde en la hoja que crece y las rayas pasan a ser una X
   useEffect(() => {
-    const el = panel.current!
-    const film = sprite.current!
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const q = gsap.utils.selector(wrap)
     if (first.current) {
       first.current = false
       return
     }
-    gsap.killTweensOf([el, film, q('[data-line]'), q('[data-bud]'), q('[data-nerve]')])
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const q = gsap.utils.selector(wrap)
+    gsap.killTweensOf([q('[data-line]'), q('[data-bud]')])
     const d = (v: number) => (reduce ? 0 : v)
-    const tl = gsap.timeline({
-      onStart: () => wrap.current?.setAttribute('data-moving', ''),
-      onComplete: () => wrap.current?.removeAttribute('data-moving'),
-    })
+    // sin sombra mientras la hoja se mueve: un drop-shadow sobre algo que cambia de forma
+    // se recalcula en cada cuadro
+    if (!reduce) wrap.current?.setAttribute('data-moving', '')
     if (open) {
-      // la película: brota enrollada, crece y se desenrolla (20 cuadros)
-      if (!reduce) tl.set(film, { autoAlpha: 1 }).add(playSprite(film, HOJA, 0, HOJA.frames - 1, 0.84), 0)
-      tl.set(el, { autoAlpha: 1 }, d(0.84))
-        .set(film, { autoAlpha: 0 }, d(0.86))
-        .set(q('[data-nerve]'), { autoAlpha: 1 }, d(0.84))
-        .to(q('[data-bud]'), { autoAlpha: 0, duration: d(0.25) }, d(0.35))
-        .to(q('[data-line="a"]'), { y: 6, rotation: 45, duration: d(0.45), ease: 'power3.inOut' }, 0)
-        .to(q('[data-line="b"]'), { autoAlpha: 0, duration: d(0.2) }, 0)
-        .to(q('[data-line="c"]'), { y: -6, rotation: -45, width: 18, duration: d(0.45), ease: 'power3.inOut' }, 0)
-      ;(gsap.utils.selector(el)('a')[0] as HTMLElement | undefined)?.focus({ preventScroll: true })
+      gsap.to(q('[data-bud]'), { autoAlpha: 0, duration: d(0.3), delay: d(0.05) })
+      gsap.to(q('[data-line="a"]'), { y: 6, rotation: 45, duration: d(0.45), ease: 'power3.inOut' })
+      gsap.to(q('[data-line="b"]'), { autoAlpha: 0, duration: d(0.2) })
+      gsap.to(q('[data-line="c"]'), { y: -6, rotation: -45, width: 18, duration: d(0.45), ease: 'power3.inOut' })
+      ;(gsap.utils.selector(panel)('a')[0] as HTMLElement | undefined)?.focus({ preventScroll: true })
     } else {
-      // las opciones se vuelven a colgar (transición CSS) y recién después la hoja se enrolla
-      const t = d(0.36)
-      if (!reduce) tl.set(film, { autoAlpha: 1 }, t).add(playSprite(film, HOJA, HOJA.frames - 1, 0, 0.6), t)
-      tl.set(el, { autoAlpha: 0 }, t + 0.01)
-        .set(q('[data-nerve]'), { autoAlpha: 0 }, t + 0.01)
-        .to(q('[data-bud]'), { autoAlpha: 1, duration: d(0.25) }, t + d(0.34))
-        .set(film, { autoAlpha: 0 }, t + d(0.62))
-        .to(q('[data-line]'), { y: 0, rotation: 0, autoAlpha: 1, width: (i: number) => (i === 2 ? 12 : 18), duration: d(0.4), ease: 'power3.inOut' }, 0)
+      // las opciones se vuelven a colgar, la hoja se repliega y recién ahí reaparece el brote
+      gsap.to(q('[data-line]'), { y: 0, rotation: 0, autoAlpha: 1, width: (i: number) => (i === 2 ? 12 : 18), duration: d(0.4), ease: 'power3.inOut' })
+      gsap.to(q('[data-bud]'), { autoAlpha: 1, duration: d(0.25), delay: d(0.6) })
     }
   }, [open])
 
@@ -144,62 +125,64 @@ function LeafMenu() {
   }, [open])
 
   return (
-    <div ref={wrap} className="relative mt-1 h-11 w-11 [&:not([data-moving])]:[filter:drop-shadow(0_8px_14px_rgb(0_0_0/0.35))]">
-      <nav
-        ref={panel}
-        id="menu-escenas"
-        aria-label="Escenas"
-        className="invisible absolute top-0 right-0 w-[min(86vw,340px)] bg-laguna text-crema [background-image:radial-gradient(120%_70%_at_100%_0%,rgb(100_188_176/0.45),transparent_62%),radial-gradient(90%_60%_at_0%_100%,rgb(65_85_33/0.35),transparent_70%)]"
+    <div ref={wrap} data-open={open} className="relative mt-1 h-11 w-11 [&:not([data-moving])]:[filter:drop-shadow(0_8px_14px_rgb(0_0_0/0.35))]">
+      <div
+        className="hoja-panel absolute top-0 right-0"
+        onTransitionEnd={(e) => e.target === e.currentTarget && e.propertyName === 'rotate' && wrap.current?.removeAttribute('data-moving')}
       >
-        {/* nervaduras de la hoja: la central va del pecíolo (botón) a la punta */}
-        <svg data-nerve="" viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full opacity-0" aria-hidden="true">
-          <g fill="none" stroke="#FAF7F2" strokeLinecap="round">
-            <path d="M97 3C74 26 44 58 3 97" strokeOpacity=".16" strokeWidth="2.2" vectorEffect="non-scaling-stroke" />
-            <g strokeOpacity=".08" strokeWidth="1.2">
-              {[18, 36, 54, 72].map((t) => {
-                const x = 97 - t * 0.95
-                const y = 3 + t * 0.95
-                return (
-                  <g key={t}>
-                    <path d={`M${x} ${y}C${x - 14} ${y - 4} ${x - 26} ${y - 14} ${x - 30} ${y - 26}`} vectorEffect="non-scaling-stroke" />
-                    <path d={`M${x} ${y}C${x + 4} ${y + 14} ${x + 14} ${y + 26} ${x + 26} ${y + 30}`} vectorEffect="non-scaling-stroke" />
-                  </g>
-                )
-              })}
+        <nav
+          ref={panel}
+          id="menu-escenas"
+          aria-label="Escenas"
+          className="relative w-[min(86vw,340px)] bg-laguna text-crema [background-image:radial-gradient(120%_70%_at_100%_0%,rgb(100_188_176/0.45),transparent_62%),radial-gradient(90%_60%_at_0%_100%,rgb(65_85_33/0.35),transparent_70%)]"
+        >
+          {/* nervaduras de la hoja: la central va del pecíolo (botón) a la punta; crecen con ella */}
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true">
+            <g fill="none" stroke="#FAF7F2" strokeLinecap="round">
+              <path d="M97 3C74 26 44 58 3 97" strokeOpacity=".16" strokeWidth="2.2" vectorEffect="non-scaling-stroke" />
+              <g strokeOpacity=".08" strokeWidth="1.2">
+                {[18, 36, 54, 72].map((t) => {
+                  const x = 97 - t * 0.95
+                  const y = 3 + t * 0.95
+                  return (
+                    <g key={t}>
+                      <path d={`M${x} ${y}C${x - 14} ${y - 4} ${x - 26} ${y - 14} ${x - 30} ${y - 26}`} vectorEffect="non-scaling-stroke" />
+                      <path d={`M${x} ${y}C${x + 4} ${y + 14} ${x + 14} ${y + 26} ${x + 26} ${y + 30}`} vectorEffect="non-scaling-stroke" />
+                    </g>
+                  )
+                })}
+              </g>
             </g>
-          </g>
-        </svg>
-        <div inert={!open} data-open={open} className="relative pt-5 pr-10 pb-12 pl-10 [perspective:700px]">
-          <p data-item="" className="hoja-item font-script text-3xl leading-none" style={{ '--i': 0 } as CSSProperties}>Lilium</p>
-          <ul className="mt-5 border-t border-crema/15 [perspective:700px]">
-            {SCENES.map((s, i) => (
-              <li key={s.href} data-item="" className="hoja-item border-b border-crema/10" style={{ '--i': i + 1 } as CSSProperties}>
-                <a
-                  href={s.href}
-                  onClick={() => setOpen(false)}
-                  className="group flex items-baseline gap-4 py-2.5 transition-colors hover:text-menta"
-                >
-                  <span className="w-12 shrink-0 font-ticket text-xs text-turquesa tabular-nums">{s.time}</span>
-                  <span className="font-display text-2xl font-semibold tracking-tight transition-transform duration-300 group-hover:translate-x-1.5">
-                    {s.label}
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-          <dl data-item="" className="hoja-item mt-5 space-y-0.5 font-ticket text-xs text-crema/75" style={{ '--i': SCENES.length + 1 } as CSSProperties}>
-            {SITE.hours.rows.map(([k, v]) => (
-              <div key={k} className="flex justify-between gap-4">
-                <dt>{k}</dt>
-                <dd className="tabular-nums">{v}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </nav>
-
-      {/* la película de la hoja (sprite renderizado con Remotion) */}
-      <span ref={sprite} aria-hidden="true" className="pointer-events-none invisible absolute top-0 right-0" />
+          </svg>
+          <div inert={!open} data-open={open} className="relative pt-5 pr-10 pb-12 pl-10 [perspective:700px]">
+            <p data-item="" className="hoja-item font-script text-3xl leading-none" style={{ '--i': 0 } as CSSProperties}>Lilium</p>
+            <ul className="mt-5 border-t border-crema/15 [perspective:700px]">
+              {SCENES.map((s, i) => (
+                <li key={s.href} data-item="" className="hoja-item border-b border-crema/10" style={{ '--i': i + 1 } as CSSProperties}>
+                  <a
+                    href={s.href}
+                    onClick={() => setOpen(false)}
+                    className="group flex items-baseline gap-4 py-2.5 transition-colors hover:text-menta"
+                  >
+                    <span className="w-12 shrink-0 font-ticket text-xs text-turquesa tabular-nums">{s.time}</span>
+                    <span className="font-display text-2xl font-semibold tracking-tight transition-transform duration-300 group-hover:translate-x-1.5">
+                      {s.label}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <dl data-item="" className="hoja-item mt-5 space-y-0.5 font-ticket text-xs text-crema/75" style={{ '--i': SCENES.length + 1 } as CSSProperties}>
+              {SITE.hours.rows.map(([k, v]) => (
+                <div key={k} className="flex justify-between gap-4">
+                  <dt>{k}</dt>
+                  <dd className="tabular-nums">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </nav>
+      </div>
 
       <button
         type="button"

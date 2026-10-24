@@ -1,10 +1,10 @@
 """Arma los sprites del sitio a partir de los cuadros renderizados con Remotion.
 
-Uso: npm run render (genera out/hoja y out/papel) y después: python3 sprites.py
+Uso: npm run render (genera out/papel) y después: python3 sprites.py
 
 Los cuadros se renderizan a 1,5x y se achican al tamaño CSS en que se muestran (supermuestreo:
-bordes suaves). Una hoja de sprites se decodifica entera en memoria: la del menú pasó de 34 MB
-a 15 MB y el primer toque ya no traba el teléfono.
+bordes suaves). Una hoja de sprites se decodifica entera en memoria: al tamaño CSS ocupa menos
+de la mitad y el primer toque no traba el teléfono.
 """
 import glob
 import os
@@ -12,7 +12,7 @@ from PIL import Image
 
 DEST = os.path.join(os.path.dirname(__file__), '..', 'public', 'anim')
 # carpeta, archivo, columnas, tamaño de cada cuadro en el sitio (px CSS, el de la composición)
-SETS = [('out/hoja', 'hoja-menu.webp', 5, (340, 562)), ('out/papel', 'papel-comanda.webp', 4, (300, 420))]
+SETS = [('out/papel', 'papel-comanda.webp', 4, (300, 420))]
 
 os.makedirs(DEST, exist_ok=True)
 for folder, name, cols, size in SETS:
