@@ -65,16 +65,22 @@ export function Amanecer() {
       tl.to(q(`[data-plant="${l.key}"]`), { ...l.to, duration: l.at[1] - l.at[0], ease: 'back.out(1.15)' }, l.at[0])
     })
     tl.to(q('[data-tagline]'), { autoAlpha: 0, y: -20, duration: 0.06 }, 0.4)
-      .to(q('[data-title]'), { autoAlpha: 0, duration: 0.1 }, 0.56)
-      // entrar a la selva: cada plano crece a su ritmo (los de adelante pasan de largo)
-      .to(q('[data-layer="far"]'), { scale: 1.35, autoAlpha: 0, duration: 0.3, ease: 'power1.in' }, 0.66)
-      .to(q('[data-lily]'), { scale: 1.9, autoAlpha: 0, duration: 0.22, ease: 'power2.in' }, 0.62)
-      .to(q('[data-layer="mid"]'), { scale: 1.6, duration: 0.32, ease: 'power2.in' }, 0.68)
-      .to(q('[data-layer="mid"]'), { autoAlpha: 0, duration: 0.08 }, 0.9)
-      .to(q('[data-layer="front"]'), { scale: 3.2, duration: 0.28, ease: 'power3.in' }, 0.7)
-      .to(q('[data-layer="front"]'), { autoAlpha: 0, duration: 0.06 }, 0.9)
-      // el suelo pasa por debajo de la cámara
-      .to(q('[data-layer="soto"]'), { scale: 1.6, yPercent: 110, duration: 0.26, ease: 'power2.in' }, 0.72)
+      // el nombre se va despacio: sube un poco y se desvanece a lo largo de un tramo largo
+      .to(q('[data-title]'), { autoAlpha: 0, y: '-9vh', duration: 0.3, ease: 'sine.inOut' }, 0.42)
+      // las plantas se abren hacia los costados, como quien corre el follaje con la mano
+      .to(q('[data-layer="far"]'), { yPercent: 18, autoAlpha: 0, duration: 0.3, ease: 'sine.in' }, 0.66)
+      .to(q('[data-lily]'), { autoAlpha: 0, duration: 0.2, ease: 'sine.inOut' }, 0.66)
+    ;[...MID, ...FRONT].forEach((l, i) => {
+      const left = l.key.endsWith('-l')
+      tl.to(
+        q(`[data-plant="${l.key}"]`),
+        { x: left ? '-62vw' : '62vw', rotation: `${left ? '-' : '+'}=${14 + (i % 3) * 6}`, duration: 0.3 + (i % 3) * 0.04, ease: 'power2.inOut' },
+        0.64 + (left ? 0 : 0.03) + (i % 3) * 0.02,
+      )
+    })
+    tl
+      // el suelo baja suave
+      .to(q('[data-layer="soto"]'), { yPercent: 80, duration: 0.26, ease: 'sine.in' }, 0.74)
       .to(q('[data-sun]'), { autoAlpha: 0, duration: 0.14 }, 0.8)
       .fromTo(q('[data-shade]'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.14 }, 0.68)
       .to(q('[data-shade]'), { autoAlpha: 0, duration: 0.14 }, 0.86)
