@@ -2,8 +2,9 @@ import { m, useTransform } from 'framer-motion'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { SCENES, SITE } from '../data/site'
 import { useDay } from '../day/DayProvider'
+import { useOpenStatus } from '../hooks/useOpenStatus'
 import { gsap } from '../lib/gsap'
-import { LilyMark } from './Icons'
+import { ArrowIcon, LilyMark } from './Icons'
 
 /** Dial sol/luna: gira 180° a lo largo del día. */
 function SunMoon() {
@@ -210,8 +211,133 @@ function LeafMenu() {
   )
 }
 
+/** Cuánto tiene que estar quieta la página para que el cartel deje la hora del recorrido y muestre la real. */
+const REST_MS = 1400
+
+/**
+ * Cartelito de madera colgado de dos hilos. Mientras se scrollea muestra la hora del recorrido
+ * ("Un día en Lilium"); con la página quieta, el estado real del local ("Abierto · hasta 21:00").
+ * Los dos textos ocupan la misma celda: el cartel no cambia de ancho al alternar. Al tocarlo se
+ * despliega, desde el propio cartel, lo que el visitante viene a buscar: horario, dirección y
+ * "Cómo llegar".
+ */
+function CartelHora() {
+  const { time } = useDay()
+  const status = useOpenStatus()
+  const [resting, setResting] = useState(true)
+  const [open, setOpen] = useState(false)
+  const wrap = useRef<HTMLDivElement>(null)
+
+  // se scrollea → hora del recorrido; quieta un momento → estado real. Y el panel se cierra:
+  // quien scrollea ya no lo está leyendo
+  useEffect(() => {
+    let id = 0
+    const onScroll = () => {
+      setResting(false)
+      setOpen(false)
+      window.clearTimeout(id)
+      id = window.setTimeout(() => setResting(true), REST_MS)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.clearTimeout(id)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    const onDown = (e: PointerEvent) => !wrap.current?.contains(e.target as Node) && setOpen(false)
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('pointerdown', onDown)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('pointerdown', onDown)
+    }
+  }, [open])
+
+  const showStatus = resting && status !== null
+  const dot = status?.open ? 'bg-[#7FE3D6] shadow-[0_0_6px_rgb(127_227_214/0.8)]' : 'bg-[#E08A6A]'
+
+  return (
+    <div ref={wrap} data-open={open} className="relative pt-3">
+      <span className="absolute top-0 left-3 h-3.5 w-px rotate-[8deg] bg-current/40" style={{ color: '#5E7A2A' }} aria-hidden="true" />
+      <span className="absolute top-0 right-3 h-3.5 w-px -rotate-[8deg] bg-current/40" style={{ color: '#5E7A2A' }} aria-hidden="true" />
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="cartel-panel"
+        aria-label={status ? `${status.label}. Horario y cómo llegar` : 'Horario y cómo llegar'}
+        onClick={() => setOpen((v) => !v)}
+        className="cartel wood-sign flex h-9 items-center gap-2 rounded-[10px_14px_9px_13px/12px_9px_14px_10px] px-3 text-crema lining-nums tabular-nums"
+      >
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-black/35 shadow-[inset_0_1px_0_rgb(255_255_255/0.25)]" aria-hidden="true" />
+        {/* las dos caras del cartel en la misma celda: el ancho es el de la más larga, siempre */}
+        <span className="grid [grid-template-areas:'cara']" aria-hidden="true">
+          <span data-visible={!showStatus} className="cartel-cara flex items-center justify-center gap-2 text-sm font-semibold [grid-area:cara]">
+            <SunMoon />
+            <m.span>{time}</m.span>
+          </span>
+          <span data-visible={showStatus} className="cartel-cara flex items-center justify-center gap-1.5 [grid-area:cara]">
+            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} />
+            <span className="flex flex-col items-start leading-none">
+              <span className="text-[0.6rem] font-semibold tracking-[0.14em] uppercase opacity-80">{status?.state}</span>
+              <span className="mt-0.5 text-[0.8rem] font-semibold">{status?.detail}</span>
+            </span>
+          </span>
+        </span>
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-black/35 shadow-[inset_0_1px_0_rgb(255_255_255/0.25)]" aria-hidden="true" />
+      </button>
+
+      {/* el panel nace del cartel: origen arriba al centro, nunca desde escala 0 */}
+      <div
+        id="cartel-panel"
+        role="dialog"
+        aria-label="Horario y cómo llegar"
+        inert={!open}
+        className="cartel-panel absolute top-full right-[-3.25rem] mt-2 w-[min(17rem,calc(100vw-2rem))] rounded-[14px] bg-[#FFFDF9] px-5 py-4 text-left text-madera shadow-[0_18px_32px_-12px_rgb(29_17_10/0.45),0_2px_6px_-2px_rgb(29_17_10/0.2)] sm:right-0"
+      >
+        {status && (
+          <p className="flex items-center gap-2 text-sm font-semibold">
+            <span className={`h-2 w-2 shrink-0 rounded-full ${status.open ? 'bg-turquesa' : 'bg-tierra'}`} aria-hidden="true" />
+            {status.label}
+          </p>
+        )}
+        <dl className="mt-3 space-y-1 font-ticket text-xs text-madera/80">
+          {SITE.hours.rows.map(([k, v]) => (
+            <div key={k} className="flex items-baseline gap-2">
+              <dt>{k}</dt>
+              <span className="flex-1 translate-y-[-3px] border-b border-dotted border-madera/25" aria-hidden="true" />
+              <dd className="tabular-nums">{v}</dd>
+            </div>
+          ))}
+        </dl>
+        <div className="mt-4 border-t border-dashed border-madera/20 pt-3">
+          <p className="text-sm font-semibold">{SITE.address}</p>
+          <p className="mt-0.5 text-xs text-madera/70">{SITE.city}</p>
+        </div>
+        <div className="mt-4 flex items-center gap-2">
+          <a
+            href={SITE.mapsHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cartel-accion group flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-turquesa-dark px-4 text-sm font-semibold text-crema"
+          >
+            Cómo llegar
+            <ArrowIcon className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </a>
+          <a href={SITE.phoneHref} className="cartel-accion flex h-11 items-center justify-center rounded-full px-4 text-sm font-semibold text-turquesa-dark ring-1 ring-turquesa-dark/30">
+            Llamar
+          </a>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function TopBar() {
-  const { fg, time } = useDay()
+  const { fg } = useDay()
 
   return (
     <>
@@ -228,17 +354,7 @@ export function TopBar() {
           </m.span>
         </a>
         <div className="pointer-events-auto flex items-start gap-2.5">
-          {/* cartelito de madera colgado de dos hilos: la hora del día */}
-          <div className="relative pt-3" aria-label="Hora del día en Lilium según tu recorrido">
-            <span className="absolute top-0 left-3 h-3.5 w-px rotate-[8deg] bg-current/40" style={{ color: '#5E7A2A' }} />
-            <span className="absolute top-0 right-3 h-3.5 w-px -rotate-[8deg] bg-current/40" style={{ color: '#5E7A2A' }} />
-            <div className="wood-sign flex h-9 items-center gap-2 rounded-[10px_14px_9px_13px/12px_9px_14px_10px] px-3 text-sm font-semibold text-crema lining-nums tabular-nums">
-              <span className="h-1.5 w-1.5 rounded-full bg-black/35 shadow-[inset_0_1px_0_rgb(255_255_255/0.25)]" />
-              <SunMoon />
-              <m.span>{time}</m.span>
-              <span className="h-1.5 w-1.5 rounded-full bg-black/35 shadow-[inset_0_1px_0_rgb(255_255_255/0.25)]" />
-            </div>
-          </div>
+          <CartelHora />
           <LeafMenu />
         </div>
       </header>

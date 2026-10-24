@@ -82,6 +82,8 @@ cada sección declara `data-phase="fondo|texto|hora"`.
   skills y el motor de la 4.7.0 (motor 0.1.16). El motor es un binario nativo no auditable: no se versiona
   (`.gitignore`); el lanzador lo baja de los releases de GitHub y verifica su SHA-256 si falta. No activar
   `/impeccable hooks on` sin decidirlo: correría el binario solo después de cada edición.
+- **emil-design-eng** (Emil Kowalski, MIT) en `.claude/skills/emil-design-eng/`: solo Markdown, auditado; fuente y
+  commit en `SOURCE.md`. Cubre movimiento e interacción (curvas, duraciones, origen, feedback), no espaciado.
 - **Puppeteer MCP no se instaló**: `@modelcontextprotocol/server-puppeteer` está deprecado y sin soporte
   en npm; Playwright MCP cubre lo mismo.
 - Figma: archivo del storyboard de scroll `8a62hs9qgXqNI8zOzefJmC`.

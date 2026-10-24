@@ -275,6 +275,61 @@
 }
 
 /*
+ * Cartel de madera (pautas de emil-design-eng). Las dos caras se funden con un desenfoque leve:
+ * sin él se verían dos textos superpuestos. Al presionar se achica apenas (feedback inmediato).
+ * El panel nace del cartel (origen arriba), desde scale(0.96) y no desde 0; entra en 200 ms con
+ * ease-out fuerte y sale más rápido (140 ms). Transiciones, no keyframes: se pueden interrumpir.
+ */
+@layer components {
+  .cartel {
+    transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .cartel:active {
+    transform: scale(0.97);
+  }
+  .cartel-cara {
+    transition:
+      opacity 220ms ease,
+      filter 220ms ease;
+  }
+  .cartel-cara[data-visible='false'] {
+    opacity: 0;
+    filter: blur(2px);
+  }
+  .cartel-panel {
+    transform-origin: 70% 0;
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+    visibility: hidden;
+    transition:
+      opacity 140ms ease-out,
+      transform 140ms ease-out,
+      visibility 0s linear 140ms;
+  }
+  [data-open='true'] > .cartel-panel {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+    transition:
+      opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
+      transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
+      visibility 0s;
+  }
+  .cartel-accion {
+    transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .cartel-accion:active {
+    transform: scale(0.97);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cartel-panel,
+    [data-open='true'] > .cartel-panel {
+      transform: none;
+    }
+  }
+}
+
+/*
  * Menú-hoja: se despliega como una hoja de planta (o un abanico) desde el pecíolo, el botón de
  * arriba a la derecha. Nace chica y girada contra el tallo, un círculo la va revelando desde la
  * esquina y se asienta con un rebote suave. Giro, escala y revelado llevan tiempos distintos:

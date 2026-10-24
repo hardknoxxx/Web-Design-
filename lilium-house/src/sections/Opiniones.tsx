@@ -1,5 +1,5 @@
-import { m, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
+import { animate, m, useInView, useMotionValue, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useRef } from 'react'
 import { HojasTransicion } from '../components/HojasTransicion'
 import { Monstera } from '../components/Botanica'
 import { HojasCayendo, Hornero } from '../components/Ambiente'
@@ -10,15 +10,31 @@ import { SITE } from '../data/site'
 const EASE = [0.22, 1, 0.36, 1] as const
 const fmt = (n: number) => n.toFixed(1).replace('.', ',')
 
-/** 08 · Atardecer. El puntaje cuenta con el scroll y las hojas empiezan a cerrarse. */
+/**
+ * 08 · Atardecer. El puntaje cuenta una sola vez al entrar en pantalla (por tiempo, no atado al
+ * scroll: si el visitante frena a mitad de camino nunca lee un puntaje menor al real) y las hojas
+ * empiezan a cerrarse.
+ */
 export function Opiniones() {
   const ref = useRef<HTMLElement>(null)
   const { score, count, breakdown, highlights } = SITE.rating
 
-  const { scrollYProgress: enter } = useScroll({ target: ref, offset: ['start end', 'center center'] })
-  const scoreText = useTransform(enter, [0.25, 1], [0, score], { clamp: true })
-  const scoreLabel = useTransform(scoreText, (v) => fmt(v))
-  const stars = useTransform(enter, [0.3, 1], ['0%', `${(score / 5) * 100}%`])
+  const scoreRef = useRef<HTMLParagraphElement>(null)
+  const seen = useInView(scoreRef, { once: true, amount: 0.15 })
+  const reduce = useReducedMotion()
+  const scoreValue = useMotionValue(0)
+  const scoreLabel = useTransform(scoreValue, (v) => fmt(v))
+  const stars = useTransform(scoreValue, (v) => `${(v / 5) * 100}%`)
+  useEffect(() => {
+    if (!seen) return
+    if (reduce) {
+      scoreValue.set(score)
+      return
+    }
+    // explicativo, no de interfaz: puede durar más de 300 ms; ease-out fuerte, sin rebote
+    const run = animate(scoreValue, score, { duration: 1.1, ease: [0.23, 1, 0.32, 1] })
+    return () => run.stop()
+  }, [seen, reduce, score, scoreValue])
 
   const { scrollYProgress: leave } = useScroll({ target: ref, offset: ['center end', 'end start'] })
   const leftX = useTransform(leave, [0, 1], ['-75%', '-10%'])
@@ -43,7 +59,7 @@ export function Opiniones() {
             <p className="inline-block -rotate-2 font-hand text-3xl text-laguna">19:30 · lo que dicen</p>
           </RevealItem>
           <RevealItem>
-            <p className="mt-4 font-display text-[clamp(7rem,34vw,13rem)] leading-none font-semibold text-white tabular-nums [text-shadow:0_2px_0_rgb(23_63_59/0.18)]" aria-hidden="true">
+            <p ref={scoreRef} className="mt-4 font-display text-[clamp(7rem,34vw,13rem)] leading-none font-semibold text-white tabular-nums [text-shadow:0_2px_0_rgb(23_63_59/0.18)]" aria-hidden="true">
               <m.span>{scoreLabel}</m.span>
             </p>
           </RevealItem>
