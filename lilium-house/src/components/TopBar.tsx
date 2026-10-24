@@ -134,7 +134,7 @@ function LeafMenu() {
     }
     gsap.killTweensOf([morph.current, q('[data-item]'), q('[data-line]'), q('[data-vein]'), q('[data-nerve]')])
     if (open) {
-      const tl = gsap.timeline()
+      const tl = gsap.timeline({ onStart: () => wrap.current?.setAttribute('data-moving', ''), onComplete: () => wrap.current?.removeAttribute('data-moving') })
       tl.to(morph.current, { t: 1, duration: reduce ? 0 : 0.95, ease: 'none', onUpdate: paint })
         .to(q('[data-vein]'), { autoAlpha: 0, duration: reduce ? 0 : 0.2 }, 0)
         .to(q('[data-nerve]'), { autoAlpha: 1, duration: reduce ? 0 : 0.6, ease: 'power2.out' }, reduce ? 0 : 0.35)
@@ -144,7 +144,7 @@ function LeafMenu() {
         .fromTo(q('[data-item]'), { y: 14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: reduce ? 0 : 0.045, duration: reduce ? 0 : 0.5, ease: 'power3.out' }, reduce ? 0 : 0.42)
       ;(q('a')[0] as HTMLElement | undefined)?.focus({ preventScroll: true })
     } else {
-      const tl = gsap.timeline()
+      const tl = gsap.timeline({ onStart: () => wrap.current?.setAttribute('data-moving', ''), onComplete: () => wrap.current?.removeAttribute('data-moving') })
       tl.to(q('[data-item]'), { autoAlpha: 0, y: 8, duration: reduce ? 0 : 0.18, stagger: -0.02, ease: 'power2.in' })
         .to(q('[data-nerve]'), { autoAlpha: 0, duration: reduce ? 0 : 0.2 }, 0)
         .to(morph.current, { t: 0, duration: reduce ? 0 : 0.8, ease: 'none', onUpdate: paint }, reduce ? 0 : 0.1)
@@ -167,7 +167,7 @@ function LeafMenu() {
   }, [open])
 
   return (
-    <div ref={wrap} className="relative mt-1 h-11 w-11 [filter:drop-shadow(0_8px_14px_rgb(0_0_0/0.35))]">
+    <div ref={wrap} className="relative mt-1 h-11 w-11 [&:not([data-moving])]:[filter:drop-shadow(0_8px_14px_rgb(0_0_0/0.35))]">
       <nav
         ref={panel}
         id="menu-escenas"

@@ -4,6 +4,7 @@ import { Butterfly, Leaf, Monstera, Toucan } from '../components/Botanica'
 import { BananaLeaf, Calathea, Fern, HeartLeaf, PalmFrond } from '../components/Flora'
 import { Sotobosque } from '../components/Paisaje'
 import { CoatiPaseo } from '../components/Ambiente'
+import { Fundido } from '../components/Fundido'
 
 /**
  * 07 · La selva entra. Escena fijada con capas parallax a distinta velocidad:
@@ -13,7 +14,6 @@ export function Selva() {
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end end'] })
 
-  const mistY = useTransform(p, [0, 1], ['-8%', '12%'])
   const backY = useTransform(p, [0, 1], ['18%', '-12%'])
   // hojas de frente asimétricas: a la izquierda una monstera que sube rápido y se abre;
   // a la derecha banano y pindó, más lentos, que se inclinan hacia adentro tarde
@@ -38,22 +38,21 @@ export function Selva() {
     <section ref={ref} id="selva" className="relative z-[5] h-[240svh]" aria-label="La selva de Puerto Iguazú">
       <div className="absolute top-0" data-phase="#415521|#FAF7F2|18:00" />
       {/* el borde inferior se funde con el fondo del día: sin cortes al pasar a la escena siguiente */}
-      <div className="sticky top-0 h-[100svh] overflow-hidden text-crema [mask-image:linear-gradient(to_bottom,black_84%,transparent)]">
-        {/* bruma de las cataratas: velos suaves, sin bordes duros */}
-        <m.div style={{ y: mistY }} className="absolute inset-x-0 top-0 flex h-[85%] justify-around px-2 will-change-transform [mask-image:linear-gradient(to_bottom,black,transparent_85%)]">
-          {[0.07, 0.11, 0.06, 0.09, 0.05].map((o, i) => (
-            <div
-              key={i}
-              className="h-full w-[22%] rounded-b-full bg-[linear-gradient(to_right,transparent,white_40%,white_60%,transparent)]"
-              style={{ opacity: o, height: `${70 + (i % 3) * 10}%` }}
-            />
-          ))}
-        </m.div>
+      <div className="sticky top-0 h-[100svh] overflow-hidden text-crema">
+        {/* bruma de las cataratas: nubes que se desvanecen en todas direcciones (sin bordes ni franjas) */}
+        <div aria-hidden="true" className="absolute -inset-x-[10%] -top-[10%] h-[80%]">
+          <div className="h-full w-full bg-[radial-gradient(40%_45%_at_18%_30%,rgb(255_255_255/0.10),transparent),radial-gradient(35%_40%_at_55%_18%,rgb(255_255_255/0.12),transparent),radial-gradient(42%_38%_at_85%_40%,rgb(255_255_255/0.08),transparent),radial-gradient(60%_30%_at_50%_62%,rgb(255_255_255/0.06),transparent)]" />
+        </div>
 
-        <m.div style={{ y: backY }} className="absolute inset-0 will-change-transform">
-          <Leaf className="absolute top-[18%] -left-6 w-28 -rotate-[30deg]" color="#5E7A2A" />
-          <Leaf className="absolute top-[10%] -right-4 w-24 rotate-[40deg]" color="#5E7A2A" />
-          <Leaf className="absolute top-[58%] right-[12%] w-16 rotate-[70deg]" color="#97AD3D" />
+        {/* hojas del fondo: cada una es su propia capa chica (no una capa de pantalla completa) */}
+        <m.div style={{ y: backY }} className="absolute top-[18%] -left-6 w-28 will-change-transform">
+          <Leaf className="w-full -rotate-[30deg]" color="#5E7A2A" />
+        </m.div>
+        <m.div style={{ y: backY }} className="absolute top-[10%] -right-4 w-24 will-change-transform">
+          <Leaf className="w-full rotate-[40deg]" color="#5E7A2A" />
+        </m.div>
+        <m.div style={{ y: backY }} className="absolute top-[58%] right-[12%] w-16 will-change-transform">
+          <Leaf className="w-full rotate-[70deg]" color="#97AD3D" />
         </m.div>
 
         <m.div
@@ -89,14 +88,14 @@ export function Selva() {
         <m.div style={{ y: frontLY, rotate: frontL }} className="absolute -bottom-[8%] -left-[24%] z-30 w-[70vw] max-w-[540px] origin-bottom-left will-change-transform">
           <Monstera color="#2C3A14" stem={140} className="w-full" />
         </m.div>
-        <m.div style={{ y: frontRY }} className="absolute inset-x-0 bottom-0 z-30 h-[55%] will-change-transform">
-          <m.div style={{ rotate: palmR }} className="absolute -right-[30%] -bottom-[6%] w-[80vw] max-w-[600px] origin-bottom">
+        <div className="absolute inset-x-0 bottom-0 z-30 h-[55%]">
+          <m.div style={{ y: frontRY, rotate: palmR }} className="absolute -right-[30%] -bottom-[6%] w-[80vw] max-w-[600px] origin-bottom will-change-transform">
             <PalmFrond color="#2F4A22" stem={140} className="w-full -scale-x-100" />
           </m.div>
-          <m.div style={{ rotate: bananaR }} className="absolute right-[2%] -bottom-[4%] w-[34vw] max-w-[260px] origin-bottom">
+          <m.div style={{ y: frontRY, rotate: bananaR }} className="absolute right-[2%] -bottom-[4%] w-[34vw] max-w-[260px] origin-bottom will-change-transform">
             <BananaLeaf color="#34451A" stem={140} className="w-full" />
           </m.div>
-        </m.div>
+        </div>
 
         {/* sotobosque donde termina la escena: matas, helechos y hojas al ras del suelo */}
         <m.div style={{ y: sotoY }} className="pointer-events-none absolute inset-x-0 bottom-0 z-[35] h-[24%] will-change-transform" aria-hidden="true">
@@ -114,6 +113,7 @@ export function Selva() {
           </div>
           <Sotobosque className="absolute inset-x-0 -bottom-1 h-[46%] w-full" />
         </m.div>
+        <Fundido className="z-[40] h-[16%]" />
       </div>
     </section>
   )

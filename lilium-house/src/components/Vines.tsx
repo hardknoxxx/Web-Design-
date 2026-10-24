@@ -102,7 +102,8 @@ function Vine({ shape, curve, scrub, side }: { shape: VineShape; curve: Curve; s
     // trazo manual: dasharray = largo total, el offset controla cuánto se ve
     const len = stem.getTotalLength()
     const drawn = (f: number) => ({ strokeDashoffset: len * (1 - f) })
-    gsap.set(stem, { strokeDasharray: len })
+    // estado inicial ya aplicado: si no, el tallo se ve entero hasta que ScrollTrigger mide la página
+    gsap.set(stem, { strokeDasharray: len, ...drawn(curve[0][1]) })
     const buds = gsap.utils.toArray<SVGGElement>('[data-bud]', svg)
     gsap.set(buds, { scale: 0, transformOrigin: '50% 100%' })
 

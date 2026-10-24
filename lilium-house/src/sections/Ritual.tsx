@@ -1,7 +1,8 @@
 import { m, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useRef } from 'react'
 import { RitualDecor } from '../components/Ambiente'
-import { CakeStand, ChipaBasket, Cup, Leaf } from '../components/Botanica'
+import { Fundido } from '../components/Fundido'
+import { CakeStand, ChipaBasket, Cup } from '../components/Botanica'
 
 /**
  * 03–05 · El ritual. Escena fijada de 3 actos: la taza entra, cambia de lugar cuando
@@ -93,16 +94,13 @@ export function Ritual() {
   const enterOpacity = useTransform(enter, [0.76, 1], [0, 1])
   const enterY = useTransform(enter, [0.76, 1], [36, 0])
 
-  // hojas que acompañan
-  const leafR = useTransform(p, [0, 1], [-20, 30])
-
   return (
     <section ref={ref} id="ritual" className="relative z-[1] -mt-[100svh] h-[340svh]" aria-label="El ritual: café, chipa y pastelería">
       <div className="absolute top-0" data-phase="#FAF7F2|#3D2314|09:00" />
       <div className="absolute top-[33%]" data-phase="#F0EAE1|#3D2314|10:00" />
       <div className="absolute top-[66%]" data-phase="#F1DCC4|#3D2314|11:00" />
 
-      <m.div style={{ opacity: enterOpacity, y: enterY }} className="sticky top-0 grid h-[100svh] grid-rows-[auto_1fr] overflow-hidden [mask-image:linear-gradient(to_bottom,black_88%,transparent)] px-9 pt-24 pb-10 sm:px-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:grid-rows-1 lg:items-center lg:gap-10 lg:px-24 lg:pt-16">
+      <m.div style={{ opacity: enterOpacity, y: enterY }} className="sticky top-0 grid h-[100svh] grid-rows-[auto_1fr] overflow-hidden px-9 pt-24 pb-10 sm:px-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:grid-rows-1 lg:items-center lg:gap-10 lg:px-24 lg:pt-16">
         <RitualDecor />
         {/* textos de los 3 actos */}
         <div className="relative z-10 h-[13.5rem] sm:h-[15rem] lg:h-[22rem]">
@@ -118,9 +116,6 @@ export function Ritual() {
 
         {/* escenario */}
         <div className="relative z-10 min-h-0">
-          <m.div style={{ rotate: leafR }} className="absolute -top-6 right-2 w-16 opacity-70 lg:w-24">
-            <Leaf color="#97AD3D" className="w-full" />
-          </m.div>
           <div className="absolute inset-x-0 bottom-[6%] mx-auto h-3 w-[70%] rounded-[50%] bg-madera/10 blur-[2px]" />
           <m.div style={{ y: cakeY, opacity: cakeOpacity }} className="absolute inset-x-0 bottom-[2%] mx-auto w-[min(72%,400px)] origin-bottom">
             <CakeStand dome={dome} className="w-full" />
@@ -138,6 +133,7 @@ export function Ritual() {
             <ChipaBasket className="w-full" />
           </m.div>
         </div>
+        <Fundido className="z-20 h-[10%]" />
       </m.div>
     </section>
   )

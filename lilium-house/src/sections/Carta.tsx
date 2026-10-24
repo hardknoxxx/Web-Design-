@@ -1,9 +1,9 @@
 import { m } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Fern, HeartLeaf } from '../components/Flora'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, whatsappLink, type CartaItem } from '../data/site'
-import { gsap, MOTION_OK, ScrollTrigger, useGsap } from '../lib/gsap'
+import { gsap, MOTION_OK, useGsap } from '../lib/gsap'
 
 const PLATOS = {
   cafe: CafePlato,
@@ -53,14 +53,13 @@ function Item({ item }: { item: CartaItem }) {
 export function Carta() {
   const ref = useRef<HTMLElement>(null)
   const [tab, setTab] = useState(tabByHour)
-  const current = CARTA.find((c) => c.id === tab) ?? CARTA[0]
 
   useGsap(
     ref,
     () => {
       const q = gsap.utils.selector(ref)
       gsap.matchMedia().add(MOTION_OK, () => {
-        q('[data-plato]').forEach((el, i) => {
+        q(`[data-panel="${tab}"] [data-plato]`).forEach((el, i) => {
           const s = SERVE[i % SERVE.length]
           gsap.fromTo(
             el,
@@ -78,13 +77,13 @@ export function Carta() {
             },
           )
         })
-        gsap.from(q('[data-ticket]'), {
+        gsap.from(q(`[data-panel="${tab}"] [data-ticket]`), {
           y: 50,
           rotation: 8,
           autoAlpha: 0,
           duration: 1,
           ease: 'back.out(1.4)',
-          scrollTrigger: { trigger: q('[data-ticket]')[0], start: 'top 92%', toggleActions: 'play none none reverse' },
+          scrollTrigger: { trigger: q(`[data-panel="${tab}"] [data-ticket]`)[0], start: 'top 92%', toggleActions: 'play none none reverse' },
         })
         // hojas que asoman por los bordes de la mesa, cada una a su velocidad
         gsap.to(q('[data-table-leaf="a"]'), { yPercent: -18, rotation: 6, ease: 'none', scrollTrigger: { trigger: ref.current, scrub: 1.5 } })
@@ -94,11 +93,6 @@ export function Carta() {
     [tab],
   )
 
-  // al cambiar de pestaña cambia el alto de la mesa: recalcular las escenas fijadas de abajo
-  useEffect(() => {
-    const id = requestAnimationFrame(() => ScrollTrigger.refresh())
-    return () => cancelAnimationFrame(id)
-  }, [tab])
 
   return (
     <section
@@ -123,7 +117,7 @@ export function Carta() {
           Desayunos, almuerzos y meriendas
         </h2>
 
-        {/* pestañas: tres momentos del día; la hoja menta marca el elegido */}
+        {/* pestañas: tres momentos del día; la píldora menta se desliza hasta el elegido */}
         <div role="tablist" aria-label="Momentos del día" className="mt-8 flex w-full max-w-md rounded-full bg-black/25 p-1 ring-1 ring-crema/10">
           {CARTA.map((c) => {
             const active = c.id === tab
@@ -134,16 +128,15 @@ export function Carta() {
                 role="tab"
                 id={`tab-${c.id}`}
                 aria-selected={active}
-                aria-controls="carta-panel"
+                aria-controls={`panel-${c.id}`}
                 onClick={() => setTab(c.id)}
-                className={`relative flex flex-1 flex-col items-center rounded-full px-2 py-2 transition-colors duration-300 ${active ? 'text-laguna-deep' : 'text-crema/75 hover:text-crema'}`}
+                className={`relative flex flex-1 flex-col items-center rounded-full px-2 py-2 transition-[color,transform] duration-300 active:scale-95 ${active ? 'text-laguna-deep' : 'text-crema/75 hover:text-crema'}`}
               >
                 {active && (
                   <m.span
                     layoutId="carta-tab"
-                    className="absolute inset-0 bg-turquesa"
-                    style={{ borderRadius: '6px 26px 6px 26px' }}
-                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    className="absolute inset-0 rounded-full bg-turquesa shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_8px_20px_-8px_rgb(100_188_176/0.9)]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
                 <span className="relative font-ticket text-[0.65rem] tabular-nums opacity-80">{c.time}</span>
@@ -152,39 +145,52 @@ export function Carta() {
             )
           })}
         </div>
-        <p className="mt-4 max-w-md text-lg leading-relaxed text-crema/75">{current.intro}</p>
-
-        <ul
-          key={current.id}
-          id="carta-panel"
-          role="tabpanel"
-          aria-labelledby={`tab-${current.id}`}
-          className="mt-12 grid grid-cols-2 gap-x-5 gap-y-12 sm:gap-x-10 lg:grid-cols-3"
-        >
-          {current.items.map((item, i) => (
-            <li key={item.name} className={`flex flex-col items-center text-center ${i % 2 ? 'mt-10 lg:mt-0' : ''} ${i === 1 ? 'lg:mt-14' : ''}`}>
-              <Item item={item} />
-              <p className="mt-4 -rotate-2 font-hand text-xl leading-none text-miel">{item.note}</p>
-              <h3 className="mt-1 font-display text-xl leading-tight font-semibold sm:text-2xl">{item.name}</h3>
-              <p className="mt-1 max-w-[16rem] text-sm leading-snug text-crema/70 sm:text-base">{item.desc}</p>
-            </li>
-          ))}
-          <li className="flex items-center justify-center">
-            <a
-              data-ticket=""
-              href={whatsappLink(`Hola Lilium! ¿Qué hay hoy para ${current.id === 'almuerzos' ? 'almorzar' : current.id === 'meriendas' ? 'merendar' : 'desayunar'}?`)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block w-full max-w-[220px] rotate-3 bg-[#FFFDF6] px-5 py-6 font-ticket text-madera shadow-[0_18px_28px_-14px_rgb(0_0_0/0.6)] transition-transform duration-300 hover:rotate-0 [mask:radial-gradient(circle_6px_at_50%_0,transparent_98%,#000)_top/16px_51%_repeat-x,radial-gradient(circle_6px_at_50%_100%,transparent_98%,#000)_bottom/16px_51%_repeat-x]"
-            >
-              <span className="block text-center text-xs tracking-[0.25em] uppercase">Comanda</span>
-              <span className="mt-3 block border-t border-dashed border-madera/40 pt-3 text-sm leading-relaxed">
-                {current.id === 'almuerzos' ? '¿Cuál es el plato del día?' : '¿Qué hay hoy en la vitrina?'}
-              </span>
-              <span className="mt-3 block text-sm font-bold text-turquesa-dark underline-offset-4 group-hover:underline">Preguntanos →</span>
-            </a>
-          </li>
-        </ul>
+        {/* los tres momentos ocupan la misma celda: el alto de la página no cambia y la hora de
+            arriba sigue solo al scroll */}
+        <div className="grid [grid-template-areas:'stack']">
+          {CARTA.map((c) => {
+            const active = c.id === tab
+            return (
+              <div
+                key={c.id}
+                id={`panel-${c.id}`}
+                data-panel={c.id}
+                role="tabpanel"
+                aria-labelledby={`tab-${c.id}`}
+                aria-hidden={!active}
+                inert={!active}
+                className={`[grid-area:stack] transition-opacity duration-500 ${active ? 'opacity-100' : 'pointer-events-none invisible opacity-0'}`}
+              >
+                <p className="mt-4 max-w-md text-lg leading-relaxed text-crema/75">{c.intro}</p>
+                <ul className="mt-12 grid grid-cols-2 gap-x-5 gap-y-12 sm:gap-x-10 lg:grid-cols-3">
+                  {c.items.map((item, i) => (
+                    <li key={item.name} className={`flex flex-col items-center text-center ${i % 2 ? 'mt-10 lg:mt-0' : ''} ${i === 1 ? 'lg:mt-14' : ''}`}>
+                      <Item item={item} />
+                      <p className="mt-4 -rotate-2 font-hand text-xl leading-none text-miel">{item.note}</p>
+                      <h3 className="mt-1 font-display text-xl leading-tight font-semibold sm:text-2xl">{item.name}</h3>
+                      <p className="mt-1 max-w-[16rem] text-sm leading-snug text-crema/70 sm:text-base">{item.desc}</p>
+                    </li>
+                  ))}
+                  <li className="flex items-center justify-center">
+                    <a
+                      data-ticket=""
+                      href={whatsappLink(`Hola Lilium! ¿Qué hay hoy para ${c.id === 'almuerzos' ? 'almorzar' : c.id === 'meriendas' ? 'merendar' : 'desayunar'}?`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group block w-full max-w-[220px] rotate-3 bg-[#FFFDF6] px-5 py-6 font-ticket text-madera shadow-[0_18px_28px_-14px_rgb(0_0_0/0.6)] transition-transform duration-300 hover:rotate-0 [mask:radial-gradient(circle_6px_at_50%_0,transparent_98%,#000)_top/16px_51%_repeat-x,radial-gradient(circle_6px_at_50%_100%,transparent_98%,#000)_bottom/16px_51%_repeat-x]"
+                    >
+                      <span className="block text-center text-xs tracking-[0.25em] uppercase">Comanda</span>
+                      <span className="mt-3 block border-t border-dashed border-madera/40 pt-3 text-sm leading-relaxed">
+                        {c.id === 'almuerzos' ? '¿Cuál es el plato del día?' : '¿Qué hay hoy en la vitrina?'}
+                      </span>
+                      <span className="mt-3 block text-sm font-bold text-turquesa-dark underline-offset-4 group-hover:underline">Preguntanos →</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </section>
   )

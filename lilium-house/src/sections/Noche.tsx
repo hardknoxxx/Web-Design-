@@ -8,8 +8,8 @@ import { useOpenStatus } from '../hooks/useOpenStatus'
 const FIREFLIES = Array.from({ length: 22 }, (_, i) => ({
   left: `${(i * 37 + 11) % 100}%`,
   top: `${(i * 53 + 7) % 92}%`,
-  delay: `${(i * 0.37) % 4}s`,
-  dur: `${3 + (i % 4)}s`,
+  // cada luciérnaga vaga por uno de tres recorridos, con su propio ritmo y desfase
+  anim: `luciernaga-${'abc'[i % 3]} ${7 + (i % 5) * 1.6}s ease-in-out ${-((i * 1.3) % 9)}s infinite`,
 }))
 
 /** 09 · Noche. El cartel “Lilium” se enciende, luciérnagas, horarios y dirección. */
@@ -32,8 +32,8 @@ export function Noche() {
         {FIREFLIES.map((f, i) => (
           <span
             key={i}
-            className="absolute h-1.5 w-1.5 animate-firefly rounded-full bg-[#E4F0D0] shadow-[0_0_12px_4px_rgb(171_204_190/0.45)]"
-            style={{ left: f.left, top: f.top, animationDelay: f.delay, animationDuration: f.dur }}
+            className="absolute h-1.5 w-1.5 rounded-full bg-[#E4F0D0] shadow-[0_0_12px_4px_rgb(171_204_190/0.45)] will-change-transform"
+            style={{ left: f.left, top: f.top, animation: f.anim }}
           />
         ))}
       </div>
@@ -55,12 +55,12 @@ export function Noche() {
         <p className="mt-3 inline-block -rotate-2 font-hand text-2xl text-arena">con la mesa lista y los lápices afilados</p>
 
         {/* tarjeta de datos, como una carta de café */}
-        <div className="relative mx-auto mt-12 max-w-4xl rounded-[28px] border border-arena/20 bg-[#163330]/85 p-7 text-left font-ticket text-crema sm:p-10">
+        <div className="relative mx-auto mt-12 max-w-4xl rounded-[28px] border border-arena/20 bg-[#163330]/85 p-7 text-left font-elegante text-crema [font-variant-numeric:lining-nums_tabular-nums] sm:p-10">
           <div className="grid gap-8 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-dashed sm:divide-arena/20">
             <div className="sm:pr-8">
               <CupHoursIcon className="h-9 w-9 text-arena" />
-              <p className="mt-4 text-[0.7rem] tracking-[0.3em] text-arena uppercase">Horario</p>
-              <p className="mt-2 text-lg font-bold">{SITE.hours.days}</p>
+              <p className="mt-4 font-sans text-[0.7rem] font-semibold tracking-[0.3em] text-arena uppercase">Horario</p>
+              <p className="mt-2 text-xl font-medium">{SITE.hours.days}</p>
               <dl className="mt-2 space-y-1 text-[0.95rem]">
                 {SITE.hours.rows.map(([k, v]) => (
                   <div key={k} className="flex items-baseline gap-2">
@@ -85,11 +85,11 @@ export function Noche() {
 
             <a href={SITE.mapsHref} target="_blank" rel="noopener noreferrer" className="group block border-t border-dashed border-arena/20 pt-8 sm:border-t-0 sm:px-8 sm:pt-0">
               <LilyPinIcon className="h-9 w-9 text-arena" />
-              <p className="mt-4 text-[0.7rem] tracking-[0.3em] text-arena uppercase">Dirección</p>
-              <p className="mt-2 text-lg font-bold">{SITE.address}</p>
+              <p className="mt-4 font-sans text-[0.7rem] font-semibold tracking-[0.3em] text-arena uppercase">Dirección</p>
+              <p className="mt-2 text-xl font-medium">{SITE.address}</p>
               <p className="mt-1 text-[0.95rem] text-crema/70">{SITE.postalCode}</p>
               <p className="text-[0.95rem] text-crema/70">{SITE.city}</p>
-              <span className="mt-4 inline-flex items-center gap-2 text-xs tracking-[0.2em] text-arena uppercase">
+              <span className="mt-4 inline-flex items-center gap-2 font-sans text-xs font-semibold tracking-[0.2em] text-arena uppercase">
                 Cómo llegar
                 <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </span>
@@ -97,10 +97,10 @@ export function Noche() {
 
             <a href={SITE.phoneHref} className="group block border-t border-dashed border-arena/20 pt-8 sm:border-t-0 sm:pt-0 sm:pl-8">
               <RotaryPhoneIcon className="h-9 w-9 text-arena" />
-              <p className="mt-4 text-[0.7rem] tracking-[0.3em] text-arena uppercase">Teléfono</p>
-              <p className="mt-2 text-lg font-bold tabular-nums">{SITE.phoneDisplay}</p>
+              <p className="mt-4 font-sans text-[0.7rem] font-semibold tracking-[0.3em] text-arena uppercase">Teléfono</p>
+              <p className="mt-2 text-xl font-medium tabular-nums">{SITE.phoneDisplay}</p>
               <p className="mt-1 text-[0.95rem] text-crema/70">o tocá la taza para escribirnos</p>
-              <span className="mt-4 inline-flex items-center gap-2 text-xs tracking-[0.2em] text-arena uppercase">
+              <span className="mt-4 inline-flex items-center gap-2 font-sans text-xs font-semibold tracking-[0.2em] text-arena uppercase">
                 Llamar
                 <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </span>
@@ -112,17 +112,17 @@ export function Noche() {
           href={SITE.instagramHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="group mx-auto mt-10 flex max-w-4xl items-center gap-4 rounded-[28px] border border-dashed border-arena/25 px-7 py-5 text-left font-ticket transition-colors hover:border-turquesa/70 sm:px-10"
+          className="group mx-auto mt-10 flex max-w-4xl items-center gap-4 rounded-[28px] border border-dashed border-arena/25 px-7 py-5 text-left font-elegante transition-colors hover:border-turquesa/70 sm:px-10"
         >
           <InstagramIcon className="h-9 w-9 shrink-0 text-turquesa" />
           <span className="flex-1">
-            <span className="block text-[0.7rem] tracking-[0.3em] text-arena uppercase">Lo del día, en Instagram</span>
-            <span className="mt-1 block text-lg font-bold">@{SITE.instagram}</span>
+            <span className="block font-sans text-[0.7rem] font-semibold tracking-[0.3em] text-arena uppercase">Lo del día, en Instagram</span>
+            <span className="mt-1 block text-xl font-medium italic">@{SITE.instagram}</span>
           </span>
           <ArrowIcon className="h-5 w-5 text-arena transition-transform group-hover:translate-x-1" />
         </a>
 
-        <footer className="mt-20 flex flex-col items-center gap-3 pb-24 font-ticket text-[0.7rem] tracking-[0.15em] text-crema/45 uppercase sm:pb-6">
+        <footer className="mt-20 flex flex-col items-center gap-3 pb-24 font-sans text-[0.7rem] tracking-[0.2em] text-crema/45 uppercase sm:pb-6">
           <LilyMark className="h-7 w-7 text-turquesa" />
           <span>
             © {new Date().getFullYear()} {SITE.brand} · Puerto Iguazú, Misiones

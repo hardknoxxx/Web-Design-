@@ -3,7 +3,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { WHATSAPP_OPTIONS, whatsappLink } from '../data/site'
 import { useDay } from '../day/DayProvider'
 import { CloseIcon, WhatsAppIcon } from './Icons'
-import { RamasNido } from './RamasNido'
+import { TablaMadera } from './TablaMadera'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 const INK = '#3D2314'
@@ -108,9 +108,9 @@ export function CupButton() {
         </div>
       )}
 
-      {/* ramas cruzadas que nacen de los bordes: la taza se apoya en el cruce */}
+      {/* tabla de madera con borde natural, en diagonal desde la esquina: la taza se apoya encima */}
       <div className="relative h-[141px] w-[160px] sm:h-[173px] sm:w-[196px]">
-        <RamasNido className="absolute inset-0 h-full w-full [filter:drop-shadow(-4px_6px_8px_rgb(0_0_0/0.35))]" />
+        <TablaMadera className="absolute inset-0 h-full w-full [filter:drop-shadow(-4px_8px_10px_rgb(0_0_0/0.35))]" />
 
         <m.button
           type="button"
@@ -148,9 +148,6 @@ export function CupButton() {
             <ellipse cx="3" cy="25" rx="42" ry="15" fill="#000" opacity=".25" />
             <ellipse cx="0" cy="21" rx="41" ry="15.5" fill="#F7F2EA" stroke={INK} strokeOpacity=".35" />
             <ellipse cx="0" cy="20" rx="29" ry="10.5" fill="#EFE6DA" />
-            {/* cucharita apoyada en el plato */}
-            <path d="M-34 27L-14 19" stroke="#B8A27E" strokeWidth="2.4" strokeLinecap="round" />
-            <ellipse cx="-37" cy="28.4" rx="4.4" ry="2.6" fill="#B8A27E" transform="rotate(-20 -37 28.4)" />
             {/* sombra de la taza */}
             <ellipse cx="3" cy="19" rx="19" ry="6.5" fill={INK} opacity=".2" />
             {/* asa */}
@@ -192,10 +189,10 @@ export function CupButton() {
               </g>
             </svg>
           </span>
-          {/* globo de mensaje: escribe (tres puntitos), se mece al scrollear y salta al tocar */}
+          {/* globo de mensaje (a la derecha, apuntando a la taza): escribe, se mece al scrollear y salta al tocar; se oculta con la comanda abierta */}
           <m.span
             style={{ rotate: sway, y: lift }}
-            className="pointer-events-none absolute -top-4 -left-5 w-11 origin-[85%_95%] will-change-transform sm:w-12"
+            className={`pointer-events-none absolute top-0 -right-3 w-10 origin-[15%_95%] transition-[opacity,scale] duration-300 will-change-transform sm:w-11 ${paper === 'closed' ? 'opacity-100' : 'scale-75 opacity-0'}`}
             aria-hidden="true"
           >
             <m.span
@@ -205,7 +202,7 @@ export function CupButton() {
               animate={bump ? { scale: [1, 1.32, 0.9, 1.06, 1], rotate: [0, -10, 6, -2, 0] } : undefined}
               transition={{ duration: 0.6, ease: 'easeOut' }}
             >
-              <svg viewBox="0 0 44 36" className="block w-full">
+              <svg viewBox="0 0 44 36" className="block w-full -scale-x-100">
                 <path
                   d="M7 2.5h30a5 5 0 0 1 5 5v15a5 5 0 0 1-5 5h-5.5l2.5 7-9.5-7H7a5 5 0 0 1-5-5v-15a5 5 0 0 1 5-5Z"
                   fill="#FFFDF9"

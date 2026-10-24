@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { gsap, MOTION_OK, pauseOffscreen, useGsap } from '../lib/gsap'
 import { Leaf } from './Botanica'
-import { Fern, HangingPothos, HeartLeaf, Hummingbird, LeafShadow, PottedPlant } from './Flora'
+import { Fern, HangingPothos, HeartLeaf, Hummingbird, LeafShadow } from './Flora'
 import { CeiboRama } from './Paisaje'
 import { Coati, HorneroNido } from './Fauna'
 
@@ -29,7 +29,6 @@ export function RitualDecor() {
     gsap.matchMedia().add(MOTION_OK, () => {
       pauseOffscreen(section, [
         gsap.to(q('[data-pothos]'), { rotation: 2.4, duration: 4.6, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 0%' }),
-        gsap.to(q('[data-pot] [data-sway]'), { rotation: -2, skewX: 1.5, duration: 5.3, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: '50% 100%' }),
       ])
     })
   })
@@ -40,9 +39,6 @@ export function RitualDecor() {
       </div>
       <div data-pothos="" className="absolute top-0 right-[4%] h-[24svh] w-11 sm:right-[14%] sm:h-[34svh] sm:w-14 lg:h-[44svh] lg:w-20">
         <HangingPothos className="h-full w-full" />
-      </div>
-      <div data-pot="" className="absolute -bottom-2 -left-6 w-28 opacity-95 sm:w-36 lg:left-4 lg:w-44">
-        <PottedPlant className="w-full" />
       </div>
     </div>
   )

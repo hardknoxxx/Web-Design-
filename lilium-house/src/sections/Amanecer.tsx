@@ -1,12 +1,10 @@
-import { lazy, Suspense, useRef, type ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { Leaf, Monstera } from '../components/Botanica'
 import { BananaLeaf, Calathea, Fern, HeartLeaf, PalmFrond } from '../components/Flora'
-import { LilyMark } from '../components/Icons'
 import { SelvaLejana, Sotobosque } from '../components/Paisaje'
 import { gsap, MOTION_OK, pauseOffscreen, useGsap } from '../lib/gsap'
 
-// three.js se carga en un chunk aparte: el texto pinta primero
-const LilyCanvas = lazy(() => import('../components/three/LilyCanvas'))
+import { Lirio } from '../components/Lirio'
 
 /**
  * Plantas que nacen del suelo (el tallo sigue por debajo del borde): cada una con especie,
@@ -139,22 +137,12 @@ export function Amanecer() {
           </h1>
         </div>
 
-        {/* lirio 3D */}
+        {/* lirio ilustrado en capas */}
         <div
           data-lily=""
           className="absolute top-[52%] left-1/2 z-[5] aspect-square w-[min(96vw,64svh,640px)] -translate-x-1/2 -translate-y-1/2"
         >
-          <Suspense
-            fallback={
-              <div className="grid h-full place-items-center">
-                <LilyMark className="h-24 w-24 animate-pulse text-turquesa" />
-              </div>
-            }
-          >
-            <div className="h-full w-full [mask-image:linear-gradient(to_bottom,black_60%,transparent_92%)]">
-              <LilyCanvas />
-            </div>
-          </Suspense>
+          <Lirio />
         </div>
 
         <div data-layer="mid" className="pointer-events-none absolute inset-0 z-[6] origin-[50%_82%]" aria-hidden="true">

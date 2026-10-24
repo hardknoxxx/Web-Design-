@@ -65,7 +65,7 @@ export function Toucan({ className, style }: ArtProps) {
     <svg viewBox="-80 -60 190 110" className={className} style={style} aria-hidden="true">
       <path d="M-14 26C-60 40-78 14-70-8L-24 2Z" fill="#1A1A1A" />
       <ellipse cx="0" cy="0" rx="28" ry="34" fill="#1A1A1A" />
-      <g className="origin-bottom-right animate-wing [transform-box:fill-box]">
+      <g>
         <path d="M-6 -6C-40 -40 -70 -36 -78 -24C-56 -18 -34 -6 -6 6Z" fill="#2B2B2B" />
       </g>
       <ellipse cx="11" cy="-12" rx="14" ry="16" fill="#F7E2A9" />
