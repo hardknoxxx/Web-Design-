@@ -1,0 +1,156 @@
+/* Prototipo "La mesa giratoria": estilos propios (las fuentes y los colores vienen de index.css) */
+
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  background: var(--color-estuco);
+  color: var(--color-laguna-deep);
+  font-family: var(--font-elegante);
+  font-size: 0.95rem;
+}
+.estado-punto {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--color-corteza);
+}
+.estado[data-open='true'] .estado-punto {
+  background: #2e9b6a;
+}
+
+.boton {
+  display: inline-flex;
+  white-space: nowrap;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  background: var(--color-laguna-deep);
+  color: var(--color-crema);
+  font-family: var(--font-elegante);
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: transform 160ms var(--ease-organic), background-color 160ms;
+}
+.boton:hover {
+  background: var(--color-turquesa-dark);
+}
+.boton:active {
+  transform: scale(0.97);
+}
+
+/* La mesa: disco enorme centrado, con su borde superior a ~62% de la pantalla */
+.mesa-wrap {
+  position: absolute;
+  left: 50%;
+  top: 64svh;
+  width: 150vw;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  pointer-events: none;
+}
+.mesa {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+.mesa-texto {
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  fill: var(--color-turquesa);
+}
+
+/* Escenario de los platos: el plato al frente queda centrado sobre el borde de la mesa */
+.escenario {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.escenario[data-dragging] {
+  cursor: grabbing;
+}
+.plato {
+  --size: min(44svh, 400px);
+  position: absolute;
+  left: calc(50% - var(--size) / 2);
+  top: calc(64svh - var(--size) * 0.66);
+  width: var(--size);
+  height: var(--size);
+  will-change: transform, opacity;
+}
+.plato-trazo,
+.plato-color {
+  position: absolute;
+  inset: 0;
+}
+.plato-color {
+  will-change: opacity;
+}
+/* Sin pintar, como el mantel para colorear: solo el trazo sobre el papel */
+.plato-trazo svg * {
+  fill: none !important;
+  stroke: var(--color-madera) !important;
+  stroke-width: 1.1px !important;
+  stroke-opacity: 0.85 !important;
+}
+.plato-trazo svg > circle:first-of-type {
+  fill: #fffdf8 !important;
+}
+
+.pie-mesa {
+  position: absolute;
+  inset-inline: 0;
+  bottom: max(1.5rem, env(safe-area-inset-bottom));
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 44rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+.flecha {
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--color-laguna);
+  color: var(--color-crema);
+  font-size: 1.25rem;
+  transition: transform 160ms var(--ease-organic), background-color 160ms;
+}
+.flecha:hover {
+  background: var(--color-turquesa-dark);
+}
+.flecha:active {
+  transform: scale(0.94);
+}
+
+@media (max-width: 767px) {
+  .mesa-wrap {
+    top: 64svh;
+    width: 230vw;
+  }
+  .mesa-texto {
+    font-size: 36px;
+  }
+  .plato {
+    --size: min(66vw, 38svh);
+    top: calc(64svh - var(--size) * 0.7);
+  }
+  .estado,
+  .boton {
+    padding: 0 0.85rem;
+    font-size: 0.875rem;
+  }
+}

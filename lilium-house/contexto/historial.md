@@ -109,3 +109,13 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   ("Abierto · hasta 21:00"). Al tocarlo, panel con estado, horario, dirección, "Cómo llegar" y "Llamar".
 - Puntaje de Google: cuenta una vez por tiempo al entrar en pantalla (antes, frenando a mitad, quedaba en 0,2–2,3).
 
+
+## 15. Nuevo enfoque — prototipo "La mesa giratoria" (`/nuevo.html`)
+
+- Referencias elegidas por el cliente: Madie (madie.es: productos recortados como carta, color de marca fuerte,
+  mapa con horario), TAB Kitchen & Bakery (ilustración plana, friso botánico) y Agrumea Farm (agrumeafarm.it:
+  carrusel de frascos que giran con el scroll sobre un disco con texto circular).
+- Prototipo aparte en `nuevo.html` (no indexado), sin tocar la portada: la mesa verde gira con el scroll, el
+  arrastre o las flechas; los platos esperan sin pintar (solo trazo, como el mantel para colorear) y se colorean
+  al pasar al frente. El texto circular de la mesa lleva el estado real del local.
+- Motor: rAF a demanda que escribe transform/opacity (sin re-render por cuadro); arrastre con `touch-action: pan-y`.
