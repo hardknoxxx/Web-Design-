@@ -2,6 +2,8 @@ import { m, useScroll, useSpring, useTransform, useVelocity } from 'framer-motio
 import { useEffect, useId, useRef, useState } from 'react'
 import { WHATSAPP_OPTIONS, whatsappLink } from '../data/site'
 import { useDay } from '../day/DayProvider'
+import { gsap } from '../lib/gsap'
+import { PAPEL, playSprite, spriteStyle } from '../lib/sprite'
 import { CloseIcon, WhatsAppIcon } from './Icons'
 import { TablaMadera } from './TablaMadera'
 
@@ -30,6 +32,39 @@ export function CupButton() {
   const [paper, setPaper] = useState<'closed' | 'open' | 'closing'>('closed')
   const open = paper === 'open'
   const close = () => setPaper((p) => (p === 'open' ? 'closing' : p))
+  const filmRef = useRef<HTMLSpanElement>(null)
+  const sheetRef = useRef<HTMLDivElement>(null)
+
+  // abrir: la película (12 cuadros, stop-motion) y después el papel real encima;
+  // cerrar: el papel se oculta y la película corre al revés (se vuelve a arrugar)
+  useEffect(() => {
+    const film = filmRef.current
+    const sheet = sheetRef.current
+    if (!film || !sheet || paper === 'closed') return
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (paper === 'open') {
+      if (reduce) {
+        gsap.set(sheet, { opacity: 1 })
+        gsap.set(film, { opacity: 0 })
+        return
+      }
+      gsap.set(sheet, { opacity: 0 })
+      gsap.set(film, { opacity: 1 })
+      const t = playSprite(film, PAPEL, 0, PAPEL.frames - 1, 1).eventCallback('onComplete', () => {
+        gsap.set(sheet, { opacity: 1 })
+        gsap.set(film, { opacity: 0 })
+      })
+      return () => void t.kill()
+    }
+    gsap.set(sheet, { opacity: 0 })
+    if (reduce) {
+      setPaper('closed')
+      return
+    }
+    gsap.set(film, { opacity: 1 })
+    const t = playSprite(film, PAPEL, PAPEL.frames - 1, 0, 0.5).eventCallback('onComplete', () => setPaper('closed'))
+    return () => void t.kill()
+  }, [paper])
   const [bump, setBump] = useState(0)
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '')
   const panelRef = useRef<HTMLDivElement>(null)
@@ -62,10 +97,16 @@ export function CupButton() {
           aria-label="Escribinos por WhatsApp"
           className="pointer-events-auto relative mr-4 -mb-6 w-[min(18rem,calc(100vw-2rem))] [filter:drop-shadow(0_18px_22px_rgb(0_0_0/0.4))] sm:mr-8"
         >
+          {/* la película del papel (Remotion → sprite): nace en la taza y se desenvuelve */}
+          <span
+            ref={filmRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute"
+            style={{ ...spriteStyle(PAPEL), left: '-2.083%', top: -4, width: '104.17%', aspectRatio: '300 / 420' }}
+          />
           <div
-            data-state={paper}
-            onAnimationEnd={(e) => e.animationName === 'paper-crumple' && setPaper('closed')}
-            className="paper-ball relative rounded-[3px] bg-[#FFFDF9] p-5 pb-8 text-madera [background-image:repeating-linear-gradient(transparent_0_27px,rgb(100_188_176/0.14)_27px_28px)]"
+            ref={sheetRef}
+            className="relative rotate-[-2deg] rounded-[3px] bg-[#FFFDF9] p-5 pb-8 text-madera opacity-0 [background-image:repeating-linear-gradient(transparent_0_27px,rgb(100_188_176/0.14)_27px_28px)]"
           >
               <div className="flex items-start justify-between gap-3 border-b border-dashed border-madera/25 pb-3">
                 <div>
@@ -87,7 +128,7 @@ export function CupButton() {
                     key={o.label}
                     initial={{ opacity: 0, x: -8, clipPath: 'inset(0 100% 0 0)' }}
                     animate={{ opacity: 1, x: 0, clipPath: 'inset(0 0% 0 0)' }}
-                    transition={{ delay: 0.88 + i * 0.08, duration: 0.4, ease: EASE }}
+                    transition={{ delay: 1 + i * 0.08, duration: 0.4, ease: EASE }}
                   >
                     <a
                       href={whatsappLink(o.message)}

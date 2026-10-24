@@ -1,4 +1,6 @@
 import { LazyMotion, MotionConfig, domAnimation, m } from 'framer-motion'
+import { useEffect } from 'react'
+import { preloadSprites } from './lib/sprite'
 import { CupButton } from './components/CupButton'
 import { TopBar } from './components/TopBar'
 import { Vines } from './components/Vines'
@@ -23,6 +25,7 @@ function DayBackground() {
 }
 
 export default function App() {
+  useEffect(preloadSprites, [])
   return (
     <LazyMotion features={domAnimation} strict>
       <MotionConfig reducedMotion="user">
