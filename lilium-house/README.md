@@ -91,12 +91,16 @@ como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
 
 - Lirio 3D en three.js puro (`components/three/lily.ts`; `LilyCanvas.tsx` solo lo monta y lo libera):
   ~1.000 triángulos y 4 llamadas de dibujo (pétalos instanciados, tallo/hojas/estambres fusionados en una
-  malla, un solo material Lambert, una nube de polen). Pixel ratio `Math.min(devicePixelRatio, 2)` que baja de
-  a escalones (1,5 → 1,25 → 1) si la página no sostiene ~50 fps; tope de 60 fps y, en equipos de bajo consumo,
-  30 fps mientras gira sola (60 apenas la tocan o scrollean). El bucle se detiene fuera de pantalla
-  (IntersectionObserver), con la pestaña oculta y al atravesar el follaje; `dispose()` libera geometrías,
-  materiales, textura, contexto WebGL y canvas. Arrastrar la gira siguiendo el dedo (con inercia); un toque
-  rápido, vuelta de bienvenida con rebote. `touch-action: pan-y`: el gesto vertical sigue siendo scroll.
+  malla, un solo material Lambert, luz ambiente + una direccional suave, sin sombras, una nube de polen).
+  **Render a demanda**: no hay bucle continuo; se dibuja solo cuando algo cambia (scroll, toque, arrastre,
+  cursor, tamaño) y se apaga apenas la flor se asienta (en reposo, 0 cuadros). Nitidez: `antialias: true`,
+  `powerPreference: 'high-performance'` y pixel ratio `Math.min(devicePixelRatio, 2)` en reposo; mientras el
+  dedo o la rueda se mueven se dibuja a 1x (`MOTION_DPR`) y a los ~160 ms de soltar vuelve a la completa.
+  Fuera de pantalla (IntersectionObserver) no corre nada: ni cuadros ni listeners de scroll o puntero; también
+  se detiene con la pestaña oculta y al atravesar el follaje. `dispose()` libera geometrías, materiales,
+  textura, contexto WebGL y canvas. Si el chunk no llega o no hay WebGL, queda el boceto ilustrado (antes la
+  página entera quedaba en blanco). Arrastrar la gira siguiendo el dedo (con inercia); un toque rápido, vuelta
+  de bienvenida con rebote. `touch-action: pan-y`: el gesto vertical sigue siendo scroll.
 - three.js empieza a bajar apenas se evalúa el JS principal; mientras tanto se ve un boceto ilustrado del lirio
   (`components/LirioBoceto.tsx`) que se funde con el 3D en su primer cuadro.
 - Sprite de la comanda al tamaño en que se muestra (el menú ya no usa película: CSS); se baja y decodifica
@@ -106,5 +110,5 @@ como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
 - Un solo fondo del día (`DayBackground`) en vez de un fondo por sección; los bordes de las escenas fijadas se funden con un degradé del mismo color.
 - Bucles decorativos pausados fuera de pantalla (`pauseOffscreen`); capas chicas compuestas en vez de capas de pantalla completa.
 - Todas las animaciones de scroll usan solo `transform`/`opacity` vía MotionValues (sin re-renders de React).
-- En dispositivos de bajo consumo: sin antialias, menos partículas y 30 fps en reposo para el lirio.
+- En pantallas táctiles, menos partículas de polen en el lirio.
 - Framer Motion con `LazyMotion` + `domAnimation`; respeta `prefers-reduced-motion`.

@@ -86,5 +86,8 @@ cada sección declara `data-phase="fondo|texto|hora"`.
 - Confirmar con el local los nombres de la carta (sobre todo almuerzos) y conseguir fotos originales.
 - Probar en un teléfono real el rendimiento del lirio 3D, la selva y los menús (Playwright no tiene GPU:
   el 3D y el dibujado salen peor que en un teléfono).
+- **Al medir scroll con Playwright**, usar `scrollTo({ top, behavior: 'instant' })`: en el teléfono el `html`
+  tiene `scroll-behavior: smooth` y un `scrollTo(0, y)` por cuadro no mueve la página (las mediciones de scroll
+  de los PR #9 y #11 se hicieron así y no son confiables; las del PR #12 ya están corregidas).
 - Bloqueo inicial de ~1 s en gama media (render de React de toda la página + GSAP): el próximo paso sería montar
   las escenas de abajo del hero cuando el navegador queda libre.

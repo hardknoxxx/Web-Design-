@@ -1,5 +1,5 @@
 import { m } from 'framer-motion'
-import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react'
 import { Leaf, Monstera } from '../components/Botanica'
 import { LirioBoceto } from '../components/LirioBoceto'
 import { BananaLeaf, Calathea, Fern, HeartLeaf, PalmFrond } from '../components/Flora'
@@ -8,7 +8,11 @@ import { gsap, MOTION_OK, pauseOffscreen, useGsap } from '../lib/gsap'
 
 // three.js se carga en un chunk aparte: el texto pinta primero. La descarga arranca apenas se
 // evalúa este módulo (no recién cuando React monta el hero, ~1 s después en un teléfono lento)
-const lilyChunk = import('../components/three/LilyCanvas')
+// Si el chunk no llega (red caída), el hero se queda con el boceto ilustrado: sin esto, el
+// error subía hasta la raíz y la página entera quedaba en blanco
+const lilyChunk: Promise<{ default: ComponentType<{ onReady?: () => void }> }> = import('../components/three/LilyCanvas').catch(() => ({
+  default: () => null,
+}))
 const LilyCanvas = lazy(() => lilyChunk)
 
 // entrada del hero al cargar: el nombre sube primero, después la bajada y al final la pista
