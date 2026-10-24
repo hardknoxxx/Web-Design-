@@ -1,8 +1,51 @@
-/* Prototipo "La mesa giratoria": estilos propios (las fuentes y los colores vienen de index.css) */
+/* La nueva Lilium (src/nuevo): estilos propios. Fuentes y colores de marca vienen de index.css. */
 
+/* Curvas de movimiento (emil-design-eng): salida fuerte para la UI, ida y vuelta para lo que se desplaza */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* En la capa de componentes: las utilidades de Tailwind (max-md:hidden, z-10…) pueden pisarlas */
+@layer components {
+/* ---------- Marca ---------- */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 999px;
+  transition: transform 160ms var(--ease-out);
+}
+.logo:active {
+  transform: scale(0.98);
+}
+.logo-sello {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+}
+.logo-bajada {
+  margin-top: 0.15rem;
+  font-family: var(--font-elegante);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-turquesa-dark);
+}
+@media (min-width: 768px) {
+  .logo {
+    gap: 0.75rem;
+  }
+  .logo-sello {
+    width: 3.4rem;
+    height: 3.4rem;
+  }
+}
+
+/* ---------- Controles ---------- */
 .estado {
   display: inline-flex;
-  white-space: nowrap;
   align-items: center;
   gap: 0.5rem;
   min-height: 2.75rem;
@@ -12,47 +55,109 @@
   color: var(--color-laguna-deep);
   font-family: var(--font-elegante);
   font-size: 0.95rem;
+  white-space: nowrap;
+  transition: background-color 200ms ease, transform 160ms var(--ease-out);
 }
-.estado:hover {
-  background: var(--color-kraft);
+.estado:active {
+  transform: scale(0.97);
 }
 .estado-punto {
   width: 0.55rem;
   height: 0.55rem;
+  flex: none;
   border-radius: 50%;
   background: var(--color-corteza);
 }
-.estado[data-open='true'] .estado:hover {
-  background: var(--color-kraft);
-}
-.estado-punto {
-  background: #2e9b6a;
+[data-open='true'] > .estado-punto {
+  background: var(--color-helecho);
 }
 
 .boton {
   display: inline-flex;
-  gap: 0.5rem;
-  justify-content: center;
-  white-space: nowrap;
   align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   min-height: 2.75rem;
   padding: 0 1.25rem;
   border-radius: 999px;
   background: var(--color-laguna-deep);
   color: var(--color-crema);
   font-family: var(--font-elegante);
-  font-weight: 700;
   font-size: 0.95rem;
-  transition: transform 160ms var(--ease-organic), background-color 160ms;
-}
-.boton:hover {
-  background: var(--color-turquesa-dark);
+  font-weight: 700;
+  white-space: nowrap;
+  transition: transform 160ms var(--ease-out), background-color 200ms ease;
 }
 .boton:active {
   transform: scale(0.97);
 }
+.boton-claro {
+  background: var(--color-estuco);
+  color: var(--color-laguna-deep);
+}
+.boton-menta {
+  background: var(--color-turquesa);
+  color: var(--color-laguna-deep);
+}
+.boton-linea {
+  background: transparent;
+  color: var(--color-crema);
+  box-shadow: inset 0 0 0 1.5px var(--color-menta);
+}
 
-/* La mesa: disco enorme centrado, con su borde superior a ~62% de la pantalla */
+.flecha {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--color-laguna);
+  color: var(--color-crema);
+  transition: transform 160ms var(--ease-out), background-color 200ms ease;
+}
+.flecha:active {
+  transform: scale(0.94);
+}
+
+.pestana {
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  background: var(--color-estuco);
+  color: var(--color-laguna-deep);
+  font-family: var(--font-elegante);
+  font-weight: 600;
+  transition: background-color 200ms ease, color 200ms ease, transform 160ms var(--ease-out);
+}
+.pestana:active {
+  transform: scale(0.97);
+}
+.pestana[aria-selected='true'] {
+  background: var(--color-laguna-deep);
+  color: var(--color-crema);
+}
+
+/* hover solo con mouse: en el teléfono un toque no deja el botón "encendido" */
+@media (hover: hover) and (pointer: fine) {
+  .estado:hover,
+  .boton-claro:hover,
+  .pestana:not([aria-selected='true']):hover {
+    background: var(--color-kraft);
+  }
+  .boton:not(.boton-claro, .boton-menta, .boton-linea):hover,
+  .flecha:hover {
+    background: var(--color-turquesa-dark);
+  }
+  .boton-menta:hover {
+    background: var(--color-menta);
+  }
+  .boton-linea:hover {
+    background: var(--color-laguna);
+  }
+}
+
+/* ---------- La mesa ---------- */
 .mesa-wrap {
   position: absolute;
   left: 50%;
@@ -76,7 +181,6 @@
   fill-opacity: 0.55;
 }
 
-/* Escenario de los platos: el plato al frente queda centrado sobre el borde de la mesa */
 .escenario {
   position: absolute;
   inset: 0;
@@ -96,15 +200,13 @@
   top: calc(64svh - var(--size) * 0.66);
   width: var(--size);
   height: var(--size);
+  cursor: pointer;
   will-change: transform, opacity;
 }
 .plato-trazo,
 .plato-color {
   position: absolute;
   inset: 0;
-}
-.plato {
-  cursor: pointer;
 }
 /* Sin pintar, como el mantel para colorear: solo el trazo sobre el papel */
 .plato-trazo svg * {
@@ -129,177 +231,54 @@
   margin-inline: auto;
   padding-inline: 1rem;
 }
-.flecha {
-  flex: none;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  background: var(--color-laguna);
-  color: var(--color-crema);
-  font-size: 1.25rem;
-  transition: transform 160ms var(--ease-organic), background-color 160ms;
+/* Pista de uso sobre el nombre del plato: se apaga con el primer toque, sin mover nada */
+.pista {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  line-height: 1.1;
+  color: var(--color-turquesa);
+  transition: opacity 200ms var(--ease-out);
 }
-.flecha {
-  display: grid;
-  place-items: center;
-}
-.flecha:hover:not([aria-disabled='true']) {
-  background: var(--color-turquesa-dark);
-}
-.flecha:active:not([aria-disabled='true']) {
-  transform: scale(0.94);
-}
-.flecha[aria-disabled='true'] {
-  opacity: 0.35;
-  cursor: default;
+.pista[data-oculta] {
+  opacity: 0;
 }
 
 @media (max-width: 767px) {
   .mesa-wrap {
-    top: 64svh;
+    top: 66svh;
     width: 230vw;
   }
   .mesa-texto {
     font-size: 30px;
   }
   .plato {
-    --size: min(66vw, 38svh);
-    top: calc(64svh - var(--size) * 0.7);
+    --size: min(62vw, 34svh);
+    top: calc(66svh - var(--size) * 0.7);
   }
-  #mesa .estado,
-  #mesa header .boton {
-    gap: 0.35rem;
-    padding: 0 0.7rem;
-    font-size: 0.8125rem;
+  .pie-mesa {
+    gap: 0.5rem;
   }
 }
 
-/* Pista de uso: se va con el primer toque */
-.pista {
-  margin-top: 0.75rem;
-  text-align: center;
-  font-family: var(--font-hand);
-  font-size: 1.35rem;
-  color: var(--color-turquesa-dark);
-  transition: opacity 400ms var(--ease-organic);
-}
-.pista[data-oculta] {
-  opacity: 0;
-}
-
-/* Lo verde de adentro, detrás de la mesa (la mesa los tapa por abajo) */
-.planta {
-  position: absolute;
-  height: auto;
-}
-.planta-lirio-a {
-  left: 3vw;
-  top: 14svh;
-  height: 64svh;
-  width: auto;
-}
-.planta-lirio-b {
-  right: 7vw;
-  top: 26svh;
-  height: 50svh;
-  width: auto;
-}
-.planta-monstera {
-  right: -3vw;
-  top: 34svh;
-  height: 34svh;
-  width: auto;
-  rotate: 24deg;
-  transform-origin: 50% 100%;
-}
-.picaflor {
-  position: absolute;
-  left: calc(3vw + 25svh);
-  top: 17svh;
-  width: 8rem;
-  animation: picaflor 2.8s ease-in-out infinite alternate;
-}
-@keyframes picaflor {
-  to {
-    translate: -10px 8px;
-  }
-}
-@media (max-width: 767px) {
-  .planta-lirio-a {
-    left: -16vw;
-    top: 30svh;
-    height: 40svh;
-  }
-  .planta-lirio-b,
-  .picaflor {
-    display: none;
-  }
-  .planta-monstera {
-    right: -18vw;
-    top: 42svh;
-    height: 22svh;
-  }
-}
-
-/* La carta */
-.pestana {
-  min-height: 2.75rem;
-  padding: 0 1.1rem;
-  border-radius: 999px;
-  background: var(--color-estuco);
-  color: var(--color-laguna-deep);
-  font-family: var(--font-elegante);
-  font-weight: 600;
-  transition: background-color 160ms, color 160ms, transform 160ms var(--ease-organic);
-}
-.pestana:hover {
-  background: var(--color-kraft);
-}
-.pestana:active {
-  transform: scale(0.97);
-}
-.pestana[aria-selected='true'] {
-  background: var(--color-laguna-deep);
-  color: var(--color-crema);
-}
-.boton-claro {
-  background: var(--color-estuco);
-  color: var(--color-laguna-deep);
-}
-.boton-claro:hover {
-  background: var(--color-kraft);
-}
-.boton-menta {
-  background: var(--color-turquesa);
-  color: var(--color-laguna-deep);
-}
-.boton-menta:hover {
-  background: var(--color-menta);
-}
-.boton-linea {
-  background: transparent;
-  color: var(--color-crema);
-  box-shadow: inset 0 0 0 1.5px var(--color-menta);
-}
-.boton-linea:hover {
-  background: var(--color-laguna);
-}
+/* ---------- La carta ---------- */
 .especimen {
   display: grid;
   grid-template-columns: 6.5rem 1fr;
   gap: 1.25rem;
   align-items: center;
-  animation: especimen-in 500ms var(--ease-organic) backwards;
+  animation: especimen-in 360ms var(--ease-out) backwards;
 }
-.especimen:nth-child(2) { animation-delay: 60ms; }
-.especimen:nth-child(3) { animation-delay: 120ms; }
-.especimen:nth-child(4) { animation-delay: 180ms; }
-.especimen:nth-child(5) { animation-delay: 240ms; }
-.especimen:nth-child(6) { animation-delay: 300ms; }
+.especimen:nth-child(2) { animation-delay: 50ms; }
+.especimen:nth-child(3) { animation-delay: 100ms; }
+.especimen:nth-child(4) { animation-delay: 150ms; }
+.especimen:nth-child(5) { animation-delay: 200ms; }
+.especimen:nth-child(6) { animation-delay: 250ms; }
 @keyframes especimen-in {
   from {
     opacity: 0;
-    translate: 0 12px;
+    translate: 0 8px;
   }
 }
 .lamina-plato {
@@ -308,7 +287,7 @@
 }
 .lamina-plato .plato-color {
   clip-path: circle(0% at 50% 50%);
-  transition: clip-path 900ms var(--ease-organic) 150ms;
+  transition: clip-path 900ms var(--ease-in-out) 120ms;
 }
 .lamina-plato[data-pintado] .plato-color {
   clip-path: circle(72% at 50% 50%);
@@ -319,19 +298,10 @@
   object-fit: cover;
   border-radius: 1.25rem;
   filter: grayscale(1) contrast(0.9);
-  transition: filter 900ms var(--ease-organic) 150ms;
+  transition: filter 900ms var(--ease-in-out) 120ms;
 }
 .lamina-foto[data-pintado] img {
   filter: none;
-}
-.mariposa {
-  animation: mariposa 0.35s ease-in-out infinite alternate;
-  transform-origin: 50% 50%;
-}
-@keyframes mariposa {
-  to {
-    scale: 0.82 1;
-  }
 }
 @media (min-width: 768px) {
   .especimen {
@@ -339,7 +309,7 @@
   }
 }
 
-/* Visitanos */
+/* ---------- Visitanos ---------- */
 .horario-fila {
   display: flex;
   justify-content: space-between;
@@ -362,7 +332,6 @@
   font-family: var(--font-elegante);
   font-size: 15px;
   font-weight: 700;
-  dominant-baseline: middle;
 }
 .croquis-nombre {
   font-family: var(--font-script);
@@ -371,57 +340,61 @@
 .hornero {
   position: absolute;
   right: 1.5rem;
-  top: -4.4rem;
+  top: -4.6rem;
   width: 11rem;
-}
-.coati-paseo {
-  position: absolute;
-  bottom: 1.25rem;
-  left: 0;
-  height: 4.5rem;
-  translate: -12rem 0;
-}
-.coati-paseo[data-camina] {
-  animation: coati 26s linear infinite;
-}
-@keyframes coati {
-  to {
-    translate: calc(100vw + 2rem) 0;
-  }
+  z-index: 1;
 }
 
-/* Friso del cierre */
+/* ---------- Friso del cierre ---------- */
 .friso {
   position: relative;
-  height: clamp(14rem, 34vw, 26rem);
-  margin-top: 2rem;
-}
-.friso-pieza {
-  position: absolute;
-  bottom: -0.5rem;
-  width: auto;
-  transform-origin: 50% 100%;
+  height: clamp(15rem, 36vw, 27rem);
 }
 .tucan {
   position: absolute;
-  left: 36%;
-  bottom: 62%;
-  width: clamp(5rem, 9vw, 8rem);
-}
-.friso-mariposa {
-  position: absolute;
-  right: 22%;
-  top: 8%;
-  width: 2.5rem;
+  left: 37%;
+  bottom: 64%;
+  height: clamp(3.5rem, 6vw, 5rem);
 }
 @media (max-width: 767px) {
   .tucan {
-    left: 50%;
-    bottom: 44%;
+    left: 46%;
+    bottom: 40%;
   }
 }
 
-/* Cómo llegar flotante */
+/* ---------- Flora y fauna con vida (three.js) ---------- */
+.vida-capa {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.vida-lienzo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+.vida-capa[data-vivo] .vida-lienzo {
+  opacity: 1;
+}
+.pieza {
+  pointer-events: none;
+  transition: opacity 240ms ease;
+}
+.pieza > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.pieza[data-oculta] {
+  opacity: 0;
+}
+
+/* ---------- Cómo llegar flotante ---------- */
 .llegar-flotante {
   position: fixed;
   right: 1rem;
@@ -430,7 +403,7 @@
   opacity: 0;
   translate: 0 0.75rem;
   pointer-events: none;
-  transition: opacity 200ms var(--ease-organic), translate 200ms var(--ease-organic), background-color 160ms;
+  transition: opacity 200ms var(--ease-out), translate 200ms var(--ease-out), transform 160ms var(--ease-out), background-color 200ms ease;
 }
 .llegar-flotante[data-visible] {
   opacity: 1;
@@ -438,7 +411,7 @@
   pointer-events: auto;
 }
 
-/* Detalles del navegador con la paleta */
+/* ---------- Detalles del navegador con la paleta ---------- */
 ::selection {
   background: var(--color-menta);
   color: var(--color-laguna-deep);
@@ -449,13 +422,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .picaflor,
-  .mariposa,
-  .coati-paseo[data-camina],
   .especimen {
     animation: none;
   }
-  .coati-paseo {
-    translate: 10vw 0;
+  .lamina-plato .plato-color,
+  .lamina-foto img {
+    transition-duration: 200ms;
   }
+}
 }

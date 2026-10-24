@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react'
 import { Coati, HorneroNido } from '../components/Fauna'
+import { BananaLeaf } from '../components/Flora'
 import { LilyMark, PhoneIcon } from '../components/Icons'
 import { SITE, whatsappLink } from '../data/site'
 import { useOpenStatus } from '../hooks/useOpenStatus'
 import { AVENIDA, CALLE, PARQUE, PIN, RIO, ROTULOS } from './croquisDatos'
+import { Pieza, Vida } from './vida/Vida'
 
 /*
  * Visitanos (referencia: el mapa redibujado de Madie). Las calles reales de OpenStreetMap en la paleta, el horario con el día de
@@ -56,22 +57,14 @@ function Croquis() {
 export function Visita() {
   const status = useOpenStatus()
   const hoy = filaDeHoy()
-  const coatiRef = useRef<HTMLDivElement>(null)
-
-  // el coatí camina solo mientras la sección está en pantalla
-  useEffect(() => {
-    const el = coatiRef.current!
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) el.dataset.camina = ''
-      else delete el.dataset.camina
-    })
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
 
   return (
     <section id="visita" aria-labelledby="visita-titulo" className="relative overflow-hidden bg-laguna-deep px-4 pt-24 pb-36 text-crema md:px-7 md:pt-32 md:pb-44">
-      <div className="mx-auto grid max-w-5xl gap-14 md:grid-cols-[1fr_1.1fr] md:gap-16">
+      <Vida>
+      <Pieza clase="planta" fase={0.45} className="absolute -right-6 bottom-0 h-[22rem] max-md:hidden" style={{ aspectRatio: '140/340' }}>
+        <BananaLeaf color="#6F7F2E" />
+      </Pieza>
+      <div className="relative z-10 mx-auto grid max-w-5xl gap-14 md:grid-cols-[1fr_1.1fr] md:gap-16">
         <div>
           <h2 id="visita-titulo" className="font-display text-[2.6rem] leading-none font-semibold md:text-[4.5rem]">
             Te esperamos
@@ -112,15 +105,19 @@ export function Visita() {
         </div>
 
         <figure className="relative self-start">
-          <HorneroNido className="hornero" />
+          <Pieza clase="salto" fase={0.3} className="hornero" style={{ aspectRatio: '230/110' }}>
+            <HorneroNido />
+          </Pieza>
           <Croquis />
           <figcaption className="mt-3 text-[0.95rem] text-menta">Casi esquina Entre Ríos, a unos 200 m de la Costanera. Mapa: © colaboradores de OpenStreetMap.</figcaption>
         </figure>
       </div>
 
-      <div ref={coatiRef} aria-hidden="true" className="coati-paseo">
-        <Coati className="h-full w-auto" />
-      </div>
+      {/* el coatí de las Cataratas cruza al pie, a su ritmo */}
+      <Pieza clase="caminata" fase={0.1} className="absolute bottom-6 left-[10%] h-[4.5rem]" style={{ aspectRatio: '170/96' }}>
+        <Coati />
+      </Pieza>
+      </Vida>
     </section>
   )
 }
