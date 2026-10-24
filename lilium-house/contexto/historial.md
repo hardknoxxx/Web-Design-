@@ -101,3 +101,11 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - Instalado sin hooks a nivel proyecto (ver README de contexto).
 - `/impeccable init`: `lilium-house/PRODUCT.md` con público (turistas y vecinos por igual), objetivo (que vaya
   al local) e idiomas como decisión abierta.
+
+## 14. PR #16 — Correcciones de la crítica (con emil-design-eng)
+
+- Skill `emil-design-eng` (Emil Kowalski) instalado en `.claude/skills/`, auditado (solo Markdown, MIT, commit fijado).
+- Cartel de madera con dos caras: hora del recorrido mientras se scrollea; con la página quieta, estado real
+  ("Abierto · hasta 21:00"). Al tocarlo, panel con estado, horario, dirección, "Cómo llegar" y "Llamar".
+- Puntaje de Google: cuenta una vez por tiempo al entrar en pantalla (antes, frenando a mitad, quedaba en 0,2–2,3).
+

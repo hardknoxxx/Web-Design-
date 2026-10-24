@@ -9,8 +9,10 @@ const SPLIT: [number, number][] = [
 const SCHEDULE: [number, number][][] = [SPLIT, [], FULL, FULL, FULL, FULL, FULL]
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const DAY_NAMES = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+const DAY_SHORT = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
 
-export type OpenStatus = { open: boolean; label: string }
+/** `label` es la frase completa; `state` y `detail`, la versión corta del cartel de madera (dos líneas). */
+export type OpenStatus = { open: boolean; label: string; state: string; detail: string }
 
 const fmt = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
 
@@ -30,18 +32,19 @@ export function computeOpenStatus(day: number, minutes: number): OpenStatus {
   const slots = SCHEDULE[day]
   if (slots.length) {
     const current = slots.find(([start, end]) => minutes >= start && minutes < end)
-    if (current) return { open: true, label: `Abierto ahora · cierra ${fmt(current[1])}` }
+    if (current) return { open: true, label: `Abierto ahora · cierra ${fmt(current[1])}`, state: 'Abierto', detail: `hasta ${fmt(current[1])}` }
     const later = slots.find(([start]) => minutes < start)
-    if (later) return { open: false, label: `Cerrado · abre hoy ${fmt(later[0])}` }
+    if (later) return { open: false, label: `Cerrado · abre hoy ${fmt(later[0])}`, state: 'Cerrado', detail: `abre ${fmt(later[0])}` }
   }
   for (let offset = 1; offset <= 7; offset++) {
     const next = (day + offset) % 7
     if (SCHEDULE[next].length) {
       const when = offset === 1 ? 'mañana' : `el ${DAY_NAMES[next]}`
-      return { open: false, label: `Cerrado · abre ${when} ${fmt(SCHEDULE[next][0][0])}` }
+      const at = fmt(SCHEDULE[next][0][0])
+      return { open: false, label: `Cerrado · abre ${when} ${at}`, state: 'Cerrado', detail: `${offset === 1 ? 'mañana' : DAY_SHORT[next]} ${at}` }
     }
   }
-  return { open: false, label: 'Cerrado' }
+  return { open: false, label: 'Cerrado', state: 'Cerrado', detail: '' }
 }
 
 export function useOpenStatus(): OpenStatus | null {
