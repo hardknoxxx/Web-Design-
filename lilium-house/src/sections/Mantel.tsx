@@ -1,4 +1,5 @@
 import { m } from 'framer-motion'
+import { HojasTransicion } from '../components/HojasTransicion'
 import { Picaflor } from '../components/Ambiente'
 import { MandalaColoring } from '../components/MandalaColoring'
 
@@ -13,6 +14,7 @@ export function Mantel() {
       className="relative z-[4] overflow-x-clip px-9 pt-28 pb-44 sm:px-14 sm:pb-52 lg:px-24"
       aria-label="El mantel para colorear"
     >
+      <HojasTransicion v="mantel" />
       <Picaflor className="bottom-2 left-0 sm:bottom-6 lg:bottom-10" />
       <div className="mx-auto max-w-6xl">
         <MandalaColoring

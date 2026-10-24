@@ -2,91 +2,131 @@ import { useId, type CSSProperties } from 'react'
 import { safeId } from './Flora'
 
 /*
- * Soporte del botón de WhatsApp: una tabla de madera con borde natural (corteza), en diagonal,
- * que entra desde la esquina de la pantalla. Se ve su espesor, las vetas siguen el largo de
- * la tabla y termina en un extremo redondeado e irregular. La taza se apoya en el centro.
+ * Soporte del botón de WhatsApp: madera que cubre toda la esquina de la pantalla, con un borde
+ * natural irregular (corteza), vetas en diagonal que se desvían alrededor de los nudos,
+ * agujeritos de carcoma, grietas y la cucharita apoyada al lado de la taza.
  */
 
 type Pt = [number, number]
 
-// viewBox 0 0 170 150; la tabla sale por el borde derecho
-const C: Pt = [100, 94]
-const ANG = (-32 * Math.PI) / 180
-const U: Pt = [Math.cos(ANG), Math.sin(ANG)]
-const N: Pt = [-U[1], U[0]] // normal hacia abajo-derecha
-const S0 = -104 // extremo visible (izquierda abajo)
-const S1 = 150 // se pierde fuera de la pantalla
-
-const at = (s: number, o: number): Pt => [C[0] + U[0] * s + N[0] * o, C[1] + U[1] * s + N[1] * o]
-// medio ancho con el borde natural: ondulado y distinto en cada lado
-const half = (s: number, side: 1 | -1) => 34 + Math.sin(s * 0.06 + (side > 0 ? 1.3 : 0)) * 3.2 + Math.sin(s * 0.17 + side) * 1.4
+// viewBox 0 0 170 150; la madera ocupa la esquina inferior derecha y sigue fuera de pantalla
+const rnd = (i: number) => {
+  const x = Math.sin(i * 127.1 + 311.7) * 43758.5453
+  return x - Math.floor(x)
+}
 const f = (n: number) => n.toFixed(1)
 
-function outline(dy = 0) {
-  const top: string[] = []
-  const bot: string[] = []
-  for (let s = S0 + 14; s <= S1; s += 8) {
-    const a = at(s, -half(s, -1))
-    const b = at(s, half(s, 1))
-    top.push(`${f(a[0])} ${f(a[1] + dy)}`)
-    bot.push(`${f(b[0])} ${f(b[1] + dy)}`)
-  }
-  // extremo redondeado e irregular
-  const e1 = at(S0 + 2, -26)
-  const e2 = at(S0 - 4, 0)
-  const e3 = at(S0 + 4, 28)
-  return `M${bot[0]}Q${f(e3[0])} ${f(e3[1] + dy)} ${f(e2[0])} ${f(e2[1] + dy)}Q${f(e1[0])} ${f(e1[1] + dy)} ${top[0]}L${top.join('L')}L${bot.reverse().join('L')}Z`
-}
+/** Borde natural: curva cóncava de la esquina con ondulaciones y mordidas irregulares. */
+const EDGE: Pt[] = Array.from({ length: 29 }, (_, i) => {
+  const t = i / 28
+  const mt = 1 - t
+  const x = mt * mt * 182 + 2 * mt * t * 34 + t * t * -8
+  const y = mt * mt * -6 + 2 * mt * t * 26 + t * t * 160
+  // normal aproximada hacia afuera (arriba-izquierda)
+  const nx = -(2 * mt * (26 + 6) + 2 * t * (160 - 26)) / 200
+  const ny = (2 * mt * (34 - 182) + 2 * t * (-8 - 34)) / 200
+  const l = Math.hypot(nx, ny) || 1
+  const o = Math.sin(t * 19) * 3.2 + Math.sin(t * 7 + 1) * 4 + (rnd(i) - 0.5) * 3
+  return [x + (nx / l) * o, y + (ny / l) * o]
+})
+const edgeD = (dx = 0, dy = 0) => `M${EDGE.map(([x, y]) => `${f(x + dx)} ${f(y + dy)}`).join('L')}L178 168L178 -12Z`
 
-/** Veta paralela al largo de la tabla, con ondas suaves y un desvío alrededor del nudo. */
+// vetas en diagonal (de abajo-izquierda hacia arriba-derecha) que se abren alrededor de los nudos
+const KNOTS: Pt[] = [
+  [128, 62],
+  [70, 132],
+]
+const ANG = (-34 * Math.PI) / 180
 function grain(o: number, k: number) {
   const pts: string[] = []
-  for (let s = S0 + 6; s <= S1; s += 6) {
-    const knot = Math.exp(-(((s - 44) / 18) ** 2)) * (o > 10 ? 6 : o < -2 ? -5 : 0)
-    const p = at(s, o + Math.sin(s * 0.05 + k) * 1.6 + knot)
-    pts.push(`${f(p[0])} ${f(p[1])}`)
+  for (let s = -140; s <= 160; s += 5) {
+    let x = 110 + Math.cos(ANG) * s - Math.sin(ANG) * o
+    let y = 100 + Math.sin(ANG) * s + Math.cos(ANG) * o
+    y += Math.sin(s * 0.045 + k) * 2
+    for (const [kx, ky] of KNOTS) {
+      const d = Math.hypot(x - kx, y - ky)
+      if (d < 22) {
+        const push = (22 - d) * 0.6
+        x += ((x - kx) / (d || 1)) * push
+        y += ((y - ky) / (d || 1)) * push
+      }
+    }
+    pts.push(`${f(x)} ${f(y)}`)
   }
   return `M${pts.join('L')}`
 }
 
+// agujeritos de carcoma: irregulares, oscuros, con un borde apenas más claro
+const HOLES = Array.from({ length: 9 }, (_, i) => ({
+  x: 70 + rnd(i * 3 + 1) * 96,
+  y: 40 + rnd(i * 5 + 2) * 104,
+  r: 0.9 + rnd(i * 7 + 3) * 1.4,
+  a: rnd(i * 11) * 180,
+})).filter((h) => !(Math.abs(h.x - 98) < 46 && Math.abs(h.y - 92) < 20)) // no debajo del plato
+
 export function TablaMadera({ className, style }: { className?: string; style?: CSSProperties }) {
   const id = safeId(useId())
-  const knot = at(44, 16)
-  const spoon = at(-50, 22)
-  const spoonEnd = at(-24, 25)
   return (
     <svg viewBox="0 0 170 150" overflow="visible" className={className} style={style} aria-hidden="true">
       <defs>
-        <linearGradient id={`${id}-top`} gradientUnits="userSpaceOnUse" x1={f(at(0, -36)[0])} y1={f(at(0, -36)[1])} x2={f(at(0, 36)[0])} y2={f(at(0, 36)[1])}>
-          <stop offset="0" stopColor="#B98A60" />
-          <stop offset=".5" stopColor="#A07148" />
-          <stop offset="1" stopColor="#875C3A" />
+        <linearGradient id={`${id}-w`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#B88A5E" />
+          <stop offset=".45" stopColor="#9C6C45" />
+          <stop offset="1" stopColor="#7A5034" />
         </linearGradient>
+        <radialGradient id={`${id}-glow`} cx="58%" cy="62%" r="55%">
+          <stop offset="0" stopColor="#FFFFFF" stopOpacity=".12" />
+          <stop offset="1" stopColor="#FFFFFF" stopOpacity="0" />
+        </radialGradient>
         <clipPath id={`${id}-c`}>
-          <path d={outline()} />
+          <path d={edgeD()} />
         </clipPath>
       </defs>
-      {/* espesor de la tabla */}
-      <path d={outline(7)} fill="#4A3020" />
-      <path d={outline(3.5)} fill="#6B4A33" />
-      {/* cara de arriba */}
-      <path d={outline()} fill={`url(#${id}-top)`} />
+
+      {/* canto y espesor (se ve un poco de la madera por debajo del borde) */}
+      <path d={edgeD(2.5, 5)} fill="#3B2416" />
+      <path d={edgeD()} fill={`url(#${id}-w)`} />
       <g clipPath={`url(#${id}-c)`} fill="none" strokeLinecap="round">
-        {[-24, -15, -7, 2, 10, 19, 27].map((o, i) => (
-          <path key={o} d={grain(o, i * 1.7)} stroke={i % 3 ? '#7A5236' : '#C99A6A'} strokeOpacity={i % 3 ? 0.4 : 0.35} strokeWidth={i % 2 ? 0.8 : 1.2} />
+        <path d={edgeD()} fill={`url(#${id}-glow)`} />
+        {Array.from({ length: 15 }, (_, i) => -70 + i * 10 + rnd(i) * 3).map((o, i) => (
+          <path
+            key={i}
+            d={grain(o, i * 1.9)}
+            stroke={i % 4 === 0 ? '#D2A472' : '#6B4429'}
+            strokeOpacity={i % 4 === 0 ? 0.32 : 0.28 + rnd(i + 9) * 0.18}
+            strokeWidth={i % 3 === 0 ? 1.3 : 0.7}
+          />
         ))}
-        {/* nudo con sus anillos */}
-        <ellipse cx={f(knot[0])} cy={f(knot[1])} rx="5" ry="3" fill="#5A3C28" opacity=".7" transform={`rotate(-32 ${f(knot[0])} ${f(knot[1])})`} />
-        <ellipse cx={f(knot[0])} cy={f(knot[1])} rx="8.5" ry="5.2" stroke="#5A3C28" strokeOpacity=".35" transform={`rotate(-32 ${f(knot[0])} ${f(knot[1])})`} />
-        {/* corteza: el borde natural, oscuro y rugoso */}
-        <path d={outline()} stroke="#4A3020" strokeWidth="5" strokeOpacity=".75" />
-        <path d={outline()} stroke="#2E1E12" strokeWidth="1.4" strokeOpacity=".5" strokeDasharray="3 2 6 2" />
+        {/* nudos con sus anillos */}
+        {KNOTS.map(([x, y], i) => (
+          <g key={i} transform={`rotate(-34 ${x} ${y})`}>
+            <ellipse cx={x} cy={y} rx={5 - i} ry={3 - i * 0.4} fill="#4A2E1C" opacity=".75" />
+            <ellipse cx={x} cy={y} rx={9 - i} ry={5.6 - i * 0.6} stroke="#4A2E1C" strokeOpacity=".35" strokeWidth=".9" />
+            <ellipse cx={x} cy={y} rx={13 - i} ry={8 - i * 0.7} stroke="#4A2E1C" strokeOpacity=".18" strokeWidth=".8" />
+          </g>
+        ))}
+        {/* grietas finas siguiendo la veta */}
+        <path d="M150 30L139 38L133 37L124 44" stroke="#2E1E12" strokeOpacity=".5" strokeWidth=".8" />
+        <path d="M60 150L66 141L72 139L78 131" stroke="#2E1E12" strokeOpacity=".45" strokeWidth=".7" />
+        {/* agujeritos de carcoma */}
+        {HOLES.map((h, i) => (
+          <g key={i} transform={`rotate(${f(h.a)} ${f(h.x)} ${f(h.y)})`}>
+            <ellipse cx={f(h.x)} cy={f(h.y)} rx={f(h.r * 1.4)} ry={f(h.r)} fill="#C9A37A" opacity=".45" />
+            <ellipse cx={f(h.x)} cy={f(h.y + 0.3)} rx={f(h.r * 1.1)} ry={f(h.r * 0.75)} fill="#1A0F08" />
+          </g>
+        ))}
+        {/* corteza: el borde natural, oscuro, rugoso y con partes más claras */}
+        <path d={`M${EDGE.map(([x, y]) => `${f(x)} ${f(y)}`).join('L')}`} stroke="#4A3020" strokeWidth="7" strokeOpacity=".85" strokeLinejoin="round" />
+        <path d={`M${EDGE.map(([x, y]) => `${f(x)} ${f(y)}`).join('L')}`} stroke="#8A6448" strokeWidth="1.6" strokeOpacity=".7" strokeDasharray="4 3 9 2 2 4" />
       </g>
-      {/* cucharita apoyada en la tabla, al costado del plato */}
-      <g>
-        <path d={`M${f(spoon[0])} ${f(spoon[1])}L${f(spoonEnd[0])} ${f(spoonEnd[1])}`} stroke="#3D2314" strokeOpacity=".25" strokeWidth="3.4" strokeLinecap="round" transform="translate(1 2)" />
-        <path d={`M${f(spoon[0])} ${f(spoon[1])}L${f(spoonEnd[0])} ${f(spoonEnd[1])}`} stroke="#C9B48C" strokeWidth="2.6" strokeLinecap="round" />
-        <ellipse cx={f(spoon[0])} cy={f(spoon[1])} rx="5.2" ry="3.2" fill="#C9B48C" stroke="#A08A62" strokeWidth=".6" transform={`rotate(-32 ${f(spoon[0])} ${f(spoon[1])})`} />
+
+      {/* cucharita acostada al lado de la taza, como la deja el mozo */}
+      <g transform="rotate(58 150 108)">
+        <ellipse cx="152.5" cy="110" rx="7.5" ry="3.6" fill="#2E1E12" opacity=".22" />
+        <path d="M150 107.5H174C175.5 107.5 175.5 110.5 174 110.5H150Z" fill="#2E1E12" opacity=".2" transform="translate(1.5 2)" />
+        <path d="M151 107.2H175C176.6 107.4 176.6 110 175 110.2H151Z" fill="#D8C7A2" stroke="#A8916A" strokeWidth=".5" />
+        <ellipse cx="148" cy="108.7" rx="7" ry="3.8" fill="#E2D3B2" stroke="#A8916A" strokeWidth=".6" />
+        <ellipse cx="147.2" cy="108.2" rx="4.6" ry="2.2" fill="#F4EBD8" opacity=".8" />
       </g>
     </svg>
   )

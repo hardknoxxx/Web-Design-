@@ -87,7 +87,7 @@ export function CupButton() {
                     key={o.label}
                     initial={{ opacity: 0, x: -8, clipPath: 'inset(0 100% 0 0)' }}
                     animate={{ opacity: 1, x: 0, clipPath: 'inset(0 0% 0 0)' }}
-                    transition={{ delay: 0.72 + i * 0.08, duration: 0.4, ease: EASE }}
+                    transition={{ delay: 0.88 + i * 0.08, duration: 0.4, ease: EASE }}
                   >
                     <a
                       href={whatsappLink(o.message)}

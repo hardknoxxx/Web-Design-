@@ -1,5 +1,6 @@
 import { m } from 'framer-motion'
 import { useRef, useState } from 'react'
+import { HojasTransicion } from '../components/HojasTransicion'
 import { Fern, HeartLeaf } from '../components/Flora'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, whatsappLink, type CartaItem } from '../data/site'
@@ -53,12 +54,39 @@ function Item({ item }: { item: CartaItem }) {
 export function Carta() {
   const ref = useRef<HTMLElement>(null)
   const [tab, setTab] = useState(tabByHour)
+  // la primera vez los platos se sirven con el scroll; al cambiar de pestaña, el mozo los tira
+  const switched = useRef(false)
 
   useGsap(
     ref,
     () => {
       const q = gsap.utils.selector(ref)
       gsap.matchMedia().add(MOTION_OK, () => {
+        // hojas que asoman por los bordes de la mesa, cada una a su velocidad
+        gsap.to(q('[data-table-leaf="a"]'), { yPercent: -18, rotation: 6, ease: 'none', scrollTrigger: { trigger: ref.current, scrub: 1.5 } })
+        gsap.to(q('[data-table-leaf="b"]'), { yPercent: -40, rotation: -12, ease: 'none', scrollTrigger: { trigger: ref.current, scrub: 0.6 } })
+        if (switched.current) {
+          // llegan desde los costados girando, patinan y se asientan con un golpecito
+          q(`[data-panel="${tab}"] [data-plato]`).forEach((el, i) => {
+            const s = SERVE[i % SERVE.length]
+            const side = i % 2 ? 1 : -1
+            gsap
+              .timeline({ delay: 0.05 + i * 0.09 })
+              .fromTo(
+                el,
+                { x: side * window.innerWidth * 0.95, y: -30 - (i % 3) * 18, rotation: side * (160 + i * 30), scale: s.scale * 0.92, autoAlpha: 1 },
+                { x: 0, y: 0, rotation: s.rest - side * 6, scale: s.scale, duration: 0.62, ease: 'power3.out' },
+              )
+              .to(el, { rotation: s.rest, duration: 0.22, ease: 'back.out(3)' })
+              .fromTo(el, { scale: s.scale * 1.04 }, { scale: s.scale, duration: 0.16, ease: 'power2.out' }, '<')
+          })
+          gsap.fromTo(
+            q(`[data-panel="${tab}"] [data-ticket]`),
+            { x: window.innerWidth * 0.8, rotation: 40, autoAlpha: 1 },
+            { x: 0, rotation: 3, duration: 0.7, delay: 0.3, ease: 'power3.out' },
+          )
+          return
+        }
         q(`[data-panel="${tab}"] [data-plato]`).forEach((el, i) => {
           const s = SERVE[i % SERVE.length]
           gsap.fromTo(
@@ -85,9 +113,6 @@ export function Carta() {
           ease: 'back.out(1.4)',
           scrollTrigger: { trigger: q(`[data-panel="${tab}"] [data-ticket]`)[0], start: 'top 92%', toggleActions: 'play none none reverse' },
         })
-        // hojas que asoman por los bordes de la mesa, cada una a su velocidad
-        gsap.to(q('[data-table-leaf="a"]'), { yPercent: -18, rotation: 6, ease: 'none', scrollTrigger: { trigger: ref.current, scrub: 1.5 } })
-        gsap.to(q('[data-table-leaf="b"]'), { yPercent: -40, rotation: -12, ease: 'none', scrollTrigger: { trigger: ref.current, scrub: 0.6 } })
       })
     },
     [tab],
@@ -102,6 +127,7 @@ export function Carta() {
       className="relative z-[3] overflow-x-clip px-7 pt-24 pb-28 text-crema sm:px-14"
       aria-label="La carta"
     >
+      <HojasTransicion v="carta" />
       {/* vetas de la mesa: aparecen y se van con degradé, sobre el fondo del día */}
       <div aria-hidden="true" className="wood-table pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]" />
       <div data-table-leaf="a" className="pointer-events-none absolute -top-6 -left-16 w-48 rotate-[120deg] opacity-80 sm:w-64">
@@ -129,7 +155,11 @@ export function Carta() {
                 id={`tab-${c.id}`}
                 aria-selected={active}
                 aria-controls={`panel-${c.id}`}
-                onClick={() => setTab(c.id)}
+                onClick={() => {
+                  if (c.id === tab) return
+                  switched.current = true
+                  setTab(c.id)
+                }}
                 className={`relative flex flex-1 flex-col items-center rounded-full px-2 py-2 transition-[color,transform] duration-300 active:scale-95 ${active ? 'text-laguna-deep' : 'text-crema/75 hover:text-crema'}`}
               >
                 {active && (

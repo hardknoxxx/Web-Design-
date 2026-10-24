@@ -9,7 +9,7 @@ hojas de monstera que se abren y se cierran, escenas fijadas donde los elementos
 Storyboard de las animaciones de scroll en Figma: “Lilium Coffee Lounge — Storyboard de scroll”
 (https://www.figma.com/design/8a62hs9qgXqNI8zOzefJmC). Cada frame es un momento del scroll con su ficha de animación.
 
-Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP.
+Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP · React Three Fiber.
 
 ```bash
 npm install
@@ -22,7 +22,7 @@ npm run preview  # servir el build
 
 | Sección | Hora | Qué pasa al scrollear |
 | --- | --- | --- |
-| `sections/Amanecer.tsx` | 08:00 | Escena fijada: abre limpio con el lirio ilustrado en capas (`components/Lirio.tsx`) y el sotobosque; sube la selva lejana (palmeras pindó), las plantas brotan del suelo y la cámara atraviesa el follaje hasta la taza |
+| `sections/Amanecer.tsx` | 08:00 | Escena fijada: abre limpio con el lirio 3D (zoom suave al scrollear) y el sotobosque; sube la selva lejana (palmeras pindó), las plantas brotan del suelo y la cámara atraviesa el follaje hasta la taza |
 | `sections/Ritual.tsx` | 09:00–11:00 | Escena fijada de 3 actos: la taza entra y cambia de lugar, llega la chipa, se levanta la campana de la torta |
 | `sections/Carta.tsx` | 11:45 | Pestañas Desayunos / Almuerzos / Meriendas (abre la que corresponde a la hora); platos ilustrados y fotos del Instagram se sirven sobre la mesa (datos en `CARTA`, `src/data/site.ts`) |
 | `sections/Mantel.tsx` | 17:00 | El mantel de papel se despliega y se colorea (mandala interactivo, descarga PNG); abajo, un picaflor liba en una rama de ceibo |
@@ -41,7 +41,7 @@ Piezas globales: `day/DayProvider.tsx` (scroll → hora y color de la barra), `c
 | Títulos y textos | Bricolage Grotesque (variable con tamaño óptico) | [ateliertriay/bricolage](https://github.com/ateliertriay/bricolage) · OFL |
 | Notas a mano | Caveat (Impallari Type, Rosario) | [googlefonts/caveat](https://github.com/googlefonts/caveat) · OFL |
 | Tickets y comanda | Courier Prime (máquina de escribir) | [quoteunquoteapps/CourierPrime](https://github.com/quoteunquoteapps/CourierPrime) · OFL |
-| Datos del cierre | Playfair Display (cifras alineadas) | [google/fonts](https://github.com/google/fonts/tree/main/ofl/playfairdisplay) · OFL |
+| Datos del cierre | Raleway (cifras alineadas) | [google/fonts](https://github.com/google/fonts/tree/main/ofl/raleway) · OFL |
 | Logo | Yellowtail (como el cartel del local) | Google Fonts |
 
 Auto-alojadas en `public/fonts/` como woff2 recortado a latín (licencias en `public/fonts/licencias/`).
@@ -77,7 +77,7 @@ como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
 
 ## Rendimiento móvil
 
-- El lirio del hero es SVG en capas (sin WebGL): ~80 % menos trabajo de GPU que el lirio 3D anterior y 920 KB menos.
+- Lirio 3D optimizado en teléfonos: 30 fps, DPR 1,25, materiales Lambert, sin luz puntual y deja de dibujarse al atravesar el follaje.
 - Un solo fondo del día (`DayBackground`) en vez de un fondo por sección; los bordes de las escenas fijadas se funden con un degradé del mismo color.
 - Bucles decorativos pausados fuera de pantalla (`pauseOffscreen`); capas chicas compuestas en vez de capas de pantalla completa.
 - Todas las animaciones de scroll usan solo `transform`/`opacity` vía MotionValues (sin re-renders de React).
