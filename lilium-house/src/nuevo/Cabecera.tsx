@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { InstagramIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from '../components/Icons'
 import { SITE, whatsappLink } from '../data/site'
 import { useOpenStatus } from '../hooks/useOpenStatus'
+import { gsap, reducido } from './animar'
 import { LogoLilium } from './LogoLilium'
 import { Estado } from './Piezas'
 
@@ -43,6 +44,11 @@ export function Cabecera() {
           first.focus()
         }
       }
+    }
+    // las secciones suben desde su máscara, en cascada; los accesos de abajo llegan después
+    if (!reducido()) {
+      gsap.fromTo(panel.querySelectorAll('.menu-enlace-texto'), { yPercent: 110 }, { yPercent: 0, duration: 0.8, stagger: 0.06, delay: 0.1 })
+      gsap.fromTo(panel.querySelectorAll('.menu-pie > *'), { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, stagger: 0.04, delay: 0.3 })
     }
     document.documentElement.style.overflow = 'hidden'
     addEventListener('keydown', onKey)
@@ -92,9 +98,9 @@ export function Cabecera() {
 
       <div ref={panelRef} id="menu-panel" className="menu-panel" data-abierto={abierto || undefined} role="dialog" aria-modal="true" aria-label="Menú" inert={!abierto}>
         <nav aria-label="Secciones" className="menu-secciones">
-          {SECCIONES.map((s, i) => (
-            <a key={s.href} href={s.href} className="menu-enlace" style={{ transitionDelay: abierto ? `${80 + i * 40}ms` : '0ms' }} onClick={() => setAbierto(false)}>
-              {s.label}
+          {SECCIONES.map((s) => (
+            <a key={s.href} href={s.href} className="menu-enlace" onClick={() => setAbierto(false)}>
+              <span className="menu-enlace-texto">{s.label}</span>
             </a>
           ))}
         </nav>

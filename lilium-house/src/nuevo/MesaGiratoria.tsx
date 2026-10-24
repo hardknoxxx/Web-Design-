@@ -2,16 +2,18 @@ import { useEffect, useRef, useState, type ComponentType, type CSSProperties } f
 import { ArrowIcon } from '../components/Icons'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA } from '../data/site'
-import { useOpenStatus } from '../hooks/useOpenStatus'
-import { Cinta, Estado, Sticker } from './Piezas'
+import { gsap, lineasQueSuben, reducido } from './animar'
+import { Sticker } from './Piezas'
+import type { Mesa3D, Pose } from './tres/mesa3d'
 
 /*
  * La mesa giratoria (referencia: el carrusel de frascos de Agrumea Farm).
  * Una mesa verde que no termina: el scroll le da una vuelta entera (de la mañana a la noche y otra vez al café)
  * y el arrastre o las flechas la siguen girando sin tope, como el carrusel de la referencia. Tocar un plato lo
  * trae al frente por el camino más corto y lo hace girar sobre la mesa.
- * Como en los manteles de Lilium, los platos esperan sin pintar (solo el trazo) y se colorean al pasar
- * frente a vos. Todo corre en un rAF a demanda que escribe estilos: sin re-render por cuadro.
+ * Los platos son objetos 3D (three.js, tres/mesa3d.ts) que giran sobre su eje y se pintan al llegar al frente,
+ * como el mantel para colorear. Mientras three.js baja (o si no hay WebGL) se ven los dibujos planos del HTML.
+ * Todo corre en un rAF que escribe estilos o dibuja el lienzo: sin re-render por cuadro.
  */
 
 const DIBUJOS: Record<string, ComponentType> = {
@@ -65,11 +67,13 @@ export function MesaGiratoria() {
   const mesaRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
   const colorRefs = useRef<(HTMLDivElement | null)[]>([])
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const tituloRef = useRef<HTMLHeadingElement>(null)
+  const nombreRef = useRef<HTMLSpanElement>(null)
   const nudgeRef = useRef<(step: number) => void>(() => {})
   const [focus, setFocus] = useState(0)
   const [aviso, setAviso] = useState('')
   const [tocada, setTocada] = useState(false)
-  const status = useOpenStatus()
 
   useEffect(() => {
     const section = sectionRef.current!
@@ -88,10 +92,28 @@ export function MesaGiratoria() {
     const spinVel = new Float32Array(N)
     let announce = false
 
+    // medidas en píxeles: borde de la mesa y tamaño del plato salen del CSS (los mismos que usa el HTML inicial)
+    let W = 0
+    let H = 0
+    let mesaTop = 0
+    let size = 0
     const measure = () => {
       narrow = innerWidth < 768
-      spacing = narrow ? innerWidth * 0.6 : Math.min(innerWidth * 0.25, 400)
+      const sticky = section.firstElementChild as HTMLElement
+      W = sticky.clientWidth
+      H = sticky.clientHeight
+      mesaTop = mesaRef.current!.parentElement!.getBoundingClientRect().top - sticky.getBoundingClientRect().top
+      const p = itemRefs.current[0]!
+      size = p.offsetWidth
+      // separación proporcional al plato (en pantallas bajas los platos se achican y se juntan)
+      spacing = narrow ? innerWidth * 0.62 : Math.min(innerWidth * 0.27, size * 1.05, 430)
+      mesa3d?.resize(W, H, size)
     }
+
+    let mesa3d: Mesa3D | null = null
+    let visible = true
+    let t0 = performance.now()
+    const poses: Pose[] = Array.from({ length: N }, () => ({ x: 0, y: 0, s: 1, d: 0, spin: 0 }))
 
     const render = () => {
       for (let i = 0; i < N; i++) {
@@ -100,6 +122,16 @@ export function MesaGiratoria() {
         const x = d * spacing * (1 - 0.06 * Math.min(a, 3))
         const y = -Math.min(a, 3) * spacing * (narrow ? 0.12 : 0.07)
         const s = 1 - 0.3 * Math.min(a, 2.2)
+        if (mesa3d) {
+          const p = poses[i]
+          p.x = W / 2 + x
+          // el plato 3D se apoya sobre el borde de la mesa (el dibujo plano flota un poco más arriba)
+          p.y = mesaTop + size * 0.06 + y
+          p.s = s
+          p.d = d
+          p.spin = spin[i]
+          continue
+        }
         const el = itemRefs.current[i]!
         el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${(GIRO[i] - d * 24 + spin[i]).toFixed(2)}deg) scale(${s.toFixed(3)})`
         el.style.opacity = String(clamp(3 - a, 0, 1))
@@ -108,6 +140,7 @@ export function MesaGiratoria() {
         const c = clamp(1.5 - a * 1.5, 0, 1)
         colorRefs.current[i]!.style.clipPath = c >= 1 ? 'none' : `circle(${(c * 72).toFixed(1)}% at 50% 50%)`
       }
+      if (mesa3d) mesa3d.render(poses, (performance.now() - t0) / 1000)
       mesaRef.current!.style.transform = `rotate(${(-current * (360 / N)).toFixed(2)}deg)`
       const idx = mod(Math.round(current))
       if (idx !== shown) {
@@ -134,7 +167,8 @@ export function MesaGiratoria() {
         else spinning = true
       }
       render()
-      if (current !== target || spinning) raf = requestAnimationFrame(frame)
+      // con los platos 3D el bucle sigue mientras la mesa está en pantalla: giran sobre su eje en reposo
+      if (current !== target || spinning || (mesa3d && visible && !reduced)) raf = requestAnimationFrame(frame)
     }
     const invalidate = () => {
       if (!raf) raf = requestAnimationFrame(frame)
@@ -197,10 +231,20 @@ export function MesaGiratoria() {
       delete stage.dataset.dragging
       announce = true
       if (!moved) {
-        const hit = (document.elementFromPoint(e.clientX, e.clientY) as Element | null)?.closest<HTMLElement>('.plato')
-        if (!hit) return
-        const i = Number(hit.dataset.i)
-        spinTarget[i] += 360 * (e.clientX < hit.getBoundingClientRect().left + hit.offsetWidth / 2 ? -1 : 1)
+        let i: number
+        let izquierda: boolean
+        if (mesa3d) {
+          const k = mesa3d.pick(e.clientX, e.clientY)
+          if (k === null) return
+          i = k
+          izquierda = e.clientX < poses[k].x
+        } else {
+          const hit = (document.elementFromPoint(e.clientX, e.clientY) as Element | null)?.closest<HTMLElement>('.plato')
+          if (!hit) return
+          i = Number(hit.dataset.i)
+          izquierda = e.clientX < hit.getBoundingClientRect().left + hit.offsetWidth / 2
+        }
+        spinTarget[i] += 360 * (izquierda ? -1 : 1)
         offset = Math.round(current + wrap(i - current)) - scrollPart
         firstTouch()
         invalidate()
@@ -233,6 +277,34 @@ export function MesaGiratoria() {
       render()
       onScroll()
     }
+
+    // el bucle 3D solo corre con la mesa en pantalla
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting
+      if (visible) invalidate()
+    })
+    io.observe(section)
+
+    // three.js se baja después de pintar la página; los platos 3D "se sirven" sobre la mesa
+    let cancelado = false
+    import('./tres/mesa3d')
+      .then(({ createMesa3D }) => {
+        if (cancelado) return
+        mesa3d = createMesa3D(canvasRef.current!, PLATOS.map((p) => p.id))
+        measure()
+        t0 = performance.now()
+        stage.dataset.tresd = ''
+        if (!reduced) {
+          const orden = [...mesa3d.entradas.keys()].sort((a, b) => Math.abs(wrap(a - current)) - Math.abs(wrap(b - current)))
+          orden.forEach((i, k) => {
+            const e = mesa3d!.entradas[i]
+            gsap.fromTo(e, { y: H * 0.22, s: 0.55 }, { y: 0, s: 1, duration: 1.15, delay: 0.05 + k * 0.08, ease: 'expo.out' })
+          })
+        }
+        invalidate()
+      })
+      // sin WebGL quedan los platos dibujados del HTML
+      .catch(() => delete stage.dataset.tresd)
     addEventListener('scroll', onScroll, { passive: true })
     addEventListener('resize', onResize)
     stage.addEventListener('pointerdown', onDown)
@@ -240,6 +312,9 @@ export function MesaGiratoria() {
     stage.addEventListener('pointerup', onUp)
     stage.addEventListener('pointercancel', onCancel)
     return () => {
+      cancelado = true
+      io.disconnect()
+      mesa3d?.dispose()
       cancelAnimationFrame(raf)
       removeEventListener('scroll', onScroll)
       removeEventListener('resize', onResize)
@@ -249,6 +324,18 @@ export function MesaGiratoria() {
       stage.removeEventListener('pointercancel', onCancel)
     }
   }, [])
+
+  // el título sube línea por línea al cargar
+  useEffect(() => lineasQueSuben(tituloRef.current!, { retraso: 0.15 }), [])
+  // el nombre del plato cambia rodando desde abajo (corto: se ve muchas veces)
+  const primera = useRef(true)
+  useEffect(() => {
+    if (primera.current || reducido()) {
+      primera.current = false
+      return
+    }
+    gsap.fromTo(nombreRef.current, { yPercent: 55, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.45 })
+  }, [focus])
 
   const plato = PLATOS[focus]
 
@@ -266,33 +353,39 @@ export function MesaGiratoria() {
       }}
     >
       <div className="sticky top-0 h-svh overflow-hidden bg-crema">
-        {/* la vitrina: título condensado enorme, el sticker del mantel y el estado del local */}
+        {/* la vitrina: título condensado enorme; en el teléfono, nada más que el título y la mesa */}
         <div className="mesa-portada">
           <Sticker className="mesa-sticker" giro={-9}>
             ¡Pedí lápices
             <br />y pintá el mantel!
           </Sticker>
-          <h1 className="titulo-vitrina mesa-titulo">
+          <h1 ref={tituloRef} className="titulo-vitrina mesa-titulo">
             Cafés especiales <span className="block">y delicias caseras</span>
           </h1>
-          <p className="mesa-bajada">
-            En Puerto Iguazú, sobre Av. Tres Fronteras. <span className="max-md:hidden">Desayunos, almuerzos y meriendas.</span>
-          </p>
-          <div className="mt-4 flex justify-center md:hidden">
-            <Estado status={status} />
-          </div>
+          <p className="mesa-bajada">En Puerto Iguazú, sobre Av. Tres Fronteras. Desayunos, almuerzos y meriendas.</p>
         </div>
 
-        <Cinta className="mesa-cinta" items={['Café de especialidad', 'Delicias caseras', 'Puerto Iguazú', status ? `${status.state} ${status.detail}` : 'Martes a domingo']} />
-
-        {/* la mesa: un disco enorme que asoma desde abajo y gira con los platos */}
+        {/* la mesa: un disco enorme con el mantel de mandala, que asoma desde abajo y gira con los platos */}
         <div aria-hidden="true" className="mesa-wrap">
           <div ref={mesaRef} className="mesa">
             <svg viewBox="-500 -500 1000 1000" className="h-full w-full">
               <circle r="500" className="fill-laguna-deep" />
+              <g className="mesa-mandala" fill="none">
+                <circle r="470" />
+                <circle r="452" strokeDasharray="2 14" strokeLinecap="round" strokeWidth="4" />
+                <circle r="300" />
+                {Array.from({ length: 24 }, (_, k) => (
+                  <path key={k} transform={`rotate(${k * 15})`} d="M0-448C26-420 26-372 0-330C-26-372-26-420 0-448Z" />
+                ))}
+                {Array.from({ length: 12 }, (_, k) => (
+                  <path key={k} transform={`rotate(${k * 30 + 7.5})`} d="M0-300C40-262 40-206 0-170C-40-206-40-262 0-300Z" />
+                ))}
+              </g>
             </svg>
           </div>
         </div>
+
+        <canvas ref={canvasRef} className="mesa-lienzo" aria-hidden="true" />
 
         <div ref={stageRef} className="escenario" aria-hidden="true">
           {PLATOS.map(({ id, Dibujo }, i) => (
@@ -315,14 +408,14 @@ export function MesaGiratoria() {
             <span className="pista" data-oculta={tocada || undefined} aria-hidden="true">
               Tocá un plato o deslizá la mesa
             </span>
-            <span className="titulo-vitrina block text-[2.3rem] leading-[0.95] text-crema md:text-[3.4rem]">{plato.name}</span>
+            <span className="block overflow-hidden">
+              <span ref={nombreRef} className="titulo-vitrina block text-[2.3rem] leading-[0.95] text-crema md:text-[3.4rem]">
+                {plato.name}
+              </span>
+            </span>
             <span className="mt-1 block font-hand text-[1.4rem] leading-tight text-menta">
               {plato.momento.toLowerCase()} · {plato.note}
             </span>
-            <a href="#carta" className="pildora pildora-lima mt-3">
-              Ver la carta
-              <ArrowIcon className="h-4 w-4" />
-            </a>
           </p>
           <button type="button" className="flecha" aria-label="Plato siguiente" onClick={() => nudgeRef.current(1)}>
             <ArrowIcon className="h-5 w-5" />

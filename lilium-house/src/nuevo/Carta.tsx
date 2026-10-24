@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState, type ComponentType } from 'react'
-import { Butterfly } from '../components/Botanica'
-import { Fern, Hummingbird } from '../components/Flora'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, SITE, whatsappLink, type CartaItem } from '../data/site'
-import { Lirio } from './Lirio'
-import { Pieza, Vida } from './vida/Vida'
 
 /*
  * La carta como láminas de especímenes (referencia: Madie): cada plato con su dibujo, nombre y nota.
@@ -72,26 +68,12 @@ export function Carta() {
   const momento = CARTA.find((c) => c.id === tab)!
 
   return (
-    <section id="carta" aria-labelledby="carta-titulo" className="relative overflow-hidden bg-crema px-4 pt-24 pb-36 md:px-7 md:pt-32 md:pb-40">
-      <Vida>
-        {/* el lirio de la casa con su picaflor, y un helecho al otro lado */}
-        <Pieza clase="planta" fase={0.2} className="absolute bottom-0 left-[-1.5rem] h-[26rem] max-lg:hidden" style={{ aspectRatio: '400/760' }}>
-          <Lirio tilt={-6} bud />
-        </Pieza>
-        <Pieza clase="picaflor" fase={0.6} className="absolute bottom-[26.5rem] left-[1.5rem] h-16 max-lg:hidden" style={{ aspectRatio: '140/100' }}>
-          <Hummingbird />
-        </Pieza>
-        <Pieza clase="planta" fase={0.7} className="absolute -right-4 bottom-0 h-[15rem] md:h-[24rem]" style={{ aspectRatio: '120/215' }}>
-          <Fern />
-        </Pieza>
+    <section id="carta" aria-labelledby="carta-titulo" className="relative overflow-hidden bg-crema px-4 pt-20 pb-24 md:px-7 md:pt-28 md:pb-32">
       <div className="relative z-10 mx-auto max-w-5xl">
         <div className="flex items-start gap-3">
           <h2 id="carta-titulo" className="titulo-vitrina text-[3.4rem] leading-[0.88] text-laguna-deep md:text-[6.5rem]">
             La carta
           </h2>
-          <Pieza clase="mariposa" fase={0.35} className="relative mt-1 ml-12 h-14 max-md:hidden" style={{ aspectRatio: '48/40' }}>
-            <Butterfly />
-          </Pieza>
         </div>
         <p className="mt-4 max-w-[46ch] font-elegante text-lg text-madera-soft">
           Desayunos, almuerzos y meriendas. Lo que sale de la vitrina cambia cada día: lo contamos en Instagram.
@@ -138,7 +120,6 @@ export function Carta() {
           </a>
         </div>
       </div>
-      </Vida>
     </section>
   )
 }

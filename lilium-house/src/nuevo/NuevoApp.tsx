@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { SITE } from '../data/site'
 import { Cabecera } from './Cabecera'
 import { Carta } from './Carta'
-import { Friso } from './Friso'
+import { Coreografia } from './Coreografia'
 import { LogoDefs } from './LogoLilium'
 import { MesaGiratoria } from './MesaGiratoria'
+import { Rincon } from './Rincon'
 import { Vitrina } from './Vitrina'
 import { Visita } from './Visita'
 
@@ -39,6 +40,7 @@ export function NuevoApp() {
   return (
     <>
       <LogoDefs />
+      <Coreografia />
       <Cabecera />
       <main>
         <MesaGiratoria />
@@ -46,7 +48,7 @@ export function NuevoApp() {
         <Carta />
         <Visita />
       </main>
-      <Friso />
+      <Rincon />
       <LlegarFlotante />
     </>
   )

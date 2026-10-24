@@ -126,20 +126,19 @@ main section[id] {
   gap: 0.25rem;
 }
 .menu-enlace {
+  display: block;
+  overflow: hidden;
   font-family: var(--font-display);
   font-weight: 800;
   font-stretch: 75%;
   font-size: clamp(3.4rem, 16vw, 8.5rem);
-  line-height: 0.92;
+  line-height: 0.95;
   text-transform: uppercase;
   color: var(--color-laguna-deep);
-  opacity: 0;
-  translate: 0 0.4em;
-  transition: opacity 200ms ease, translate 360ms var(--ease-out), color 200ms ease;
+  transition: color 200ms ease;
 }
-.menu-panel[data-abierto] .menu-enlace {
-  opacity: 1;
-  translate: 0 0;
+.menu-enlace-texto {
+  display: block;
 }
 .menu-pie {
   display: flex;
@@ -359,6 +358,23 @@ main section[id] {
   will-change: transform;
 }
 
+.mesa-lienzo {
+  position: absolute;
+  inset: 0;
+  z-index: 19;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.mesa-mandala {
+  stroke: var(--color-turquesa);
+  stroke-opacity: 0.28;
+  stroke-width: 2;
+}
+.escenario[data-tresd] .plato {
+  opacity: 0 !important;
+  transition: opacity 300ms ease;
+}
 .escenario {
   position: absolute;
   inset: 0;
@@ -373,7 +389,7 @@ main section[id] {
 }
 .plato {
   /* separación entre platos y caída del arco: las mismas que usa el script (measure / render) */
-  --sp: min(25vw, 400px);
+  --sp: min(27vw, var(--size) * 1.05, 430px);
   --yk: 0.07;
   --size: min(44svh, 400px);
   position: absolute;
@@ -430,14 +446,14 @@ main section[id] {
 
 @media (max-width: 767px) {
   .mesa-wrap {
-    top: 66svh;
+    top: 54svh;
     width: 230vw;
   }
-    .plato {
-    --sp: 60vw;
+  .plato {
+    --sp: 62vw;
     --yk: 0.12;
-    --size: min(62vw, 34svh);
-    top: calc(66svh - var(--size) * 0.7);
+    --size: min(64vw, 34svh);
+    top: calc(54svh - var(--size) * 0.7);
   }
   .pie-mesa {
     gap: 0.5rem;
@@ -519,61 +535,53 @@ main section[id] {
   font-family: var(--font-script);
   font-size: 34px;
 }
-.hornero {
-  position: absolute;
-  right: 1.5rem;
-  top: -4.6rem;
-  width: 11rem;
-  z-index: 1;
-}
-
-/* ---------- Friso del cierre ---------- */
-.friso {
+/* ---------- El cierre: rincón verde en 3D ---------- */
+.rincon {
   position: relative;
-  height: clamp(15rem, 36vw, 27rem);
+  background: var(--color-crema);
+  overflow: hidden;
 }
-.tucan {
-  position: absolute;
-  left: 37%;
-  bottom: 64%;
-  height: clamp(3.5rem, 6vw, 5rem);
+.rincon-cabeza {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 4rem 1rem 0;
+  text-align: center;
 }
-@media (max-width: 767px) {
-  .tucan {
-    left: 46%;
-    bottom: 40%;
-  }
+.rincon-logo {
+  width: min(78vw, 30rem);
+  height: auto;
+  color: var(--color-laguna-deep);
 }
-
-/* ---------- Flora y fauna con vida (three.js) ---------- */
-.vida-capa {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
+.rincon-frase {
+  max-width: 30ch;
+  font-family: var(--font-hand);
+  font-size: 1.5rem;
+  line-height: 1.15;
+  color: var(--color-turquesa-dark);
 }
-.vida-lienzo {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  opacity: 0;
-  transition: opacity 240ms ease;
-}
-.vida-capa[data-vivo] .vida-lienzo {
-  opacity: 1;
-}
-.pieza {
-  pointer-events: none;
-  transition: opacity 240ms ease;
-}
-.pieza > svg {
+.rincon-lienzo {
   display: block;
   width: 100%;
-  height: 100%;
+  height: clamp(18rem, 52svh, 30rem);
+  margin-top: 0.5rem;
 }
-.pieza[data-oculta] {
-  opacity: 0;
+.rincon-pie {
+  padding: 1rem;
+  background: var(--color-laguna-deep);
+  color: var(--color-menta);
+  font-size: 0.9rem;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .rincon-cabeza {
+    padding-top: 7rem;
+  }
+  .rincon-lienzo {
+    height: clamp(24rem, 64svh, 38rem);
+  }
 }
 
 /* ---------- Cómo llegar flotante ---------- */
@@ -617,19 +625,20 @@ main section[id] {
 .mesa-portada {
   position: relative;
   z-index: 30;
-  padding: calc(var(--alto-cabecera) + 1.25rem) 1rem 0;
+  padding: calc(var(--alto-cabecera) + clamp(1.25rem, 4svh, 2.5rem)) 1rem 0;
   text-align: center;
 }
+/* el título se achica con el ancho y con el alto: en notebooks de poca altura no se pisa con la mesa */
 .mesa-titulo {
   margin-inline: auto;
-  font-size: clamp(2.9rem, 12vw, 6.4rem);
+  font-size: clamp(2.9rem, min(12.5vw, 11svh), 6.4rem);
   line-height: 0.86;
   color: var(--color-laguna-deep);
 }
 .mesa-bajada {
   margin-top: 0.9rem;
   font-family: var(--font-elegante);
-  font-size: 1rem;
+  font-size: 1.15rem;
   color: var(--color-madera-soft);
 }
 .mesa-sticker {
@@ -638,24 +647,25 @@ main section[id] {
   top: calc(var(--alto-cabecera) + 0.25rem);
   z-index: 2;
 }
-.mesa-cinta {
-  position: absolute;
-  inset-inline: -5vw;
-  top: 55svh;
-  z-index: 5;
-  rotate: -3deg;
-}
+/* teléfono: arriba solo el título; dónde queda y el horario están en el menú y en Visitanos */
 @media (max-width: 767px) {
-  .mesa-sticker {
+  .mesa-sticker,
+  .mesa-bajada {
     display: none;
   }
-  .mesa-cinta {
-    top: 50svh;
-  }
 }
-@media (min-width: 768px) {
+/* pantallas bajas (notebooks con la barra del navegador): mesa más abajo y platos más chicos */
+@media (min-width: 768px) and (max-height: 780px) {
+  .mesa-wrap {
+    top: 66svh;
+  }
+  .plato {
+    --size: min(38svh, 360px);
+    top: calc(66svh - var(--size) * 0.66);
+  }
   .mesa-bajada {
-    font-size: 1.15rem;
+    margin-top: 0.6rem;
+    font-size: 1rem;
   }
 }
 
@@ -663,7 +673,7 @@ main section[id] {
 .vitrina {
   position: relative;
   overflow: hidden;
-  padding: 6rem 1rem 9rem;
+  padding: 7rem 1rem 6rem;
   background: var(--color-crema);
 }
 .vitrina-grilla {
@@ -729,16 +739,19 @@ main section[id] {
 .lamina-2 {
   margin-top: 3rem;
 }
+.vitrina {
+  overflow: visible;
+}
 .vitrina-cinta {
   position: absolute;
   inset-inline: -5vw;
-  bottom: 2.5rem;
-  rotate: 2deg;
-  background: var(--lima);
+  top: -1.6rem;
+  z-index: 5;
+  rotate: -2.5deg;
 }
 @media (min-width: 768px) {
   .vitrina {
-    padding: 8rem 2rem 11rem;
+    padding: 9rem 2rem 8rem;
   }
   .vitrina-grilla {
     grid-template-columns: 1.15fr 1fr 0.8fr;

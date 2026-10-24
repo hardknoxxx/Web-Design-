@@ -16,6 +16,8 @@ const FOTOS = [
 export function Vitrina() {
   return (
     <section id="vitrina" aria-labelledby="vitrina-titulo" className="vitrina">
+      {/* la cinta cose la mesa con la vitrina: cruza el borde entre las dos secciones */}
+      <Cinta className="vitrina-cinta" items={['Café de especialidad', 'Delicias caseras', 'Recién hecho', 'Puerto Iguazú']} />
       <div className="vitrina-grilla">
         <div className="vitrina-texto">
           <h2 id="vitrina-titulo" className="titulo-vitrina text-[3.4rem] leading-[0.88] text-laguna-deep md:text-[6.5rem]">
@@ -55,7 +57,6 @@ export function Vitrina() {
           </figure>
         ))}
       </div>
-      <Cinta className="vitrina-cinta" inversa items={['Recién hecho', 'Delicias caseras', 'Café de especialidad', 'Para llevar']} />
     </section>
   )
 }

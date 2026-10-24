@@ -171,3 +171,20 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - Bricolage Grotesque reemplazada por la variable completa (ancho 75–100, peso 200–800) para los títulos condensados.
 - Nuevo: cabecera fija y menú overlay; hero con título condensado, sticker y cinta; sección "Elegí tu favorito" con
   las fotos reales; carta, visita y botones con el mismo sistema. Primer contenido local 0,87 s (4G lento + CPU 4×).
+
+## 21. 3D con three.js y coreografía GSAP
+
+- Pedido: portada más limpia en el teléfono, nada de flora/fauna flotando sin contexto, platos 3D que giren sobre su
+  eje como en Agrumea, animaciones GSAP en textos, secciones, menú y transiciones.
+- Hero: platos 3D procedurales (`src/nuevo/tres/`) sentados en el borde de la mesa, giran en reposo, al viajar y al
+  tocarlos; los de los costados quedan "sin pintar" (mantel para colorear). Los platos DOM quedan como respaldo sin WebGL.
+- Teléfono: la portada muestra solo título, mesa y nombre del plato (sin estado, cinta ni bajada).
+- Se quitaron lirios, picaflor, helecho, mariposa y animales sueltos de carta, visita y friso. En su lugar, al pie, un
+  "rincón verde" 3D con contexto: mostrador de madera con monstera, florero de lirios, helecho, lápices y café; un
+  picaflor va de flor en flor y una mariposa rodea la monstera. Carga diferida y shaders precompilados.
+- GSAP (ScrollTrigger, SplitText, DrawSVG): mandala que se dibuja, títulos por líneas, fotos que se reparten, mapa
+  que se abre, horario renglón por renglón, menú con secciones que suben. Con movimiento reducido no se anima nada.
+- Referencias revisadas (React Bits, Motion Primitives, Godly, Refero, GSAP, Spline, etc.): se tomó lo alineado a la
+  marca (GSAP, criterios editoriales); se descartó lo de estética SaaS/tech y Spline por peso.
+- Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,83 s, CLS 0,03, sin errores. Los cuadros por
+  segundo medidos usan WebGL por software (sin GPU) y no representan un teléfono real.

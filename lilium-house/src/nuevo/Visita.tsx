@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Coati, HorneroNido } from '../components/Fauna'
-import { BananaLeaf } from '../components/Flora'
 import { LilyMark, PhoneIcon } from '../components/Icons'
 import { SITE, whatsappLink } from '../data/site'
 import { useOpenStatus } from '../hooks/useOpenStatus'
 import { AVENIDA, CALLE, PARQUE, PIN, RIO, ROTULOS } from './croquisDatos'
-import { Pieza, Vida } from './vida/Vida'
 
 /*
  * Visitanos (referencia: el mapa redibujado de Madie). Las calles reales de OpenStreetMap en la paleta, el horario con el día de
- * hoy marcado y las tres formas de llegar o avisar. Un hornero cuida el croquis y un coatí cruza al pie.
+ * hoy marcado y las tres formas de llegar o avisar.
  */
 
 function filaDeHoy() {
@@ -62,11 +59,7 @@ export function Visita() {
   useEffect(() => setHoy(filaDeHoy()), [])
 
   return (
-    <section id="visita" aria-labelledby="visita-titulo" className="relative overflow-hidden bg-laguna-deep px-4 pt-24 pb-36 text-crema md:px-7 md:pt-32 md:pb-44">
-      <Vida>
-      <Pieza clase="planta" fase={0.45} className="absolute -right-6 bottom-0 h-[22rem] max-md:hidden" style={{ aspectRatio: '140/340' }}>
-        <BananaLeaf color="#6F7F2E" />
-      </Pieza>
+    <section id="visita" aria-labelledby="visita-titulo" className="relative overflow-hidden bg-laguna-deep px-4 pt-20 pb-24 text-crema md:px-7 md:pt-28 md:pb-32">
       <div className="relative z-10 mx-auto grid max-w-5xl gap-14 md:grid-cols-[1fr_1.1fr] md:gap-16">
         <div>
           <h2 id="visita-titulo" className="titulo-vitrina text-[3.4rem] leading-[0.88] md:text-[6.5rem]">
@@ -108,19 +101,11 @@ export function Visita() {
         </div>
 
         <figure className="relative self-start">
-          <Pieza clase="salto" fase={0.3} className="hornero" style={{ aspectRatio: '230/110' }}>
-            <HorneroNido />
-          </Pieza>
           <Croquis />
           <figcaption className="mt-3 text-[0.95rem] text-menta">Casi esquina Entre Ríos, a unos 200 m de la Costanera. Mapa: © colaboradores de OpenStreetMap.</figcaption>
         </figure>
       </div>
 
-      {/* el coatí de las Cataratas cruza al pie, a su ritmo */}
-      <Pieza clase="caminata" fase={0.1} className="absolute bottom-6 left-[10%] h-[4.5rem]" style={{ aspectRatio: '170/96' }}>
-        <Coati />
-      </Pieza>
-      </Vida>
     </section>
   )
 }
