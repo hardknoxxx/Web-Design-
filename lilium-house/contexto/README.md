@@ -86,6 +86,14 @@ cada sección declara `data-phase="fondo|texto|hora"`.
   commit en `SOURCE.md`. Cubre movimiento e interacción (curvas, duraciones, origen, feedback), no espaciado.
 - **Puppeteer MCP no se instaló**: `@modelcontextprotocol/server-puppeteer` está deprecado y sin soporte
   en npm; Playwright MCP cubre lo mismo.
+- Playwright MCP: la ruta del Chromium del entorno cambió a `/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`
+  (oct. 2026); si vuelve a fallar, buscar la carpeta `chromium-*` vigente en `/opt/pw-browsers/`.
+- **Figma MCP** (servidor oficial remoto `https://mcp.figma.com/mcp`, HTTP) en `.mcp.json`. Requiere autenticarse una
+  vez: en Claude Code, `/mcp` → figma → Authenticate → "Allow Access" en el navegador.
+- **Taste Skill** (`Leonxlnx/taste-skill`, skill `design-taste-frontend`, MIT) en `.claude/skills/taste-skill/`,
+  auditado (ver `SOURCE.md`): sus scripts de Node descargan imágenes de dominio público, guardan historial en
+  `~/.taste-skill/` y abren un Chrome local para inspeccionar; solo corren al usar el skill. Propone direcciones de
+  arte nuevas: en este proyecto manda el mundo visual ya establecido (`PRODUCT.md`).
 - Figma: archivo del storyboard de scroll `8a62hs9qgXqNI8zOzefJmC`.
 
 ## Pendientes
