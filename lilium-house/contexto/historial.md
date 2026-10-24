@@ -95,3 +95,9 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   (CPU 4x): sin flor 48 fps · producción anterior 27 · pedido estricto 17 · con resolución dinámica 29.
 - Arreglo: si el chunk del lirio fallaba o no había WebGL, la página entera quedaba en blanco.
 
+
+## 13. PR #13–14 — Impeccable
+
+- Instalado sin hooks a nivel proyecto (ver README de contexto).
+- `/impeccable init`: `lilium-house/PRODUCT.md` con público (turistas y vecinos por igual), objetivo (que vaya
+  al local) e idiomas como decisión abierta.
