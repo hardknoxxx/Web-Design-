@@ -1,0 +1,109 @@
+/* Base de la portada (src/nuevo): Tailwind, tipografías auto-alojadas y tokens de marca.
+   Independiente de src/index.css, que queda solo para el sitio archivado (/anterior.html). */
+@import 'tailwindcss' source(none);
+@source './';
+@source '../components/Platos.tsx';
+@source '../components/Flora.tsx';
+@source '../components/Fauna.tsx';
+@source '../components/Botanica.tsx';
+@source '../components/Icons.tsx';
+
+/* Tipografías auto-alojadas (licencias en /fonts/licencias): Bricolage Grotesque, Raleway y Caveat (OFL 1.1),
+   Yellowtail (Apache 2.0, el script del logo). */
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/fonts/bricolage-grotesque.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Raleway';
+  src: url('/fonts/raleway.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Caveat';
+  src: url('/fonts/caveat.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yellowtail';
+  src: url('/fonts/yellowtail.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-crema: #faf7f2;
+  --color-estuco: #f0eae1;
+  --color-madera: #3d2314;
+  --color-madera-soft: #6b4a36;
+  --color-hierro: #1a1a1a;
+  --color-turquesa: #64bcb0;
+  --color-turquesa-dark: #277067;
+  --color-laguna: #1c4a45;
+  --color-laguna-deep: #173f3b;
+  --color-menta: #bfe3dc;
+  /* Menta del logo (Lilium Coffee Lounge) como color de marca; acentos "tierra colorada": suelo rojo de Misiones, selva, yerba y madera
+     (base Bakery/Cafe de UI UX Pro Max + IguazuFalls de NatParksPalettes) */
+  --color-tierra: #b4472b;
+  --color-tierra-dark: #8e3520;
+  --color-canela: #9a5b2e;
+  --color-miel: #d9a441;
+  --color-arena: #e4d3b4;
+  --color-kraft: #e6d7bc;
+  --color-dulce: #f1dcc4;
+  --color-salvia: #5b7b5a;
+  --color-selva: #22351e;
+  --color-musgo: #415521;
+  --color-yerba: #6f7f2e;
+  --color-helecho: #97ad3d;
+  --color-corteza: #7f6552;
+
+  --font-display: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-script: 'Yellowtail', 'Brush Script MT', cursive;
+  --font-hand: 'Caveat', 'Segoe Print', cursive;
+  --font-elegante: 'Raleway', 'Avenir Next', system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    overflow-x: clip;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+    scrollbar-color: color-mix(in oklab, var(--color-madera) 55%, transparent) transparent;
+    scrollbar-width: thin;
+    caret-color: var(--color-turquesa-dark);
+  }
+  body {
+    @apply bg-crema font-sans text-madera antialiased;
+    overflow-x: clip;
+    font-optical-sizing: auto;
+  }
+  /* títulos: corte display de Bricolage, apretado y parejo */
+  .font-display {
+    letter-spacing: -0.025em;
+  }
+  a {
+    text-underline-offset: 0.2em;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}

@@ -1,3 +1,20 @@
+/*
+ * Horario del local: fuente única. Por día de la semana (0 = domingo), los tramos abiertos en minutos.
+ * De acá salen el estado "Abierto/Cerrado", la tabla de horarios y los datos estructurados (JSON-LD).
+ * Martes a sábado corrido; domingo mañana y tarde; lunes cerrado.
+ */
+const CORRIDO: [number, number][] = [[8 * 60, 21 * 60]]
+const PARTIDO: [number, number][] = [
+  [8 * 60, 12 * 60],
+  [17 * 60, 21 * 60],
+]
+export const HORARIO: [number, number][][] = [PARTIDO, [], CORRIDO, CORRIDO, CORRIDO, CORRIDO, CORRIDO]
+
+export const hhmm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+const hh = (m: number) => String(Math.floor(m / 60)).padStart(2, '0')
+const tramos = (slots: [number, number][], corto = false) =>
+  slots.length ? slots.map(([a, b]) => (corto ? `${hh(a)}–${hh(b)}` : `${hhmm(a)} – ${hhmm(b)}`)).join(' · ') : 'cerrado'
+
 export const SITE = {
   name: 'Lilium House & Coffee',
   brand: 'Lilium Coffee Lounge',
@@ -17,10 +34,10 @@ export const SITE = {
   hours: {
     days: 'Martes a Domingo',
     rows: [
-      ['Mar a Sáb', '08:00 – 21:00'],
-      ['Domingo', '08–12 · 17–21'],
-      ['Lunes', 'cerrado'],
-    ],
+      ['Mar a Sáb', tramos(HORARIO[2])],
+      ['Domingo', tramos(HORARIO[0], true)],
+      ['Lunes', tramos(HORARIO[1])],
+    ] as [string, string][],
     closed: 'Lunes cerrado',
   },
   // Datos públicos de la ficha de Google Maps
@@ -112,3 +129,37 @@ export const CARTA: { id: string; label: string; time: string; intro: string; it
     ],
   },
 ]
+
+const DIAS_SCHEMA = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+/** Datos estructurados de la cafetería (schema.org), generados desde SITE y HORARIO al prerenderizar. */
+export function jsonLd() {
+  const porTramo = new Map<string, string[]>()
+  HORARIO.forEach((slots, dia) =>
+    slots.forEach(([a, b]) => {
+      const k = `${hhmm(a)}-${hhmm(b)}`
+      porTramo.set(k, [...(porTramo.get(k) ?? []), DIAS_SCHEMA[dia]])
+    }),
+  )
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CafeOrCoffeeShop',
+    name: SITE.brand,
+    alternateName: SITE.name,
+    telephone: SITE.phoneDisplay,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: SITE.address,
+      postalCode: SITE.postalCode,
+      addressLocality: 'Puerto Iguazú',
+      addressRegion: 'Misiones',
+      addressCountry: 'AR',
+    },
+    servesCuisine: ['Café', 'Desayunos', 'Almuerzos', 'Meriendas', 'Pastelería'],
+    sameAs: [SITE.instagramHref],
+    openingHoursSpecification: [...porTramo].map(([k, dias]) => {
+      const [opens, closes] = k.split('-')
+      return { '@type': 'OpeningHoursSpecification', dayOfWeek: dias.length === 1 ? dias[0] : dias, opens, closes }
+    }),
+  }
+}

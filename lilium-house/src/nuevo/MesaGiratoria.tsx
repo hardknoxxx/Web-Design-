@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react'
+import { useEffect, useRef, useState, type ComponentType, type CSSProperties } from 'react'
 import { ArrowIcon } from '../components/Icons'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, SITE } from '../data/site'
@@ -38,6 +38,27 @@ const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
 /** distancia de un plato al frente, por el lado más corto de la mesa: [-N/2, N/2) */
 const wrap = (d: number) => ((((d + N / 2) % N) + N) % N) - N / 2
 const mod = (i: number) => ((i % N) + N) % N
+
+/**
+ * Posición de cada plato con la mesa quieta en el café (current = 0), como variables CSS: así el HTML
+ * generado al compilar ya trae los platos en su lugar antes de que corra JavaScript. Mismas fórmulas que render().
+ */
+function posicionInicial(i: number): CSSProperties {
+  const d = wrap(i)
+  const a = Math.abs(d)
+  return {
+    '--xf': d * (1 - 0.06 * Math.min(a, 3)),
+    '--yf': -Math.min(a, 3),
+    '--rot': GIRO[i] - d * 24,
+    '--s': 1 - 0.3 * Math.min(a, 2.2),
+    opacity: clamp(3 - a, 0, 1),
+    zIndex: 10 - Math.round(a * 2),
+  } as CSSProperties
+}
+const colorInicial = (i: number): CSSProperties => {
+  const c = clamp(1.5 - Math.abs(wrap(i)) * 1.5, 0, 1)
+  return { clipPath: c >= 1 ? 'none' : `circle(${(c * 72).toFixed(1)}% at 50% 50%)` }
+}
 
 /** Estado del local en una píldora: punto (verde si está abierto) y la próxima hora que importa. */
 function Estado({ status, className = '' }: { status: OpenStatus | null; className?: string }) {
@@ -300,11 +321,11 @@ export function MesaGiratoria() {
 
         <div ref={stageRef} className="escenario" aria-hidden="true">
           {PLATOS.map(({ id, Dibujo }, i) => (
-            <div key={id} ref={(el) => void (itemRefs.current[i] = el)} data-i={i} className="plato">
+            <div key={id} ref={(el) => void (itemRefs.current[i] = el)} data-i={i} className="plato" style={posicionInicial(i)}>
               <div className="plato-trazo">
                 <Dibujo />
               </div>
-              <div ref={(el) => void (colorRefs.current[i] = el)} className="plato-color">
+              <div ref={(el) => void (colorRefs.current[i] = el)} className="plato-color" style={colorInicial(i)}>
                 <Dibujo />
               </div>
             </div>

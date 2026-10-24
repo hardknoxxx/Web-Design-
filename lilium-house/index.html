@@ -19,15 +19,11 @@
       content="Desayunos, almuerzos y meriendas en el corazón verde de Puerto Iguazú."
     />
 
-    <!-- Tipografías propias (OFL, auto-alojadas): Bricolage Grotesque, Caveat -->
+    <!-- Tipografías auto-alojadas: las del primer pantallazo (título y logo) se piden antes que el CSS las descubra -->
     <link rel="preload" href="/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Yellowtail&display=swap"
-    />
+    <link rel="preload" href="/fonts/yellowtail.woff2" as="font" type="font/woff2" crossorigin />
 
+    <!-- Se regenera al compilar desde src/data/site.ts (scripts/prerender.mjs) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",

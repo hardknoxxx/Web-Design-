@@ -66,7 +66,9 @@ function Lamina({ item }: { item: CartaItem }) {
 }
 
 export function Carta() {
-  const [tab, setTab] = useState(momentoPorHora)
+  // el HTML se genera al compilar: arranca en desayunos y, ya en el navegador, abre la pestaña de la hora
+  const [tab, setTab] = useState('desayunos')
+  useEffect(() => setTab(momentoPorHora()), [])
   const momento = CARTA.find((c) => c.id === tab)!
 
   return (

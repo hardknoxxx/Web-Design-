@@ -35,6 +35,11 @@ Referencias: Madie (carta en láminas, color de marca fuerte, mapa con horario),
 
 "Cómo llegar" flotante cuando la mesa queda atrás.
 
+**Build**: `npm run build` compila el sitio, después un build de servidor de `src/nuevo/entry-server.tsx`, y
+`scripts/prerender.mjs` inserta el HTML de la portada y el JSON-LD (generado desde `src/data/site.ts`) en
+`dist/index.html`; `main.tsx` lo retoma con `hydrateRoot`. La portada usa su propio CSS (`src/nuevo/base.css`):
+`src/index.css` queda solo para `/anterior.html`. El horario vive una sola vez en `HORARIO` (`src/data/site.ts`).
+
 ### Concepto anterior "Un día en Lilium" (archivado en `/anterior.html`, `src/main.tsx`)
 
 El scroll es el paso del día (08:00 → 21:00). Un reloj en un cartelito de madera muestra la hora.
@@ -105,6 +110,9 @@ cada sección declara `data-phase="fondo|texto|hora"`.
   (oct. 2026); si vuelve a fallar, buscar la carpeta `chromium-*` vigente en `/opt/pw-browsers/`.
 - **Figma MCP** (servidor oficial remoto `https://mcp.figma.com/mcp`, HTTP) en `.mcp.json`. Requiere autenticarse una
   vez: en Claude Code, `/mcp` → figma → Authenticate → "Allow Access" en el navegador.
+- **UI UX Pro Max** (`nextlevelbuilder/ui-ux-pro-max-skill`, MIT) en `.claude/skills/ui-ux-pro-max/`, auditado (commit
+  `d14efff`, ver `SOURCE.md`): datos CSV locales y scripts de Python sin red; solo escribe con `--persist`.
+  Uso: `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<consulta>" --domain <dominio>`.
 - **Taste Skill** (`Leonxlnx/taste-skill`, skill `design-taste-frontend`, MIT) en `.claude/skills/taste-skill/`,
   auditado (ver `SOURCE.md`): sus scripts de Node descargan imágenes de dominio público, guardan historial en
   `~/.taste-skill/` y abren un Chrome local para inspeccionar; solo corren al usar el skill. Propone direcciones de

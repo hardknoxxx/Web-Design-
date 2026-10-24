@@ -194,6 +194,9 @@
   cursor: grabbing;
 }
 .plato {
+  /* separación entre platos y caída del arco: las mismas que usa el script (measure / render) */
+  --sp: min(25vw, 400px);
+  --yk: 0.07;
   --size: min(44svh, 400px);
   position: absolute;
   left: calc(50% - var(--size) / 2);
@@ -202,6 +205,8 @@
   height: var(--size);
   cursor: pointer;
   will-change: transform, opacity;
+  transform: translate3d(calc(var(--xf, 0) * var(--sp)), calc(var(--yf, 0) * var(--sp) * var(--yk)), 0) rotate(calc(var(--rot, 0) * 1deg))
+    scale(var(--s, 1));
 }
 .plato-trazo,
 .plato-color {
@@ -254,6 +259,8 @@
     font-size: 30px;
   }
   .plato {
+    --sp: 60vw;
+    --yk: 0.12;
     --size: min(62vw, 34svh);
     top: calc(66svh - var(--size) * 0.7);
   }

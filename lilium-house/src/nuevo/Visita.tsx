@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Coati, HorneroNido } from '../components/Fauna'
 import { BananaLeaf } from '../components/Flora'
 import { LilyMark, PhoneIcon } from '../components/Icons'
@@ -56,7 +57,9 @@ function Croquis() {
 
 export function Visita() {
   const status = useOpenStatus()
-  const hoy = filaDeHoy()
+  // el día de hoy se marca recién en el navegador (el HTML se genera al compilar)
+  const [hoy, setHoy] = useState<string | null>(null)
+  useEffect(() => setHoy(filaDeHoy()), [])
 
   return (
     <section id="visita" aria-labelledby="visita-titulo" className="relative overflow-hidden bg-laguna-deep px-4 pt-24 pb-36 text-crema md:px-7 md:pt-32 md:pb-44">
