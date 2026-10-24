@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { SCENES, SITE } from '../data/site'
 import { useDay } from '../day/DayProvider'
 import { gsap } from '../lib/gsap'
-import { HOJA, playSprite, spriteStyle } from '../lib/sprite'
+import { HOJA, playSprite } from '../lib/sprite'
 import { LilyMark } from './Icons'
 
 /** Dial sol/luna: gira 180° a lo largo del día. */
@@ -199,7 +199,7 @@ function LeafMenu() {
       </nav>
 
       {/* la película de la hoja (sprite renderizado con Remotion) */}
-      <span ref={sprite} aria-hidden="true" className="pointer-events-none invisible absolute top-0 right-0" style={spriteStyle(HOJA)} />
+      <span ref={sprite} aria-hidden="true" className="pointer-events-none invisible absolute top-0 right-0" />
 
       <button
         type="button"

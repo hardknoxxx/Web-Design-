@@ -23,16 +23,41 @@ export function setFrame(el: HTMLElement, s: Sprite, i: number) {
   el.style.backgroundPosition = `${(c / (s.cols - 1)) * 100}% ${(r / (s.rows - 1)) * 100}%`
 }
 
-/** Tween que recorre los cuadros (de `from` a `to`) mostrando siempre un cuadro entero. */
+/**
+ * Tween que recorre los cuadros (de `from` a `to`) mostrando siempre un cuadro entero.
+ * El fondo se asigna recién acá: un `background-image` en el HTML se descarga apenas carga la
+ * página aunque el elemento esté oculto, y le quitaba conexión al lirio del hero.
+ */
 export function playSprite(el: HTMLElement, s: Sprite, from: number, to: number, duration: number) {
+  if (!el.style.backgroundImage) Object.assign(el.style, spriteStyle(s))
   const p = { f: from }
   setFrame(el, s, from)
   return gsap.to(p, { f: to, duration, ease: 'none', onUpdate: () => setFrame(el, s, Math.round(p.f)) })
 }
 
-/** Descarga los sprites cuando el navegador está libre, así el primer toque ya es inmediato. */
-export function preloadSprites() {
-  const go = () => [HOJA, PAPEL].forEach((s) => (new Image().src = s.url))
-  if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 4000 })
-  else setTimeout(go, 2500)
+// se guardan las imágenes ya decodificadas: si el GC las suelta, el teléfono vuelve a
+// decodificar la hoja entera justo en el toque (la traba de 380 ms que medimos)
+const warm: HTMLImageElement[] = []
+
+/**
+ * Descarga y decodifica los sprites cuando el navegador está libre, así el primer toque ya es
+ * inmediato. Espera a `after` (el lirio del hero): en 4G lento competían por la conexión y el
+ * lirio tardaba el doble en aparecer.
+ */
+export function preloadSprites(after: Promise<unknown>) {
+  let done = false
+  const go = () => {
+    if (done) return
+    done = true
+    for (const s of [HOJA, PAPEL]) {
+      const img = new Image()
+      img.src = s.url
+      img.decode().catch(() => {})
+      warm.push(img)
+    }
+  }
+  const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 3000 }) : setTimeout(go, 1500))
+  after.then(idle)
+  // sin WebGL o con la página abierta más abajo el lirio no llega a dibujarse: igual se precargan
+  setTimeout(idle, 9000)
 }

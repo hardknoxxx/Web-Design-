@@ -3,7 +3,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { WHATSAPP_OPTIONS, whatsappLink } from '../data/site'
 import { useDay } from '../day/DayProvider'
 import { gsap } from '../lib/gsap'
-import { PAPEL, playSprite, spriteStyle } from '../lib/sprite'
+import { PAPEL, playSprite } from '../lib/sprite'
 import { CloseIcon, WhatsAppIcon } from './Icons'
 import { TablaMadera } from './TablaMadera'
 
@@ -102,7 +102,7 @@ export function CupButton() {
             ref={filmRef}
             aria-hidden="true"
             className="pointer-events-none absolute"
-            style={{ ...spriteStyle(PAPEL), left: '-2.083%', top: -4, width: '104.17%', aspectRatio: '300 / 420' }}
+            style={{ left: '-2.083%', top: -4, width: '104.17%', aspectRatio: '300 / 420' }}
           />
           <div
             ref={sheetRef}

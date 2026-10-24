@@ -1,11 +1,12 @@
 import { LazyMotion, MotionConfig, domAnimation, m } from 'framer-motion'
 import { useEffect } from 'react'
+import { startSmoothScroll } from './lib/scroll'
 import { preloadSprites } from './lib/sprite'
 import { CupButton } from './components/CupButton'
 import { TopBar } from './components/TopBar'
 import { Vines } from './components/Vines'
 import { DayProvider, useDay } from './day/DayProvider'
-import { Amanecer } from './sections/Amanecer'
+import { Amanecer, lilyReady } from './sections/Amanecer'
 import { Carta } from './sections/Carta'
 import { Mantel } from './sections/Mantel'
 import { Noche } from './sections/Noche'
@@ -25,7 +26,8 @@ function DayBackground() {
 }
 
 export default function App() {
-  useEffect(preloadSprites, [])
+  useEffect(() => preloadSprites(lilyReady), [])
+  useEffect(startSmoothScroll, [])
   return (
     <LazyMotion features={domAnimation} strict>
       <MotionConfig reducedMotion="user">

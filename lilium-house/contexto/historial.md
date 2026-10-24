@@ -57,3 +57,13 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 
 - Playwright MCP instalado a nivel proyecto (auditado). Puppeteer MCP descartado (paquete deprecado).
 - Contexto de la conversación exportado a esta carpeta.
+
+## 9. PR #9 — Rendimiento móvil y animaciones de scroll premium
+
+- Medición con Playwright (390×844, CPU 4x + 4G lento): scroll a 60 fps, pero el lirio tardaba 6,6 s en verse,
+  el primer toque al menú trababa 383 ms (sprite de 34 MB decodificado) y la carga bloqueaba ~1 s.
+- Arreglos: three.js baja antes y un boceto ilustrado ocupa su lugar; sprites al tamaño real, decodificados de
+  antemano y después del lirio; enredaderas montadas en tiempo libre. Lirio ~3 s antes, menú sin trabas.
+- Lenis 1.3.26 (auditada) para rueda/trackpad, atado al reloj de GSAP; nativo en táctiles.
+- Apariciones fade-up (`Reveal*`, títulos palabra por palabra) y paralaje sutil en lo decorativo.
+

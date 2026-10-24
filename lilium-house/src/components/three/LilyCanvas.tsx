@@ -1,4 +1,4 @@
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { Lily, type LilyInput } from './Lily'
 
@@ -29,11 +29,22 @@ function Throttle({ fps }: { fps: number }) {
   return null
 }
 
+/** Avisa cuando el primer cuadro ya está en pantalla (el boceto del hero se va recién ahí). */
+function FirstFrame({ onReady }: { onReady?: () => void }) {
+  const sent = useRef(false)
+  useFrame(() => {
+    if (sent.current) return
+    sent.current = true
+    requestAnimationFrame(() => onReady?.())
+  })
+  return null
+}
+
 // el hero dura 1,5 pantallas de scroll; el lirio termina de desvanecerse al ~84 %
 const HERO_SCROLL = 1.5
 const LILY_GONE = 1.32
 
-export default function LilyCanvas() {
+export default function LilyCanvas({ onReady }: { onReady?: () => void }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const input = useRef<LilyInput>({
     pointerX: 0,
@@ -121,6 +132,7 @@ export default function LilyCanvas() {
           onCreated={({ camera }) => camera.lookAt(0, -0.81, 0)}
         >
           {lowPower && visible && !gone && <Throttle fps={30} />}
+          <FirstFrame onReady={onReady} />
           <Lily input={input} lowPower={lowPower} reducedMotion={reducedMotion} />
         </Canvas>
       </div>

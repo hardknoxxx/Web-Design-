@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { gsap, MOTION_OK, ScrollTrigger, useGsap } from '../lib/gsap'
+import { useEffect, useRef, useState } from 'react'
+import { gsap, MOTION_OK, useGsap } from '../lib/gsap'
 
 /*
  * Enredaderas que trepan por los bordes a medida que avanza el día (scroll).
@@ -135,7 +135,6 @@ function Vine({ shape, curve, scrub, side }: { shape: VineShape; curve: Curve; s
         repeat: -1,
       })
     })
-    ScrollTrigger.refresh()
   })
 
   return (
@@ -161,7 +160,23 @@ function Vine({ shape, curve, scrub, side }: { shape: VineShape; curve: Curve; s
   )
 }
 
+/**
+ * Las enredaderas se montan cuando el navegador queda libre: medir el largo del tallo obliga a
+ * calcular el diseño de toda la página, y en el primer render eso alargaba ~0,4 s el bloqueo
+ * inicial en un teléfono lento. Al principio casi no se ven (5 % y 0 % dibujadas): nadie nota
+ * la demora. Cada ScrollTrigger nuevo se mide solo: ya no se recalculan todos los de la página.
+ */
 export function Vines() {
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    if ('requestIdleCallback' in window) {
+      const id = requestIdleCallback(() => setReady(true), { timeout: 2000 })
+      return () => cancelIdleCallback(id)
+    }
+    const id = setTimeout(() => setReady(true), 600)
+    return () => clearTimeout(id)
+  }, [])
+  if (!ready) return null
   return (
     <>
       <Vine shape={LEFT} curve={LEFT_CURVE} scrub={1.2} side="left" />

@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { HojasTransicion } from '../components/HojasTransicion'
 import { Monstera } from '../components/Botanica'
 import { HojasCayendo, Hornero } from '../components/Ambiente'
+import { Reveal, RevealGroup, RevealItem } from '../components/Reveal'
 import { ArrowIcon } from '../components/Icons'
 import { SITE } from '../data/site'
 
@@ -37,31 +38,41 @@ export function Opiniones() {
       <HojasCayendo />
       <Hornero className="top-4 -right-2 w-56 sm:top-8 sm:right-[4%] sm:w-72 lg:w-80" />
       <div className="relative z-10 mx-auto max-w-3xl text-center">
-        <p className="inline-block -rotate-2 font-hand text-3xl text-laguna">19:30 · lo que dicen</p>
-        <p className="mt-4 font-display text-[clamp(7rem,34vw,13rem)] leading-none font-semibold text-white tabular-nums [text-shadow:0_2px_0_rgb(23_63_59/0.18)]" aria-hidden="true">
-          <m.span>{scoreLabel}</m.span>
-        </p>
+        <RevealGroup>
+          <RevealItem>
+            <p className="inline-block -rotate-2 font-hand text-3xl text-laguna">19:30 · lo que dicen</p>
+          </RevealItem>
+          <RevealItem>
+            <p className="mt-4 font-display text-[clamp(7rem,34vw,13rem)] leading-none font-semibold text-white tabular-nums [text-shadow:0_2px_0_rgb(23_63_59/0.18)]" aria-hidden="true">
+              <m.span>{scoreLabel}</m.span>
+            </p>
+          </RevealItem>
+        </RevealGroup>
         <p className="sr-only">
           Calificación {fmt(score)} de 5 según {count} opiniones en Google
         </p>
-        <div className="mt-3 flex items-center justify-center gap-3" aria-hidden="true">
-          <span className="relative text-2xl tracking-[0.2em]">
-            <span className="text-laguna/25">★★★★★</span>
-            <m.span style={{ width: stars }} className="absolute inset-0 overflow-hidden whitespace-nowrap text-white">
-              ★★★★★
-            </m.span>
-          </span>
-          <span className="text-sm font-medium">{count} opiniones en Google</span>
-        </div>
+        <Reveal delay={0.15}>
+          <div className="mt-3 flex items-center justify-center gap-3" aria-hidden="true">
+            <span className="relative text-2xl tracking-[0.2em]">
+              <span className="text-laguna/25">★★★★★</span>
+              <m.span style={{ width: stars }} className="absolute inset-0 overflow-hidden whitespace-nowrap text-white">
+                ★★★★★
+              </m.span>
+            </span>
+            <span className="text-sm font-medium">{count} opiniones en Google</span>
+          </div>
+        </Reveal>
 
-        <dl className="mx-auto mt-8 flex max-w-sm justify-center gap-10">
-          {breakdown.map((b) => (
-            <div key={b.label}>
-              <dt className="text-xs font-semibold tracking-[0.2em] uppercase opacity-75">{b.label}</dt>
-              <dd className="font-display text-3xl font-semibold tabular-nums">{fmt(b.score)}</dd>
-            </div>
-          ))}
-        </dl>
+        <RevealGroup className="mx-auto mt-8 max-w-sm" delay={0.2} stagger={0.12}>
+          <dl className="flex justify-center gap-10">
+            {breakdown.map((b) => (
+              <RevealItem key={b.label}>
+                <dt className="text-xs font-semibold tracking-[0.2em] uppercase opacity-75">{b.label}</dt>
+                <dd className="font-display text-3xl font-semibold tabular-nums">{fmt(b.score)}</dd>
+              </RevealItem>
+            ))}
+          </dl>
+        </RevealGroup>
 
         <m.ul
           className="mt-10 flex flex-wrap justify-center gap-2.5"
@@ -84,15 +95,17 @@ export function Opiniones() {
           ))}
         </m.ul>
 
-        <a
-          href={SITE.mapsHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group mt-10 inline-flex items-center gap-2 border-b border-laguna/40 pb-1 font-semibold"
-        >
-          Ver opiniones en Google Maps
-          <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-        </a>
+        <Reveal delay={0.1}>
+          <a
+            href={SITE.mapsHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group mt-10 inline-flex items-center gap-2 border-b border-laguna/40 pb-1 font-semibold"
+          >
+            Ver opiniones en Google Maps
+            <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </a>
+        </Reveal>
       </div>
 
       {/* las hojas empiezan a cerrarse: llega la noche */}
