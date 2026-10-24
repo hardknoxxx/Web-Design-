@@ -9,7 +9,7 @@ hojas de monstera que se abren y se cierran, escenas fijadas donde los elementos
 Storyboard de las animaciones de scroll en Figma: “Lilium Coffee Lounge — Storyboard de scroll”
 (https://www.figma.com/design/8a62hs9qgXqNI8zOzefJmC). Cada frame es un momento del scroll con su ficha de animación.
 
-Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP · Lenis · React Three Fiber.
+Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP · Lenis · three.js (lirio 3D, sin React en el bucle).
 
 ```bash
 npm install
@@ -89,7 +89,14 @@ como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
 
 ## Rendimiento móvil
 
-- Lirio 3D optimizado en teléfonos: 30 fps, DPR 1,25, materiales Lambert, sin luz puntual y deja de dibujarse al atravesar el follaje.
+- Lirio 3D en three.js puro (`components/three/lily.ts`; `LilyCanvas.tsx` solo lo monta y lo libera):
+  ~1.000 triángulos y 4 llamadas de dibujo (pétalos instanciados, tallo/hojas/estambres fusionados en una
+  malla, un solo material Lambert, una nube de polen). Pixel ratio `Math.min(devicePixelRatio, 2)` que baja de
+  a escalones (1,5 → 1,25 → 1) si la página no sostiene ~50 fps; tope de 60 fps y, en equipos de bajo consumo,
+  30 fps mientras gira sola (60 apenas la tocan o scrollean). El bucle se detiene fuera de pantalla
+  (IntersectionObserver), con la pestaña oculta y al atravesar el follaje; `dispose()` libera geometrías,
+  materiales, textura, contexto WebGL y canvas. Arrastrar la gira siguiendo el dedo (con inercia); un toque
+  rápido, vuelta de bienvenida con rebote. `touch-action: pan-y`: el gesto vertical sigue siendo scroll.
 - three.js empieza a bajar apenas se evalúa el JS principal; mientras tanto se ve un boceto ilustrado del lirio
   (`components/LirioBoceto.tsx`) que se funde con el 3D en su primer cuadro.
 - Sprite de la comanda al tamaño en que se muestra (el menú ya no usa película: CSS); se baja y decodifica
@@ -99,5 +106,5 @@ como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
 - Un solo fondo del día (`DayBackground`) en vez de un fondo por sección; los bordes de las escenas fijadas se funden con un degradé del mismo color.
 - Bucles decorativos pausados fuera de pantalla (`pauseOffscreen`); capas chicas compuestas en vez de capas de pantalla completa.
 - Todas las animaciones de scroll usan solo `transform`/`opacity` vía MotionValues (sin re-renders de React).
-- En dispositivos de bajo consumo: DPR ≤ 1.5, sin antialias, menos segmentos y partículas.
+- En dispositivos de bajo consumo: sin antialias, menos partículas y 30 fps en reposo para el lirio.
 - Framer Motion con `LazyMotion` + `domAnimation`; respeta `prefers-reduced-motion`.

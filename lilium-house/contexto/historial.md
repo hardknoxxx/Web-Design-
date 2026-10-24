@@ -77,3 +77,12 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - Menú-hoja en CSS: revelado circular desde la esquina del botón, escala + giro con rebote
   `cubic-bezier(0.34, 1.56, 0.64, 1)`. Se quitó la película `HojaMenu` (186 KB menos).
 
+## 11. PR #11 — Lirio 3D liviano en three.js puro
+
+- Pedido: flor 3D sencilla y fluida en celulares y computadoras; arrastrar para girar, toque rápido con
+  animación elástica, `Math.min(devicePixelRatio, 2)`, IntersectionObserver y limpieza de memoria.
+- Se reescribió sin React Three Fiber (−11 paquetes, chunk del lirio 245 → 142 KB gzip): 4 llamadas de dibujo
+  y ~1.000 triángulos (antes 27 y ~4.300), misma flor y encuadre.
+- Gobernador de resolución (2 → 1,5 → 1,25 → 1 si la página baja de ~50 fps) y 30 fps en reposo en equipos de
+  bajo consumo. Verificado: 25 montajes/desmontajes sin buffers, programas, listeners ni canvas sueltos.
+
