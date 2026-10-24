@@ -7,20 +7,20 @@ import { LeafGradients } from './Flora'
  * Mismo encuadre que el 3D: la flor centrada al 44 % de la caja y el tallo que baja al pasto.
  */
 
-const petal = (w: number, l: number) =>
+export const petal = (w: number, l: number) =>
   `M0 0C${-w * 0.55} ${-l * 0.2} ${-w * 0.62} ${-l * 0.64} ${-w * 0.2} ${-l * 0.9}Q${-w * 0.02} ${-l * 1.03} ${w * 0.14} ${-l * 0.95}C${w * 0.62} ${-l * 0.68} ${w * 0.52} ${-l * 0.2} 0 0Z`
 
-const BACK = [
+export const BACK = [
   { a: 0, w: 78, l: 150 },
   { a: 122, w: 72, l: 140 },
   { a: 238, w: 72, l: 140 },
 ]
-const FRONT = [
+export const FRONT = [
   { a: 58, w: 84, l: 154 },
   { a: 180, w: 76, l: 124 },
   { a: 302, w: 84, l: 154 },
 ]
-const STAMENS = [-58, -34, -12, 14, 36, 60]
+export const STAMENS = [-58, -34, -12, 14, 36, 60]
 
 function Petals({ list, front }: { list: typeof BACK; front?: boolean }) {
   return list.map((p) => (
