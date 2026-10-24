@@ -9,7 +9,7 @@ hojas de monstera que se abren y se cierran, escenas fijadas donde los elementos
 Storyboard de las animaciones de scroll en Figma: “Lilium Coffee Lounge — Storyboard de scroll”
 (https://www.figma.com/design/8a62hs9qgXqNI8zOzefJmC). Cada frame es un momento del scroll con su ficha de animación.
 
-Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP · React Three Fiber.
+Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP · Lenis · React Three Fiber.
 
 ```bash
 npm install
@@ -65,6 +65,14 @@ como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
   hojas que caen y el menú-hoja: un contorno de 8 curvas (`clip-path: path()`) cuyos bordes crecen a
   ritmos distintos, de modo que la hoja cambia de forma hasta volverse panel y al cerrar vuelve a ser hoja.
 - **Framer Motion**: escenas fijadas existentes (ritual, mantel, selva, opiniones, noche) y la comanda.
+- **Lenis** (`src/lib/scroll.ts`, 1.3.26 auditada): scroll suave con rueda y trackpad, atado al reloj de GSAP
+  (Lenis, ScrollTrigger y Framer leen la misma posición en el mismo cuadro). En pantallas táctiles y con
+  movimiento reducido no se activa: queda el scroll nativo. Los enlaces del menú-hoja viajan con la misma curva.
+- **Apariciones** (`components/Reveal.tsx`): `Reveal`, `RevealGroup`/`RevealItem` (cascada) y `RevealWords`
+  (títulos que suben palabra por palabra desde una ventana oculta), una sola vez, con la curva orgánica.
+  Entrada del hero al cargar; encabezados de la carta, opiniones y el cierre.
+- **Paralaje** (`components/Parallax.tsx`): solo `transform`, recorrido más corto en el teléfono. Picaflor y
+  ceibo, nido del hornero y dos planos de luciérnagas en el cierre.
 - Todo respeta `prefers-reduced-motion` y anima solo `transform`/`opacity`/`clip-path`.
 
 ## Para completar antes de publicar
@@ -78,6 +86,12 @@ como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
 ## Rendimiento móvil
 
 - Lirio 3D optimizado en teléfonos: 30 fps, DPR 1,25, materiales Lambert, sin luz puntual y deja de dibujarse al atravesar el follaje.
+- three.js empieza a bajar apenas se evalúa el JS principal; mientras tanto se ve un boceto ilustrado del lirio
+  (`components/LirioBoceto.tsx`) que se funde con el 3D en su primer cuadro.
+- Sprites de Remotion al tamaño en que se muestran (menú: 34 → 15 MB decodificado); se bajan y decodifican
+  recién cuando el lirio ya está, y el fondo CSS se asigna al reproducirlos (un `background-image` oculto se
+  descargaba igual al cargar la página).
+- Enredaderas montadas cuando el navegador está libre (medir el tallo forzaba el diseño de toda la página).
 - Un solo fondo del día (`DayBackground`) en vez de un fondo por sección; los bordes de las escenas fijadas se funden con un degradé del mismo color.
 - Bucles decorativos pausados fuera de pantalla (`pauseOffscreen`); capas chicas compuestas en vez de capas de pantalla completa.
 - Todas las animaciones de scroll usan solo `transform`/`opacity` vía MotionValues (sin re-renders de React).

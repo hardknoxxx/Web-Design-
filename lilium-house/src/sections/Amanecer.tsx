@@ -1,11 +1,27 @@
-import { lazy, Suspense, useRef, type ReactNode } from 'react'
+import { m } from 'framer-motion'
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Leaf, Monstera } from '../components/Botanica'
+import { LirioBoceto } from '../components/LirioBoceto'
 import { BananaLeaf, Calathea, Fern, HeartLeaf, PalmFrond } from '../components/Flora'
 import { SelvaLejana, Sotobosque } from '../components/Paisaje'
 import { gsap, MOTION_OK, pauseOffscreen, useGsap } from '../lib/gsap'
 
-// three.js se carga en un chunk aparte: el texto pinta primero
-const LilyCanvas = lazy(() => import('../components/three/LilyCanvas'))
+// three.js se carga en un chunk aparte: el texto pinta primero. La descarga arranca apenas se
+// evalúa este módulo (no recién cuando React monta el hero, ~1 s después en un teléfono lento)
+const lilyChunk = import('../components/three/LilyCanvas')
+const LilyCanvas = lazy(() => lilyChunk)
+
+// entrada del hero al cargar: el nombre sube primero, después la bajada y al final la pista
+const EASE = [0.22, 1, 0.36, 1] as const
+const intro = (delay: number, y = 28) => ({
+  initial: { opacity: 0, y },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 1.1, ease: EASE, delay },
+})
+
+// se resuelve cuando el lirio 3D dibujó su primer cuadro: recién ahí se precargan los sprites
+let markLilyReady = () => {}
+export const lilyReady = new Promise<void>((resolve) => (markLilyReady = resolve))
 
 /**
  * Plantas que nacen del suelo (el tallo sigue por debajo del borde): cada una con especie,
@@ -45,6 +61,14 @@ const FRONT: Plant[] = [
  */
 export function Amanecer() {
   const ref = useRef<HTMLElement>(null)
+  // boceto ilustrado mientras baja three.js; se retira después del fundido cruzado
+  const [lily, setLily] = useState<'loading' | 'ready' | 'done'>('loading')
+  useEffect(() => {
+    if (lily !== 'ready') return
+    markLilyReady()
+    const t = setTimeout(() => setLily('done'), 800)
+    return () => clearTimeout(t)
+  }, [lily])
 
   useGsap(ref, () => {
     const q = gsap.utils.selector(ref)
@@ -137,10 +161,15 @@ export function Amanecer() {
         <div data-title="" className="relative z-10 pt-[max(5.5rem,12svh)] text-center">
           {/* como en el logo: el nombre arriba y "Coffee Lounge" debajo */}
           <h1 className="font-script text-[clamp(4.6rem,21vw,10rem)] leading-[1.05] text-madera">
-            Lilium
-            <span className="mt-1 block font-sans text-[0.7rem] font-semibold tracking-[0.34em] text-turquesa-dark uppercase sm:text-xs">
+            <m.span className="block" {...intro(0.05, 34)}>
+              Lilium
+            </m.span>
+            <m.span
+              className="mt-1 block font-sans text-[0.7rem] font-semibold tracking-[0.34em] text-turquesa-dark uppercase sm:text-xs"
+              {...intro(0.3, 14)}
+            >
               Coffee Lounge · Puerto Iguazú
-            </span>
+            </m.span>
           </h1>
         </div>
 
@@ -149,9 +178,12 @@ export function Amanecer() {
           data-lily=""
           className="absolute top-[52%] left-1/2 z-[5] aspect-square w-[min(96vw,64svh,640px)] -translate-x-1/2 -translate-y-1/2"
         >
-          <Suspense fallback={null}>
-            <LilyCanvas />
-          </Suspense>
+          {lily !== 'done' && <LirioBoceto hidden={lily === 'ready'} />}
+          <div className={`absolute inset-0 transition-opacity duration-700 ${lily === 'loading' ? 'opacity-0' : ''}`}>
+            <Suspense fallback={null}>
+              <LilyCanvas onReady={() => setLily((s) => (s === 'loading' ? 'ready' : s))} />
+            </Suspense>
+          </div>
         </div>
 
         <div data-layer="mid" className="pointer-events-none absolute inset-0 z-[6] origin-[50%_82%]" aria-hidden="true">
@@ -182,11 +214,13 @@ export function Amanecer() {
         />
 
         {/* pista de scroll: un brote */}
-        <div data-hint="" className="absolute inset-x-0 bottom-[15svh] z-30 flex flex-col items-center gap-1 text-madera">
-          <div data-sprout="">
-            <Leaf className="h-7 w-7 -rotate-12" color="#D9A441" />
-          </div>
-          <span className="font-hand text-2xl leading-none">Deslizá y entrá</span>
+        <div data-hint="" className="absolute inset-x-0 bottom-[15svh] z-30 text-madera">
+          <m.div className="flex flex-col items-center gap-1" {...intro(0.9, 16)}>
+            <div data-sprout="">
+              <Leaf className="h-7 w-7 -rotate-12" color="#D9A441" />
+            </div>
+            <span className="font-hand text-2xl leading-none">Deslizá y entrá</span>
+          </m.div>
         </div>
       </div>
     </section>

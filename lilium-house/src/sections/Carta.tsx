@@ -1,6 +1,7 @@
 import { m } from 'framer-motion'
 import { useRef, useState } from 'react'
 import { HojasTransicion } from '../components/HojasTransicion'
+import { Reveal, RevealWords } from '../components/Reveal'
 import { Fern, HeartLeaf } from '../components/Flora'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, whatsappLink, type CartaItem } from '../data/site'
@@ -138,43 +139,47 @@ export function Carta() {
       </div>
 
       <div className="relative mx-auto max-w-5xl">
-        <p className="inline-block -rotate-2 font-hand text-3xl text-turquesa">11:45 · la carta</p>
+        <Reveal>
+          <p className="inline-block -rotate-2 font-hand text-3xl text-turquesa">11:45 · la carta</p>
+        </Reveal>
         <h2 className="mt-2 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.98] font-semibold text-balance">
-          Desayunos, almuerzos y meriendas
+          <RevealWords text="Desayunos, almuerzos y meriendas" delay={0.1} />
         </h2>
 
         {/* pestañas: tres momentos del día; la píldora menta se desliza hasta el elegido */}
-        <div role="tablist" aria-label="Momentos del día" className="mt-8 flex w-full max-w-md rounded-full bg-black/25 p-1 ring-1 ring-crema/10">
-          {CARTA.map((c) => {
-            const active = c.id === tab
-            return (
-              <button
-                key={c.id}
-                type="button"
-                role="tab"
-                id={`tab-${c.id}`}
-                aria-selected={active}
-                aria-controls={`panel-${c.id}`}
-                onClick={() => {
-                  if (c.id === tab) return
-                  switched.current = true
-                  setTab(c.id)
-                }}
-                className={`relative flex flex-1 flex-col items-center rounded-full px-2 py-2 transition-[color,transform] duration-300 active:scale-95 ${active ? 'text-laguna-deep' : 'text-crema/75 hover:text-crema'}`}
-              >
-                {active && (
-                  <m.span
-                    layoutId="carta-tab"
-                    className="absolute inset-0 rounded-full bg-turquesa shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_8px_20px_-8px_rgb(100_188_176/0.9)]"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <span className="relative font-ticket text-[0.65rem] tabular-nums opacity-80">{c.time}</span>
-                <span className="relative text-sm font-semibold sm:text-base">{c.label}</span>
-              </button>
-            )
-          })}
-        </div>
+        <Reveal delay={0.25}>
+          <div role="tablist" aria-label="Momentos del día" className="mt-8 flex w-full max-w-md rounded-full bg-black/25 p-1 ring-1 ring-crema/10">
+            {CARTA.map((c) => {
+              const active = c.id === tab
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  role="tab"
+                  id={`tab-${c.id}`}
+                  aria-selected={active}
+                  aria-controls={`panel-${c.id}`}
+                  onClick={() => {
+                    if (c.id === tab) return
+                    switched.current = true
+                    setTab(c.id)
+                  }}
+                  className={`relative flex flex-1 flex-col items-center rounded-full px-2 py-2 transition-[color,transform] duration-300 active:scale-95 ${active ? 'text-laguna-deep' : 'text-crema/75 hover:text-crema'}`}
+                >
+                  {active && (
+                    <m.span
+                      layoutId="carta-tab"
+                      className="absolute inset-0 rounded-full bg-turquesa shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_8px_20px_-8px_rgb(100_188_176/0.9)]"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative font-ticket text-[0.65rem] tabular-nums opacity-80">{c.time}</span>
+                  <span className="relative text-sm font-semibold sm:text-base">{c.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </Reveal>
         {/* los tres momentos ocupan la misma celda: el alto de la página no cambia y la hora de
             arriba sigue solo al scroll */}
         <div className="grid [grid-template-areas:'stack']">
@@ -191,7 +196,9 @@ export function Carta() {
                 inert={!active}
                 className={`[grid-area:stack] transition-opacity duration-500 ${active ? 'opacity-100' : 'pointer-events-none invisible opacity-0'}`}
               >
-                <p className="mt-4 max-w-md text-lg leading-relaxed text-crema/75">{c.intro}</p>
+                <Reveal delay={0.35}>
+                  <p className="mt-4 max-w-md text-lg leading-relaxed text-crema/75">{c.intro}</p>
+                </Reveal>
                 <ul className="mt-12 grid grid-cols-2 gap-x-5 gap-y-12 sm:gap-x-10 lg:grid-cols-3">
                   {c.items.map((item, i) => (
                     <li key={item.name} className={`flex flex-col items-center text-center ${i % 2 ? 'mt-10 lg:mt-0' : ''} ${i === 1 ? 'lg:mt-14' : ''}`}>

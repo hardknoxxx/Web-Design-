@@ -16,9 +16,9 @@ pedido por pedido, está en [historial.md](./historial.md).
 ## Sitio
 
 - Producción: https://lilium-house.vercel.app (proyecto Vercel `hardknoxxx/lilium-house`, rootDirectory `lilium-house`).
-- Repo: `hardknoxxx/Web-Design-`, carpeta `lilium-house/`. Rama de trabajo `ccr-055fb50e-v2vhdy`.
+- Repo: `hardknoxxx/Web-Design-`, carpeta `lilium-house/`. Rama de trabajo actual `ccr-fda5bd2b-rxfhw3` (antes `ccr-055fb50e-v2vhdy`).
 - Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP + ScrollTrigger ·
-  React Three Fiber (lirio 3D). Animaciones de menús hechas con **Remotion** (`animaciones/`).
+  Lenis (scroll suave solo con rueda/trackpad) · React Three Fiber (lirio 3D). Animaciones de menús hechas con **Remotion** (`animaciones/`).
 
 ### Concepto "Un día en Lilium"
 
@@ -79,4 +79,7 @@ cada sección declara `data-phase="fondo|texto|hora"`.
 ## Pendientes
 
 - Confirmar con el local los nombres de la carta (sobre todo almuerzos) y conseguir fotos originales.
-- Probar en un teléfono real el rendimiento del lirio 3D, la selva y los menús.
+- Probar en un teléfono real el rendimiento del lirio 3D, la selva y los menús (Playwright no tiene GPU:
+  el 3D y el dibujado salen peor que en un teléfono).
+- Bloqueo inicial de ~1 s en gama media (render de React de toda la página + GSAP): el próximo paso sería montar
+  las escenas de abajo del hero cuando el navegador queda libre.

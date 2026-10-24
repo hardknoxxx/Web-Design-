@@ -4,6 +4,7 @@ import { Leaf } from './Botanica'
 import { Fern, HangingPothos, HeartLeaf, Hummingbird, LeafShadow } from './Flora'
 import { CeiboRama } from './Paisaje'
 import { Coati, HorneroNido } from './Fauna'
+import { Parallax } from './Parallax'
 
 /*
  * Capas de ambiente: vida de fondo (sombras de follaje, plantas, fauna) siempre detrás del
@@ -75,12 +76,15 @@ export function Picaflor({ className = '' }: { className?: string }) {
   })
   return (
     <div ref={ref} className={`pointer-events-none absolute z-10 h-36 w-72 sm:h-44 sm:w-96 ${className}`} aria-hidden="true">
-      <div data-ceibo="" className="absolute bottom-0 left-0 w-[78%]">
-        <CeiboRama className="w-full" />
-      </div>
-      <div data-picaflor="" className="absolute top-[20%] left-[60%] w-24 sm:w-28">
-        <Hummingbird className="w-full -scale-x-100" />
-      </div>
+      {/* la rama flota apenas más rápido que el mantel: queda por delante */}
+      <Parallax distance={26} className="absolute inset-0">
+        <div data-ceibo="" className="absolute bottom-0 left-0 w-[78%]">
+          <CeiboRama className="w-full" />
+        </div>
+        <div data-picaflor="" className="absolute top-[20%] left-[60%] w-24 sm:w-28">
+          <Hummingbird className="w-full -scale-x-100" />
+        </div>
+      </Parallax>
     </div>
   )
 }
@@ -134,7 +138,10 @@ export function Hornero({ className = '' }: { className?: string }) {
   })
   return (
     <div ref={ref} className={`pointer-events-none absolute z-[1] ${className}`} aria-hidden="true">
-      <HorneroNido className="w-full -scale-x-100" />
+      {/* el nido queda más lejos: baja más lento que el texto */}
+      <Parallax distance={-30}>
+        <HorneroNido className="w-full -scale-x-100" />
+      </Parallax>
     </div>
   )
 }
