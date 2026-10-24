@@ -1,5 +1,5 @@
 import { m, useTransform } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { SCENES, SITE } from '../data/site'
 import { useDay } from '../day/DayProvider'
 import { gsap } from '../lib/gsap'
@@ -101,7 +101,7 @@ function LeafMenu() {
       first.current = false
       return
     }
-    gsap.killTweensOf([el, film, q('[data-item]'), q('[data-line]'), q('[data-bud]'), q('[data-nerve]')])
+    gsap.killTweensOf([el, film, q('[data-line]'), q('[data-bud]'), q('[data-nerve]')])
     const d = (v: number) => (reduce ? 0 : v)
     const tl = gsap.timeline({
       onStart: () => wrap.current?.setAttribute('data-moving', ''),
@@ -117,16 +117,15 @@ function LeafMenu() {
         .to(q('[data-line="a"]'), { y: 6, rotation: 45, duration: d(0.45), ease: 'power3.inOut' }, 0)
         .to(q('[data-line="b"]'), { autoAlpha: 0, duration: d(0.2) }, 0)
         .to(q('[data-line="c"]'), { y: -6, rotation: -45, width: 18, duration: d(0.45), ease: 'power3.inOut' }, 0)
-        .fromTo(q('[data-item]'), { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: d(0.04), duration: d(0.4), ease: 'power3.out' }, d(0.8))
       ;(gsap.utils.selector(el)('a')[0] as HTMLElement | undefined)?.focus({ preventScroll: true })
     } else {
-      tl.to(q('[data-item]'), { autoAlpha: 0, y: 6, duration: d(0.14), stagger: -0.012, ease: 'power2.in' })
-      // la misma película al revés: se vuelve a enrollar y se retrae
-      if (!reduce) tl.set(film, { autoAlpha: 1 }, 0.16).add(playSprite(film, HOJA, HOJA.frames - 1, 0, 0.6), 0.16)
-      tl.set(el, { autoAlpha: 0 }, d(0.17))
-        .set(q('[data-nerve]'), { autoAlpha: 0 }, d(0.17))
-        .to(q('[data-bud]'), { autoAlpha: 1, duration: d(0.25) }, d(0.5))
-        .set(film, { autoAlpha: 0 }, d(0.78))
+      // las opciones se vuelven a colgar (transición CSS) y recién después la hoja se enrolla
+      const t = d(0.36)
+      if (!reduce) tl.set(film, { autoAlpha: 1 }, t).add(playSprite(film, HOJA, HOJA.frames - 1, 0, 0.6), t)
+      tl.set(el, { autoAlpha: 0 }, t + 0.01)
+        .set(q('[data-nerve]'), { autoAlpha: 0 }, t + 0.01)
+        .to(q('[data-bud]'), { autoAlpha: 1, duration: d(0.25) }, t + d(0.34))
+        .set(film, { autoAlpha: 0 }, t + d(0.62))
         .to(q('[data-line]'), { y: 0, rotation: 0, autoAlpha: 1, width: (i: number) => (i === 2 ? 12 : 18), duration: d(0.4), ease: 'power3.inOut' }, 0)
     }
   }, [open])
@@ -170,11 +169,11 @@ function LeafMenu() {
             </g>
           </g>
         </svg>
-        <div inert={!open} className="relative pt-5 pr-10 pb-12 pl-10">
-          <p data-item="" className="font-script text-3xl leading-none">Lilium</p>
-          <ul className="mt-5 border-t border-crema/15">
-            {SCENES.map((s) => (
-              <li key={s.href} data-item="" className="border-b border-crema/10">
+        <div inert={!open} data-open={open} className="relative pt-5 pr-10 pb-12 pl-10 [perspective:700px]">
+          <p data-item="" className="hoja-item font-script text-3xl leading-none" style={{ '--i': 0 } as CSSProperties}>Lilium</p>
+          <ul className="mt-5 border-t border-crema/15 [perspective:700px]">
+            {SCENES.map((s, i) => (
+              <li key={s.href} data-item="" className="hoja-item border-b border-crema/10" style={{ '--i': i + 1 } as CSSProperties}>
                 <a
                   href={s.href}
                   onClick={() => setOpen(false)}
@@ -188,7 +187,7 @@ function LeafMenu() {
               </li>
             ))}
           </ul>
-          <dl data-item="" className="mt-5 space-y-0.5 font-ticket text-xs text-crema/75">
+          <dl data-item="" className="hoja-item mt-5 space-y-0.5 font-ticket text-xs text-crema/75" style={{ '--i': SCENES.length + 1 } as CSSProperties}>
             {SITE.hours.rows.map(([k, v]) => (
               <div key={k} className="flex justify-between gap-4">
                 <dt>{k}</dt>

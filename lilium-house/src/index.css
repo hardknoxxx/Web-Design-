@@ -253,3 +253,32 @@
   60% { transform: translate3d(18px, 26px, 0); opacity: 0.45; }
   85% { transform: translate3d(-20px, 10px, 0); opacity: 0.85; }
 }
+
+/*
+ * Opciones del menú-hoja: se abren como las hojas de una planta en cámara rápida. Cuelgan
+ * contraídas e inclinadas hacia abajo y, al abrir, se yerguen y se expanden desde el tallo
+ * (arriba al centro) con un rebote elástico al estabilizarse, en cascada cada 50 ms.
+ */
+@layer components {
+  .hoja-item {
+    transform-origin: top center;
+    transform: scale(0.3) rotateX(-70deg);
+    opacity: 0;
+    transition:
+      transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+      opacity 0.35s ease-out;
+    transition-delay: calc(var(--i, 0) * 50ms);
+  }
+  [data-open='true'] > .hoja-item,
+  [data-open='true'] > ul > .hoja-item {
+    transform: scale(1) rotateX(0deg);
+    opacity: 1;
+    /* empiezan cuando la hoja del panel terminó de desenrollarse */
+    transition-delay: calc(780ms + var(--i, 0) * 50ms);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hoja-item {
+      transition: none;
+    }
+  }
+}
