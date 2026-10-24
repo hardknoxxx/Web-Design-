@@ -62,8 +62,12 @@ como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
 - **GSAP + ScrollTrigger** (`src/lib/gsap.ts`): cortina de hojas del amanecer (8 especies, cada una con su
   ángulo, distancia y momento), enredaderas asimétricas (`components/Vines.tsx`: filodendro a la izquierda,
   hiedra con flores a la derecha, con ritmos de crecimiento distintos), platos de la carta, potus, picaflor,
-  hojas que caen y el menú-hoja: un contorno de 8 curvas (`clip-path: path()`) cuyos bordes crecen a
-  ritmos distintos, de modo que la hoja cambia de forma hasta volverse panel y al cerrar vuelve a ser hoja.
+  hojas que caen y la taza del botón de WhatsApp: al tocarla, taza, plato y cucharita reaccionan cada
+  uno con su retardo, su curva y su eje (`clink` en `CupButton.tsx`), y la bolita de papel sale de la boca
+  de la taza (escala 0), sube en arco hasta el centro de la pantalla y ahí se desenvuelve.
+- **Menú-hoja** (`.hoja-panel` en `index.css`): se abre desde el botón como una hoja o un abanico; anclaje
+  arriba a la derecha, revelado circular desde la esquina, `scale` + `rotate` con tiempos distintos (la punta
+  traza un arco) y `cubic-bezier(0.34, 1.56, 0.64, 1)` para el rebote al asentarse.
 - **Framer Motion**: escenas fijadas existentes (ritual, mantel, selva, opiniones, noche) y la comanda.
 - **Lenis** (`src/lib/scroll.ts`, 1.3.26 auditada): scroll suave con rueda y trackpad, atado al reloj de GSAP
   (Lenis, ScrollTrigger y Framer leen la misma posición en el mismo cuadro). En pantallas táctiles y con
@@ -88,7 +92,7 @@ como acento chico. El lirio (`LilyMark`, favicon) es el trazo blanco del logo.
 - Lirio 3D optimizado en teléfonos: 30 fps, DPR 1,25, materiales Lambert, sin luz puntual y deja de dibujarse al atravesar el follaje.
 - three.js empieza a bajar apenas se evalúa el JS principal; mientras tanto se ve un boceto ilustrado del lirio
   (`components/LirioBoceto.tsx`) que se funde con el 3D en su primer cuadro.
-- Sprites de Remotion al tamaño en que se muestran (menú: 34 → 15 MB decodificado); se bajan y decodifican
+- Sprite de la comanda al tamaño en que se muestra (el menú ya no usa película: CSS); se baja y decodifica
   recién cuando el lirio ya está, y el fondo CSS se asigna al reproducirlos (un `background-image` oculto se
   descargaba igual al cargar la página).
 - Enredaderas montadas cuando el navegador está libre (medir el tallo forzaba el diseño de toda la página).

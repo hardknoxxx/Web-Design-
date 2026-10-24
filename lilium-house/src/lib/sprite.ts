@@ -7,7 +7,6 @@ import { gsap } from './gsap'
 
 export type Sprite = { url: string; frames: number; cols: number; rows: number }
 
-export const HOJA: Sprite = { url: '/anim/hoja-menu.webp', frames: 20, cols: 5, rows: 4 }
 export const PAPEL: Sprite = { url: '/anim/papel-comanda.webp', frames: 12, cols: 4, rows: 3 }
 
 export const spriteStyle = (s: Sprite) => ({
@@ -18,6 +17,8 @@ export const spriteStyle = (s: Sprite) => ({
 
 export function setFrame(el: HTMLElement, s: Sprite, i: number) {
   const f = Math.max(0, Math.min(s.frames - 1, i))
+  // el cuadro actual queda anotado: si se cierra a mitad de camino, vuelve desde ahí
+  el.dataset.frame = String(f)
   const c = f % s.cols
   const r = Math.floor(f / s.cols)
   el.style.backgroundPosition = `${(c / (s.cols - 1)) * 100}% ${(r / (s.rows - 1)) * 100}%`
@@ -35,26 +36,24 @@ export function playSprite(el: HTMLElement, s: Sprite, from: number, to: number,
   return gsap.to(p, { f: to, duration, ease: 'none', onUpdate: () => setFrame(el, s, Math.round(p.f)) })
 }
 
-// se guardan las imágenes ya decodificadas: si el GC las suelta, el teléfono vuelve a
-// decodificar la hoja entera justo en el toque (la traba de 380 ms que medimos)
+// se guarda la imagen ya decodificada: si el GC la suelta, el teléfono vuelve a decodificar
+// la hoja de cuadros entera justo en el toque
 const warm: HTMLImageElement[] = []
 
 /**
- * Descarga y decodifica los sprites cuando el navegador está libre, así el primer toque ya es
- * inmediato. Espera a `after` (el lirio del hero): en 4G lento competían por la conexión y el
- * lirio tardaba el doble en aparecer.
+ * Descarga y decodifica el sprite de la comanda cuando el navegador está libre, así el primer
+ * toque ya es inmediato. Espera a `after` (el lirio del hero): en 4G lento competían por la
+ * conexión y el lirio tardaba el doble en aparecer.
  */
 export function preloadSprites(after: Promise<unknown>) {
   let done = false
   const go = () => {
     if (done) return
     done = true
-    for (const s of [HOJA, PAPEL]) {
-      const img = new Image()
-      img.src = s.url
-      img.decode().catch(() => {})
-      warm.push(img)
-    }
+    const img = new Image()
+    img.src = PAPEL.url
+    img.decode().catch(() => {})
+    warm.push(img)
   }
   const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 3000 }) : setTimeout(go, 1500))
   after.then(idle)

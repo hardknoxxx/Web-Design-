@@ -18,7 +18,7 @@ pedido por pedido, está en [historial.md](./historial.md).
 - Producción: https://lilium-house.vercel.app (proyecto Vercel `hardknoxxx/lilium-house`, rootDirectory `lilium-house`).
 - Repo: `hardknoxxx/Web-Design-`, carpeta `lilium-house/`. Rama de trabajo actual `ccr-fda5bd2b-rxfhw3` (antes `ccr-055fb50e-v2vhdy`).
 - Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP + ScrollTrigger ·
-  Lenis (scroll suave solo con rueda/trackpad) · React Three Fiber (lirio 3D). Animaciones de menús hechas con **Remotion** (`animaciones/`).
+  Lenis (scroll suave solo con rueda/trackpad) · React Three Fiber (lirio 3D). Comanda en stop-motion hecha con **Remotion** (`animaciones/`).
 
 ### Concepto "Un día en Lilium"
 
@@ -38,14 +38,19 @@ cada sección declara `data-phase="fondo|texto|hora"`.
 
 ### Piezas clave
 
-- **Menú-hoja (arriba a la derecha)**: película de Remotion `HojaMenu` (la hoja brota enrollada y se
-  desenrolla) + opciones que se abren como hojas de una planta (CSS: origen arriba al centro,
-  `scale(0.3) rotateX(-70deg)` → `scale(1) rotateX(0)`, `cubic-bezier(0.175, 0.885, 0.32, 1.275)` 0,6 s,
-  cascada de 50 ms).
-- **Botón de WhatsApp (abajo a la derecha)**: taza vista a ~55° sobre un tronco irregular en diagonal;
-  globo de "escribiendo" dibujado a lápiz; la comanda es la película `PapelComanda` (stop-motion:
-  la bola de papel sale de la taza y se desenvuelve).
-- Sprites: `public/anim/*.webp`, se precargan cuando el navegador está libre (`src/lib/sprite.ts`).
+- **Menú-hoja (arriba a la derecha)**: se abre en CSS como una hoja o un abanico (`.hoja-panel`: anclaje
+  arriba a la derecha, `clip-path: circle()` desde la esquina, `scale` 0,14→1 y `rotate` −26°→0 con tiempos
+  distintos, `cubic-bezier(0.34, 1.56, 0.64, 1)`). La película `HojaMenu` se quitó: el cliente la veía
+  estirarse como un palo diagonal. Opciones que se abren como hojas de una planta (origen arriba al
+  centro, `scale(0.3) rotateX(-70deg)` → `scale(1) rotateX(0)`, `cubic-bezier(0.175, 0.885, 0.32, 1.275)`
+  0,6 s, cascada de 50 ms desde los 300 ms).
+- **Botón de WhatsApp (abajo a la derecha)**: taza vista a ~55° sobre su plato, con la cucharita apoyada
+  en el plato al lado de la taza, sobre un tronco irregular en diagonal; globo de "escribiendo" dibujado a
+  lápiz. Al tocarla: la taza salta y se bambolea, el plato se asienta después y la cucharita tintinea
+  (GSAP, cada una con su eje). La bolita de papel sale de la boca de la taza (escala 0), sube en arco
+  hasta el centro de la pantalla y se desenvuelve: película `PapelComanda` (bolita centrada en el papel;
+  el vuelo lo hace el sitio). Al cerrar se arruga y vuelve a caer en la taza.
+- Sprite: `public/anim/papel-comanda.webp`, se precarga cuando el navegador está libre (`src/lib/sprite.ts`).
 - Regenerar animaciones: `cd lilium-house/animaciones && npm i && REMOTION_BROWSER=<chrome-headless-shell> npm run render && python3 sprites.py`.
 
 ### Diseño

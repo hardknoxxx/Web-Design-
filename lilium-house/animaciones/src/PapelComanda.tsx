@@ -2,15 +2,18 @@ import { AbsoluteFill, random, useCurrentFrame } from 'remotion'
 
 /*
  * Comanda: como la referencia del papel. Stop-motion a 12 cuadros por segundo: una bolita
- * apretada nace en la boca de la taza, se abre en una bola con facetas, pasa a ser una hoja
- * muy arrugada y se va alisando hasta quedar lisa, igual al papel del sitio (mismo tamaño,
- * color, renglones y giro). Cada cuadro tiene sus propias arrugas, como fotografiado a mano.
+ * apretada se abre en una bola con facetas, pasa a ser una hoja muy arrugada y se va alisando
+ * hasta quedar lisa, igual al papel del sitio (mismo tamaño, color, renglones y giro). Cada
+ * cuadro tiene sus propias arrugas, como fotografiado a mano.
+ *
+ * La bolita nace en `origen` (por defecto, el centro del papel): el vuelo desde la boca de la
+ * taza hasta el centro de la pantalla lo hace el sitio, porque depende del tamaño de pantalla.
  */
 
 const PAPER = { x: 6, y: 4, w: 288, h: 330 } // papel final dentro del lienzo de 300×420
 
 type Stage = {
-  cx: number // centro (0 = taza, 1 = lugar final)
+  cx: number // centro (0 = origen, 1 = lugar final)
   size: number // 0 = bolita, 1 = hoja completa
   crumple: number // 1 = muy arrugado, 0 = liso
   rot: number
@@ -34,14 +37,14 @@ const STAGES: Stage[] = [
 
 const pt = (x: number, y: number) => `${x.toFixed(1)} ${y.toFixed(1)}`
 
-export const PapelComanda = ({ cupX, cupY }: { cupX: number; cupY: number }) => {
+export const PapelComanda = ({ origenX, origenY }: { origenX: number; origenY: number }) => {
   const f = Math.min(useCurrentFrame(), STAGES.length - 1)
   const s = STAGES[f]
   const seed = `papel-${f}`
   const fx = PAPER.x + PAPER.w / 2
   const fy = PAPER.y + PAPER.h / 2
-  const cx = cupX + (fx - cupX) * s.cx
-  const cy = cupY + (fy - cupY) * s.cx
+  const cx = origenX + (fx - origenX) * s.cx
+  const cy = origenY + (fy - origenY) * s.cx
 
   // contorno: de una bola irregular (radio con mordidas) a un rectángulo con bordes rotos
   const N = 40

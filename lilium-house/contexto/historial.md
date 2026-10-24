@@ -67,3 +67,13 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - Lenis 1.3.26 (auditada) para rueda/trackpad, atado al reloj de GSAP; nativo en táctiles.
 - Apariciones fade-up (`Reveal*`, títulos palabra por palabra) y paralaje sutil en lo decorativo.
 
+## 10. PR #10 — Taza, comanda y menú-hoja más orgánicos
+
+- Cucharita sobre el plato, al lado de la taza (antes sobre el tronco).
+- Al tocar la taza cada pieza reacciona por separado: taza (salto + bamboleo), plato (asentamiento con otro
+  retardo y curva) y cucharita (tintineo).
+- La comanda sale de la boca de la taza (escala 0), sube en arco y se desenvuelve en el centro de la
+  pantalla; al cerrar vuelve a caer en la taza. Película `PapelComanda` re-renderizada con la bolita centrada.
+- Menú-hoja en CSS: revelado circular desde la esquina del botón, escala + giro con rebote
+  `cubic-bezier(0.34, 1.56, 0.64, 1)`. Se quitó la película `HojaMenu` (186 KB menos).
+

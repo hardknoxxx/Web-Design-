@@ -275,6 +275,45 @@
 }
 
 /*
+ * Menú-hoja: se despliega como una hoja de planta (o un abanico) desde el pecíolo, el botón de
+ * arriba a la derecha. Nace chica y girada contra el tallo, un círculo la va revelando desde la
+ * esquina y se asienta con un rebote suave. Giro, escala y revelado llevan tiempos distintos:
+ * la punta traza un arco, no se estira en línea recta. Al cerrar se repliega sin rebote, después
+ * de que las opciones se vuelven a colgar.
+ */
+@layer components {
+  .hoja-panel {
+    transform-origin: 100% 0;
+    scale: 0.14;
+    rotate: -26deg;
+    clip-path: circle(8% at 100% 0);
+    visibility: hidden;
+    transition:
+      scale 0.42s cubic-bezier(0.55, 0, 0.75, 0.2) 0.28s,
+      rotate 0.46s cubic-bezier(0.55, 0, 0.75, 0.2) 0.28s,
+      clip-path 0.4s cubic-bezier(0.55, 0, 0.75, 0.2) 0.3s,
+      visibility 0s linear 0.74s;
+  }
+  [data-open='true'] > .hoja-panel {
+    scale: 1;
+    rotate: 0deg;
+    clip-path: circle(150% at 100% 0);
+    visibility: visible;
+    transition:
+      scale 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
+      rotate 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s,
+      clip-path 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hoja-panel,
+    [data-open='true'] > .hoja-panel {
+      transition: visibility 0s;
+    }
+  }
+}
+
+/*
  * Opciones del menú-hoja: se abren como las hojas de una planta en cámara rápida. Cuelgan
  * contraídas e inclinadas hacia abajo y, al abrir, se yerguen y se expanden desde el tallo
  * (arriba al centro) con un rebote elástico al estabilizarse, en cascada cada 50 ms.
@@ -293,8 +332,8 @@
   [data-open='true'] > ul > .hoja-item {
     transform: scale(1) rotateX(0deg);
     opacity: 1;
-    /* empiezan cuando la hoja del panel terminó de desenrollarse */
-    transition-delay: calc(780ms + var(--i, 0) * 50ms);
+    /* brotan mientras la hoja todavía se está asentando */
+    transition-delay: calc(300ms + var(--i, 0) * 50ms);
   }
   @media (prefers-reduced-motion: reduce) {
     .hoja-item {

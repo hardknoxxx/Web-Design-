@@ -1,17 +1,16 @@
 import { Composition } from 'remotion'
 import { z } from 'zod'
-import { HojaMenu } from './HojaMenu'
 import { PapelComanda } from './PapelComanda'
 
-export const hojaSchema = z.object({ width: z.number(), height: z.number() })
-export const papelSchema = z.object({ cupX: z.number(), cupY: z.number() })
+export const papelSchema = z.object({ origenX: z.number(), origenY: z.number() })
 
-/** Animaciones de los menús de Lilium, inspiradas en las referencias del cliente (planta y papel). */
+/**
+ * Animación de la comanda de Lilium, inspirada en la referencia del cliente (papel que se
+ * desenvuelve). El menú-hoja de arriba ya no usa película: se abre con CSS (revelado radial).
+ */
 export const Root = () => (
   <>
-    {/* menú de arriba: una hoja nueva que brota enrollada y se desenrolla (panel 340×562) */}
-    <Composition id="HojaMenu" component={HojaMenu} schema={hojaSchema} defaultProps={{ width: 340, height: 562 }} durationInFrames={20} fps={24} width={340} height={562} />
-    {/* comanda: la bola de papel nace en la taza y se desenvuelve en stop-motion (papel 288×330) */}
-    <Composition id="PapelComanda" component={PapelComanda} schema={papelSchema} defaultProps={{ cupX: 246, cupY: 378 }} durationInFrames={12} fps={12} width={300} height={420} />
+    {/* comanda: la bolita se desenvuelve en su lugar, en stop-motion (papel 288×330, centro en 150,169) */}
+    <Composition id="PapelComanda" component={PapelComanda} schema={papelSchema} defaultProps={{ origenX: 150, origenY: 169 }} durationInFrames={12} fps={12} width={300} height={420} />
   </>
 )
