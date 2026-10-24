@@ -36,7 +36,8 @@ alojamiento ni B&B (aunque Google Maps lo liste como "Lilium House & Coffee").
 
 - Sitio estático (React 19 + Vite + Tailwind v4), publicado en Vercel (`lilium-house.vercel.app`). Sin backend:
   reservas y pedidos se derivan a WhatsApp con mensajes prearmados.
-- Concepto vigente "Un día en Lilium": el scroll recorre el día de 08:00 a 21:00.
+- Concepto vigente "La mesa giratoria": el scroll hace girar una mesa verde con los platos del día (de la mañana
+  a la noche), que se colorean como los manteles. La versión anterior ("Un día en Lilium") queda en `/anterior.html`.
 - Rendimiento en teléfonos de gama media es requisito: el cliente nota tirones y borrosidad.
 - **Abierto:** idiomas del sitio (hoy solo español rioplatense; no está decidido si sumar inglés y portugués
   para turistas de la triple frontera).
