@@ -18,7 +18,7 @@ pedido por pedido, está en [historial.md](./historial.md).
 - Producción: https://lilium-house.vercel.app (proyecto Vercel `hardknoxxx/lilium-house`, rootDirectory `lilium-house`).
 - Repo: `hardknoxxx/Web-Design-`, carpeta `lilium-house/`. Rama de trabajo actual `ccr-fda5bd2b-rxfhw3` (antes `ccr-055fb50e-v2vhdy`).
 - Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP + ScrollTrigger ·
-  Lenis (scroll suave solo con rueda/trackpad) · React Three Fiber (lirio 3D). Comanda en stop-motion hecha con **Remotion** (`animaciones/`).
+  Lenis (scroll suave solo con rueda/trackpad) · three.js puro (lirio 3D, `components/three/lily.ts`). Comanda en stop-motion hecha con **Remotion** (`animaciones/`).
 
 ### Concepto "Un día en Lilium"
 
