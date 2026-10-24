@@ -2,6 +2,7 @@
 
 .estado {
   display: inline-flex;
+  white-space: nowrap;
   align-items: center;
   gap: 0.5rem;
   min-height: 2.75rem;
@@ -12,18 +13,26 @@
   font-family: var(--font-elegante);
   font-size: 0.95rem;
 }
+.estado:hover {
+  background: var(--color-kraft);
+}
 .estado-punto {
   width: 0.55rem;
   height: 0.55rem;
   border-radius: 50%;
   background: var(--color-corteza);
 }
-.estado[data-open='true'] .estado-punto {
+.estado[data-open='true'] .estado:hover {
+  background: var(--color-kraft);
+}
+.estado-punto {
   background: #2e9b6a;
 }
 
 .boton {
   display: inline-flex;
+  gap: 0.5rem;
+  justify-content: center;
   white-space: nowrap;
   align-items: center;
   min-height: 2.75rem;
@@ -60,10 +69,11 @@
 }
 .mesa-texto {
   font-family: var(--font-display);
-  font-size: 27px;
+  font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.04em;
   fill: var(--color-turquesa);
+  fill-opacity: 0.55;
 }
 
 /* Escenario de los platos: el plato al frente queda centrado sobre el borde de la mesa */
@@ -93,8 +103,8 @@
   position: absolute;
   inset: 0;
 }
-.plato-color {
-  will-change: opacity;
+.plato {
+  cursor: pointer;
 }
 /* Sin pintar, como el mantel para colorear: solo el trazo sobre el papel */
 .plato-trazo svg * {
@@ -129,11 +139,19 @@
   font-size: 1.25rem;
   transition: transform 160ms var(--ease-organic), background-color 160ms;
 }
-.flecha:hover {
+.flecha {
+  display: grid;
+  place-items: center;
+}
+.flecha:hover:not([aria-disabled='true']) {
   background: var(--color-turquesa-dark);
 }
-.flecha:active {
+.flecha:active:not([aria-disabled='true']) {
   transform: scale(0.94);
+}
+.flecha[aria-disabled='true'] {
+  opacity: 0.35;
+  cursor: default;
 }
 
 @media (max-width: 767px) {
@@ -142,15 +160,302 @@
     width: 230vw;
   }
   .mesa-texto {
-    font-size: 36px;
+    font-size: 30px;
   }
   .plato {
     --size: min(66vw, 38svh);
     top: calc(64svh - var(--size) * 0.7);
   }
-  .estado,
-  .boton {
-    padding: 0 0.85rem;
-    font-size: 0.875rem;
+  #mesa .estado,
+  #mesa header .boton {
+    gap: 0.35rem;
+    padding: 0 0.7rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* Pista de uso: se va con el primer toque */
+.pista {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-family: var(--font-hand);
+  font-size: 1.35rem;
+  color: var(--color-turquesa-dark);
+  transition: opacity 400ms var(--ease-organic);
+}
+.pista[data-oculta] {
+  opacity: 0;
+}
+
+/* Lo verde de adentro, detrás de la mesa (la mesa los tapa por abajo) */
+.planta {
+  position: absolute;
+  height: auto;
+}
+.planta-lirio-a {
+  left: 3vw;
+  top: 14svh;
+  height: 64svh;
+  width: auto;
+}
+.planta-lirio-b {
+  right: 7vw;
+  top: 26svh;
+  height: 50svh;
+  width: auto;
+}
+.planta-monstera {
+  right: -3vw;
+  top: 34svh;
+  height: 34svh;
+  width: auto;
+  rotate: 24deg;
+  transform-origin: 50% 100%;
+}
+.picaflor {
+  position: absolute;
+  left: calc(3vw + 25svh);
+  top: 17svh;
+  width: 8rem;
+  animation: picaflor 2.8s ease-in-out infinite alternate;
+}
+@keyframes picaflor {
+  to {
+    translate: -10px 8px;
+  }
+}
+@media (max-width: 767px) {
+  .planta-lirio-a {
+    left: -16vw;
+    top: 30svh;
+    height: 40svh;
+  }
+  .planta-lirio-b,
+  .picaflor {
+    display: none;
+  }
+  .planta-monstera {
+    right: -18vw;
+    top: 42svh;
+    height: 22svh;
+  }
+}
+
+/* La carta */
+.pestana {
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border-radius: 999px;
+  background: var(--color-estuco);
+  color: var(--color-laguna-deep);
+  font-family: var(--font-elegante);
+  font-weight: 600;
+  transition: background-color 160ms, color 160ms, transform 160ms var(--ease-organic);
+}
+.pestana:hover {
+  background: var(--color-kraft);
+}
+.pestana:active {
+  transform: scale(0.97);
+}
+.pestana[aria-selected='true'] {
+  background: var(--color-laguna-deep);
+  color: var(--color-crema);
+}
+.boton-claro {
+  background: var(--color-estuco);
+  color: var(--color-laguna-deep);
+}
+.boton-claro:hover {
+  background: var(--color-kraft);
+}
+.boton-menta {
+  background: var(--color-turquesa);
+  color: var(--color-laguna-deep);
+}
+.boton-menta:hover {
+  background: var(--color-menta);
+}
+.boton-linea {
+  background: transparent;
+  color: var(--color-crema);
+  box-shadow: inset 0 0 0 1.5px var(--color-menta);
+}
+.boton-linea:hover {
+  background: var(--color-laguna);
+}
+.especimen {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 1.25rem;
+  align-items: center;
+  animation: especimen-in 500ms var(--ease-organic) backwards;
+}
+.especimen:nth-child(2) { animation-delay: 60ms; }
+.especimen:nth-child(3) { animation-delay: 120ms; }
+.especimen:nth-child(4) { animation-delay: 180ms; }
+.especimen:nth-child(5) { animation-delay: 240ms; }
+.especimen:nth-child(6) { animation-delay: 300ms; }
+@keyframes especimen-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+.lamina-plato {
+  position: relative;
+  aspect-ratio: 1;
+}
+.lamina-plato .plato-color {
+  clip-path: circle(0% at 50% 50%);
+  transition: clip-path 900ms var(--ease-organic) 150ms;
+}
+.lamina-plato[data-pintado] .plato-color {
+  clip-path: circle(72% at 50% 50%);
+}
+.lamina-foto img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 1.25rem;
+  filter: grayscale(1) contrast(0.9);
+  transition: filter 900ms var(--ease-organic) 150ms;
+}
+.lamina-foto[data-pintado] img {
+  filter: none;
+}
+.mariposa {
+  animation: mariposa 0.35s ease-in-out infinite alternate;
+  transform-origin: 50% 50%;
+}
+@keyframes mariposa {
+  to {
+    scale: 0.82 1;
+  }
+}
+@media (min-width: 768px) {
+  .especimen {
+    grid-template-columns: 8rem 1fr;
+  }
+}
+
+/* Visitanos */
+.horario-fila {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.9rem;
+}
+.horario-fila[data-hoy] {
+  background: var(--color-laguna);
+}
+.horario-fila dd {
+  color: var(--color-menta);
+}
+.croquis-rotulo {
+  font-family: var(--font-elegante);
+  font-size: 15px;
+  font-weight: 600;
+}
+.croquis-calle {
+  font-family: var(--font-elegante);
+  font-size: 15px;
+  font-weight: 700;
+  dominant-baseline: middle;
+}
+.croquis-nombre {
+  font-family: var(--font-script);
+  font-size: 34px;
+}
+.hornero {
+  position: absolute;
+  right: 1.5rem;
+  top: -4.4rem;
+  width: 11rem;
+}
+.coati-paseo {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 0;
+  height: 4.5rem;
+  translate: -12rem 0;
+}
+.coati-paseo[data-camina] {
+  animation: coati 26s linear infinite;
+}
+@keyframes coati {
+  to {
+    translate: calc(100vw + 2rem) 0;
+  }
+}
+
+/* Friso del cierre */
+.friso {
+  position: relative;
+  height: clamp(14rem, 34vw, 26rem);
+  margin-top: 2rem;
+}
+.friso-pieza {
+  position: absolute;
+  bottom: -0.5rem;
+  width: auto;
+  transform-origin: 50% 100%;
+}
+.tucan {
+  position: absolute;
+  left: 36%;
+  bottom: 62%;
+  width: clamp(5rem, 9vw, 8rem);
+}
+.friso-mariposa {
+  position: absolute;
+  right: 22%;
+  top: 8%;
+  width: 2.5rem;
+}
+@media (max-width: 767px) {
+  .tucan {
+    left: 50%;
+    bottom: 44%;
+  }
+}
+
+/* Cómo llegar flotante */
+.llegar-flotante {
+  position: fixed;
+  right: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 50;
+  opacity: 0;
+  translate: 0 0.75rem;
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-organic), translate 200ms var(--ease-organic), background-color 160ms;
+}
+.llegar-flotante[data-visible] {
+  opacity: 1;
+  translate: 0 0;
+  pointer-events: auto;
+}
+
+/* Detalles del navegador con la paleta */
+::selection {
+  background: var(--color-menta);
+  color: var(--color-laguna-deep);
+}
+:focus-visible {
+  outline: 2px solid var(--color-turquesa-dark);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .picaflor,
+  .mariposa,
+  .coati-paseo[data-camina],
+  .especimen {
+    animation: none;
+  }
+  .coati-paseo {
+    translate: 10vw 0;
   }
 }

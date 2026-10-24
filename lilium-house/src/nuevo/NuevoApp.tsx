@@ -1,38 +1,47 @@
-import { SITE, whatsappLink } from '../data/site'
+import { useEffect, useState } from 'react'
+import { SITE } from '../data/site'
+import { Carta } from './Carta'
+import { Friso } from './Friso'
 import { MesaGiratoria } from './MesaGiratoria'
+import { Visita } from './Visita'
+
+/** "Cómo llegar" siempre a mano: cuando la mesa queda atrás, el botón baja a la esquina. */
+function LlegarFlotante() {
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const mesa = document.getElementById('mesa')!
+    const visita = document.getElementById('visita')!
+    let pastMesa = false
+    let onVisita = false
+    const sync = () => setVisible(pastMesa && !onVisita)
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.target === mesa) pastMesa = !e.isIntersecting && e.boundingClientRect.top < 0
+        else onVisita = e.isIntersecting
+      }
+      sync()
+    })
+    io.observe(mesa)
+    io.observe(visita)
+    return () => io.disconnect()
+  }, [])
+  return (
+    <a href={SITE.mapsHref} target="_blank" rel="noopener" className="boton llegar-flotante" data-visible={visible || undefined} tabIndex={visible ? 0 : -1} aria-hidden={!visible}>
+      Cómo llegar
+    </a>
+  )
+}
 
 export function NuevoApp() {
   return (
-    <main>
-      <MesaGiratoria />
-      <section id="visita" className="bg-laguna-deep px-4 py-20 text-crema md:px-7 md:py-28">
-        <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-2">
-          <div>
-            <h2 className="font-display text-[2.2rem] leading-tight font-semibold md:text-[3rem]">Te esperamos</h2>
-            <p className="mt-4 text-lg text-menta">
-              {SITE.address}
-              <br />
-              {SITE.city}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href={SITE.mapsHref} target="_blank" rel="noopener" className="boton !bg-turquesa !text-laguna-deep">
-                Cómo llegar
-              </a>
-              <a href={whatsappLink()} target="_blank" rel="noopener" className="boton !bg-laguna">
-                Escribinos por WhatsApp
-              </a>
-            </div>
-          </div>
-          <dl className="grid content-start gap-4 font-elegante text-lg">
-            {SITE.hours.rows.map(([dia, hora]) => (
-              <div key={dia} className="flex justify-between gap-6 border-b border-laguna pb-3">
-                <dt className="font-semibold">{dia}</dt>
-                <dd className="tabular-nums text-menta">{hora}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-    </main>
+    <>
+      <main>
+        <MesaGiratoria />
+        <Carta />
+        <Visita />
+      </main>
+      <Friso />
+      <LlegarFlotante />
+    </>
   )
 }

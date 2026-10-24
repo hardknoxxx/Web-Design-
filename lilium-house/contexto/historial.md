@@ -119,3 +119,16 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   arrastre o las flechas; los platos esperan sin pintar (solo trazo, como el mantel para colorear) y se colorean
   al pasar al frente. El texto circular de la mesa lleva el estado real del local.
 - Motor: rAF a demanda que escribe transform/opacity (sin re-render por cuadro); arrastre con `touch-action: pan-y`.
+
+## 16. Crítica del prototipo + carta, visita y friso (`/nuevo.html`)
+
+- `/impeccable critique` (dos evaluadores aislados): 21/32. Problemas: el arrastre desincronizaba la hora del
+  scroll, horario lejos en el teléfono, texto de la mesa ilegible con datos, sin pista de uso, WhatsApp sin contraste.
+- Mesa: sin vuelta infinita (el scroll siempre es la hora), lo arrastrado vuelve solo al seguir scrolleando,
+  tocar un plato lo trae al frente y lo hace girar con rebote, flechas y ←/→ con aviso para lector de pantalla,
+  pista "Tocá un plato o deslizá la mesa", color que se abre desde el centro (como con lápiz), 300/340svh.
+- Reutilizado del sitio anterior: lirios (`src/nuevo/Lirio.tsx`, misma flor del boceto), monstera, picaflor,
+  hornero, coatí, tucán, mariposa, helechos, banano y pindó.
+- Nuevas secciones: carta en láminas con pestañas por momento (dibujos y fotos se pintan al entrar), visita con
+  croquis propio de Av. Tres Fronteras (no a escala), horario con "hoy", y friso botánico al pie.
+- "Cómo llegar" flotante cuando la mesa queda atrás. Scroll a 60 fps con CPU 4× más lenta (390×844).
