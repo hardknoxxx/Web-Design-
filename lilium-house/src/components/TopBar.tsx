@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { SCENES, SITE } from '../data/site'
 import { useDay } from '../day/DayProvider'
 import { gsap } from '../lib/gsap'
+import { HOJA, playSprite, spriteStyle } from '../lib/sprite'
 import { LilyMark } from './Icons'
 
 /** Dial sol/luna: gira 180° a lo largo del día. */
@@ -58,20 +59,17 @@ function shapePath({ x0, y0, x1, y1, r, b }: Shape) {
 const openShape = (w: number, h: number): Shape => ({ x0: 0, y0: 0, x1: w, y1: h, r: [Math.min(104, w * 0.32), 8, Math.min(120, w * 0.36), 6], b: [7, 4, 9, 7] })
 
 
-// ancho de la hoja todavía enrollada (fracción del panel)
-const ROLL = 0.07
-
 /**
- * Menú-hoja, como una hoja nueva de una planta: brota enrollada como un tubo desde el botón
- * (pecíolo), crece hacia abajo y después se desenrolla de costado hasta quedar abierta; al
- * cerrar se vuelve a enrollar y se retrae. El contorno de hoja es fijo y la animación es solo
- * transform (scale/translate): la GPU la compone sin repintar, sin trabas.
+ * Menú-hoja, como la hoja nueva de la referencia: brota enrollada desde el botón (pecíolo),
+ * crece por la nervadura y se desenrolla hacia los dos lados. La animación está hecha con
+ * Remotion (animaciones/HojaMenu) y se reproduce como sprite; su último cuadro es idéntico al
+ * panel, que aparece encima con el contenido. Al cerrar, la misma película al revés.
  */
 function LeafMenu() {
   const [open, setOpen] = useState(false)
   const wrap = useRef<HTMLDivElement>(null)
   const panel = useRef<HTMLElement>(null)
-  const roll = useRef<HTMLSpanElement>(null)
+  const sprite = useRef<HTMLSpanElement>(null)
   const first = useRef(true)
 
   // contorno de hoja fijo (se calcula una vez y al cambiar el tamaño)
@@ -81,11 +79,14 @@ function LeafMenu() {
       const d = `path('${shapePath(openShape(el.offsetWidth, el.offsetHeight))}')`
       el.style.clipPath = d
       el.style.setProperty('-webkit-clip-path', d)
-      if (roll.current) roll.current.style.height = `${el.offsetHeight * 0.92}px`
+      if (sprite.current) {
+        sprite.current.style.width = `${el.offsetWidth}px`
+        sprite.current.style.height = `${el.offsetHeight}px`
+      }
     }
     set()
-    gsap.set(el, { scaleX: ROLL, scaleY: 0, autoAlpha: 0, transformOrigin: '100% 0%' })
-    gsap.set(roll.current, { autoAlpha: 0, scaleY: 0, transformOrigin: '50% 0%' })
+    gsap.set(el, { autoAlpha: 0 })
+    gsap.set(sprite.current, { autoAlpha: 0 })
     const ro = new ResizeObserver(set)
     ro.observe(el)
     return () => ro.disconnect()
@@ -93,48 +94,39 @@ function LeafMenu() {
 
   useEffect(() => {
     const el = panel.current!
-    const band = roll.current!
+    const film = sprite.current!
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
     const q = gsap.utils.selector(wrap)
     if (first.current) {
       first.current = false
       return
     }
-    const w = el.offsetWidth
-    // el borde que se desenrolla: el panel se abre hacia la izquierda y el rollo viaja con su borde
-    const unroll = { s: Number(gsap.getProperty(el, 'scaleX')) }
-    const place = () => {
-      gsap.set(el, { scaleX: unroll.s })
-      gsap.set(band, { x: -w * unroll.s + 7, autoAlpha: unroll.s < 0.85 ? 1 : (1 - unroll.s) / 0.15 })
-    }
-    gsap.killTweensOf([el, band, unroll, q('[data-item]'), q('[data-line]'), q('[data-bud]'), q('[data-nerve]')])
+    gsap.killTweensOf([el, film, q('[data-item]'), q('[data-line]'), q('[data-bud]'), q('[data-nerve]')])
     const d = (v: number) => (reduce ? 0 : v)
     const tl = gsap.timeline({
       onStart: () => wrap.current?.setAttribute('data-moving', ''),
       onComplete: () => wrap.current?.removeAttribute('data-moving'),
     })
     if (open) {
-      tl.set(el, { autoAlpha: 1 })
-        .set(band, { autoAlpha: 1, x: -w * unroll.s + 7 })
-        // 1 · brota enrollada, hacia abajo
-        .to([el, band], { scaleY: 1, duration: d(0.5), ease: 'power3.out' })
-        // 2 · se desenrolla de costado
-        .to(unroll, { s: 1, duration: d(0.62), ease: 'power2.inOut', onUpdate: place }, d(0.34))
-        .to(q('[data-bud]'), { autoAlpha: 0, duration: d(0.3) }, d(0.6))
-        .to(q('[data-nerve]'), { autoAlpha: 1, duration: d(0.5) }, d(0.7))
+      // la película: brota enrollada, crece y se desenrolla (20 cuadros)
+      if (!reduce) tl.set(film, { autoAlpha: 1 }).add(playSprite(film, HOJA, 0, HOJA.frames - 1, 0.84), 0)
+      tl.set(el, { autoAlpha: 1 }, d(0.84))
+        .set(film, { autoAlpha: 0 }, d(0.86))
+        .set(q('[data-nerve]'), { autoAlpha: 1 }, d(0.84))
+        .to(q('[data-bud]'), { autoAlpha: 0, duration: d(0.25) }, d(0.35))
         .to(q('[data-line="a"]'), { y: 6, rotation: 45, duration: d(0.45), ease: 'power3.inOut' }, 0)
         .to(q('[data-line="b"]'), { autoAlpha: 0, duration: d(0.2) }, 0)
         .to(q('[data-line="c"]'), { y: -6, rotation: -45, width: 18, duration: d(0.45), ease: 'power3.inOut' }, 0)
-        .fromTo(q('[data-item]'), { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: d(0.04), duration: d(0.45), ease: 'power3.out' }, d(0.8))
+        .fromTo(q('[data-item]'), { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: d(0.04), duration: d(0.4), ease: 'power3.out' }, d(0.8))
       ;(gsap.utils.selector(el)('a')[0] as HTMLElement | undefined)?.focus({ preventScroll: true })
     } else {
-      tl.to(q('[data-item]'), { autoAlpha: 0, y: 6, duration: d(0.16), stagger: -0.015, ease: 'power2.in' })
-        .to(q('[data-nerve]'), { autoAlpha: 0, duration: d(0.15) }, 0)
-        .to(q('[data-bud]'), { autoAlpha: 1, duration: d(0.25) }, d(0.1))
-        // se vuelve a enrollar y se retrae hacia el pecíolo
-        .to(unroll, { s: ROLL, duration: d(0.45), ease: 'power2.inOut', onUpdate: place }, d(0.12))
-        .to([el, band], { scaleY: 0, duration: d(0.32), ease: 'power3.in' }, '>-0.05')
-        .set([el, band], { autoAlpha: 0 })
+      tl.to(q('[data-item]'), { autoAlpha: 0, y: 6, duration: d(0.14), stagger: -0.012, ease: 'power2.in' })
+      // la misma película al revés: se vuelve a enrollar y se retrae
+      if (!reduce) tl.set(film, { autoAlpha: 1 }, 0.16).add(playSprite(film, HOJA, HOJA.frames - 1, 0, 0.6), 0.16)
+      tl.set(el, { autoAlpha: 0 }, d(0.17))
+        .set(q('[data-nerve]'), { autoAlpha: 0 }, d(0.17))
+        .to(q('[data-bud]'), { autoAlpha: 1, duration: d(0.25) }, d(0.5))
+        .set(film, { autoAlpha: 0 }, d(0.78))
         .to(q('[data-line]'), { y: 0, rotation: 0, autoAlpha: 1, width: (i: number) => (i === 2 ? 12 : 18), duration: d(0.4), ease: 'power3.inOut' }, 0)
     }
   }, [open])
@@ -158,7 +150,7 @@ function LeafMenu() {
         ref={panel}
         id="menu-escenas"
         aria-label="Escenas"
-        className="invisible absolute top-0 right-0 w-[min(86vw,340px)] bg-laguna text-crema will-change-transform [background-image:radial-gradient(120%_70%_at_100%_0%,rgb(100_188_176/0.45),transparent_62%),radial-gradient(90%_60%_at_0%_100%,rgb(65_85_33/0.35),transparent_70%)]"
+        className="invisible absolute top-0 right-0 w-[min(86vw,340px)] bg-laguna text-crema [background-image:radial-gradient(120%_70%_at_100%_0%,rgb(100_188_176/0.45),transparent_62%),radial-gradient(90%_60%_at_0%_100%,rgb(65_85_33/0.35),transparent_70%)]"
       >
         {/* nervaduras de la hoja: la central va del pecíolo (botón) a la punta */}
         <svg data-nerve="" viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 h-full w-full opacity-0" aria-hidden="true">
@@ -207,12 +199,8 @@ function LeafMenu() {
         </div>
       </nav>
 
-      {/* el rollo: la parte de la hoja que todavía está enrollada, viaja con el borde que se abre */}
-      <span
-        ref={roll}
-        aria-hidden="true"
-        className="pointer-events-none invisible absolute top-[4%] right-0 w-[16px] rounded-full bg-[linear-gradient(to_right,#173F3B,#5FA89C_40%,#BFE3DC_55%,#2B6E65_80%,#173F3B)] will-change-transform"
-      />
+      {/* la película de la hoja (sprite renderizado con Remotion) */}
+      <span ref={sprite} aria-hidden="true" className="pointer-events-none invisible absolute top-0 right-0" style={spriteStyle(HOJA)} />
 
       <button
         type="button"
