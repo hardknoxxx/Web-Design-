@@ -10,7 +10,6 @@ import {
   DirectionalLight,
   DoubleSide,
   Group,
-  HemisphereLight,
   IcosahedronGeometry,
   InstancedMesh,
   MathUtils,
@@ -34,27 +33,31 @@ import {
  * Liviano a propósito: ~1.000 triángulos y 4 llamadas de dibujo.
  * - Pétalos procedurales de pocos segmentos, dos formas instanciadas (3 + 3 tépalos).
  * - Tallo, hojas, estambres, pistilo y estigma fusionados en una sola malla con colores por vértice.
- * - Un solo material Lambert para todo y una sola nube de polen.
+ * - Un solo material Lambert, luz ambiente + una direccional suave, sin sombras.
  *
- * Rendimiento: pixel ratio ≤ 2 (y baja de a escalones si el equipo no llega), ≤ 60 fps aunque la
- * pantalla sea de 120 Hz; en equipos de bajo consumo, 30 fps mientras la flor solo gira sola y 60
- * apenas alguien la toca o scrollea. El bucle se detiene fuera de pantalla (IntersectionObserver),
- * con la pestaña oculta y cuando el hero ya atravesó el follaje. `dispose()` libera geometrías,
- * materiales, textura, contexto WebGL y canvas.
+ * Render a demanda: no hay bucle continuo. Se dibuja solo cuando algo cambia (scroll, toque,
+ * arrastre, cursor, tamaño) y el bucle se apaga apenas la flor se asienta. Fuera de pantalla no
+ * corre nada: ni cuadros ni listeners de scroll o de puntero. Nitidez fija: antialias y pixel ratio
+ * `Math.min(devicePixelRatio, 2)`. `dispose()` libera geometrías, materiales, textura, contexto
+ * WebGL y canvas.
  *
  * Interacción: arrastrar gira la flor siguiendo el dedo (y queda con inercia al soltar); un toque
  * rápido la hace dar una vuelta de bienvenida con rebote elástico, latir y abrirse un poco.
- * El contenedor usa `touch-action: pan-y`: el gesto vertical sigue siendo scroll de la página.
+ * La caja usa `touch-action: pan-y`: el gesto vertical sigue siendo scroll de la página.
  */
 
 // el hero dura 1,5 pantallas de scroll; el lirio termina de desvanecerse al ~84 %
 const HERO_SCROLL = 1.5
 const LILY_GONE = 1.32
-const MAX_DPR = 2
-// escalones de resolución si el equipo no sostiene los cuadros (nunca por encima de MAX_DPR)
-const DPR_STEPS = [2, 1.5, 1.25, 1]
 const FRAME_MS = 1000 / 60
-const IDLE_FRAME_MS = 1000 / 30
+// por debajo de esto, nada se mueve a la vista: el bucle se apaga
+const EPS = 3e-4
+// mientras el dedo o la rueda se mueven, la flor se dibuja a esta densidad (4 veces menos píxeles
+// que a 2x); apenas se suelta vuelve a la completa: en reposo siempre está nítida
+const MOTION_DPR = 1
+const MOTION_HOLD_MS = 160
+// ángulo con que arranca quieta: tallo despejado y hojas asimétricas a los dos lados
+const START_TURN = 1.2
 const TAP_MS = 280
 const TAP_PX = 10
 
@@ -241,24 +244,14 @@ export type LilyOptions = {
 export function createLily({ hitArea, container, onReady }: LilyOptions) {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
   const coarse = matchMedia('(pointer: coarse)').matches
-  const lowPower = (navigator.hardwareConcurrency ?? 4) <= 4 || (coarse && matchMedia('(max-width: 768px)').matches)
-  const deviceDpr = () => Math.min(window.devicePixelRatio || 1, MAX_DPR)
 
   // ── renderer, escena y cámara ────────────────────────────────────────────
   const canvas = document.createElement('canvas')
   canvas.style.cssText = 'display:block;width:100%;height:100%;pointer-events:none'
   container.appendChild(canvas)
-  const renderer = new WebGLRenderer({
-    canvas,
-    alpha: true,
-    // con pixel ratio 2 el serrucho no se ve: el antialias solo se paga en pantallas de menos
-    // densidad, y no en equipos de bajo consumo (el MSAA es lo más caro de este dibujo)
-    antialias: !lowPower && deviceDpr() < 2,
-    stencil: false,
-    powerPreference: 'default',
-  })
-  let pixelRatio = deviceDpr()
-  renderer.setPixelRatio(pixelRatio)
+  const renderer = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', alpha: true, stencil: false })
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.shadowMap.enabled = false
   renderer.setClearColor(0x000000, 0)
   renderer.toneMapping = ACESFilmicToneMapping
 
@@ -267,13 +260,11 @@ export function createLily({ hitArea, container, onReady }: LilyOptions) {
   camera.position.set(0, -0.71, 5.6)
   camera.lookAt(0, -0.81, 0)
 
-  scene.add(new HemisphereLight('#FFF4E6', '#C9A68C', 1.25))
-  scene.add(new AmbientLight('#FFE9DA', 0.35))
-  const key = new DirectionalLight('#FFE8D0', 1.9)
-  key.position.set(2.5, 4, 5)
-  const rim = new DirectionalLight('#64BCB0', 1.1)
-  rim.position.set(-3, 1.5, -3)
-  scene.add(key, rim)
+  // luz ambiente cálida + una sola direccional suave, sin sombras
+  scene.add(new AmbientLight('#FFEBDD', 1.4))
+  const sun = new DirectionalLight('#FFE8D0', 1.85)
+  sun.position.set(2.5, 4, 5)
+  scene.add(sun)
 
   // ── la flor ──────────────────────────────────────────────────────────────
   const material = new MeshLambertMaterial({ vertexColors: true, side: DoubleSide })
@@ -288,8 +279,6 @@ export function createLily({ hitArea, container, onReady }: LilyOptions) {
   const body = new Mesh(staticGeo, material)
 
   const root = new Group()
-  root.rotation.x = 0.78
-  root.position.y = -0.35
   const spinner = new Group()
   spinner.add(body, outer, inner)
   root.add(spinner)
@@ -302,31 +291,44 @@ export function createLily({ hitArea, container, onReady }: LilyOptions) {
   scene.add(pollen)
 
   // ── estado ───────────────────────────────────────────────────────────────
-  const spin: Spring = { x: 0, v: 0 } // sigue al dedo, sin pasarse
-  let spinTarget = 0
+  const spin: Spring = { x: START_TURN, v: 0 } // sigue al dedo, sin pasarse
+  let spinTarget = START_TURN
   let inertia = 0 // rad/s al soltar
   const welcome: Spring = { x: 0, v: 0 } // vuelta de bienvenida, con rebote
   let welcomeTarget = 0
   const beat: Spring = { x: 1, v: 0 } // latido de escala
   const kick: Spring = { x: 0, v: 0 } // apertura extra de los pétalos al tocar
-  let bloom = 0.35
-  let time = 0
   let scroll = 0
   let gone = false
+  let visible = false
   let pointerX = 0
   let pointerY = 0
-  let lastInput = -Infinity // último scroll o movimiento del puntero (ms)
+  let lastInput = -Infinity // último scroll o arrastre (ms)
   // gesto en curso (null si no hay dedo/mouse apretado sobre la flor)
   let drag: { id: number; x0: number; y0: number; t0: number; lastX: number; lastT: number; v: number; moved: boolean } | null = null
+
+  const readScroll = () => {
+    const h = window.innerHeight
+    scroll = MathUtils.clamp(window.scrollY / (h * HERO_SCROLL), 0, 1)
+    // ya atravesamos el follaje: el lirio es invisible, no se dibuja más
+    gone = window.scrollY > h * LILY_GONE
+  }
+  readScroll()
+
+  // valores que siguen a sus objetivos (arrancan ya en su lugar: nada que asentar al cargar)
+  let bloom = 0.3 + scroll * 0.7
+  let size = 1 + scroll * 0.42
+  root.rotation.x = 0.78 - scroll * 0.25
+  root.position.y = -0.35 + scroll * 0.3
 
   const matY = new Matrix4()
   const matT = new Matrix4()
   const matX = new Matrix4()
-  const placePetals = (flutter: number) => {
+  const placePetals = () => {
     for (let i = 0; i < 6; i++) {
       const isInner = i >= 3
       const angle = (i % 3) * ((Math.PI * 2) / 3) + (isInner ? Math.PI / 3 : 0)
-      const open = (isInner ? -0.42 : -0.3) + bloom * (isInner ? 0.55 : 0.68) + (reducedMotion ? 0 : Math.sin(time * 1.6 + i * 1.3) * flutter)
+      const open = (isInner ? -0.42 : -0.3) + bloom * (isInner ? 0.55 : 0.68)
       matY.makeRotationY(angle).multiply(matT.makeTranslation(0, isInner ? 0.02 : 0, 0.04)).multiply(matX.makeRotationX(open))
       ;(isInner ? inner : outer).setMatrixAt(i % 3, matY)
     }
@@ -334,40 +336,95 @@ export function createLily({ hitArea, container, onReady }: LilyOptions) {
     inner.instanceMatrix.needsUpdate = true
   }
 
-  const update = (dt: number) => {
-    time += dt
+  const far = (a: number, b: number) => Math.abs(a - b) > EPS
 
-    // giro: el objetivo avanza solo (despacio), con el arrastre o con la inercia al soltar
-    if (!drag) {
-      spinTarget += (reducedMotion ? 0.06 : 0.22) * dt + inertia * dt
+  /** Avanza un paso. Devuelve si algo todavía se mueve (si no, el bucle se apaga). */
+  const update = (dt: number) => {
+    // giro: solo con el arrastre o con la inercia al soltar
+    if (!drag && inertia) {
+      spinTarget += inertia * dt
       inertia *= Math.exp(-dt * 3.2)
+      if (Math.abs(inertia) < 1e-3) inertia = 0
     }
     stepSpring(spin, spinTarget, 150, 24.5, dt)
     // vuelta de bienvenida: resorte con poca fricción (se pasa y vuelve); al asentarse se
     // descuenta la vuelta entera, que a la vista es idéntica
     stepSpring(welcome, welcomeTarget, reducedMotion ? 30 : 38, reducedMotion ? 11 : 6.5, dt)
-    if (welcomeTarget !== 0 && Math.abs(welcome.x - welcomeTarget) < 1e-3 && Math.abs(welcome.v) < 1e-3) {
+    if (welcomeTarget !== 0 && !far(welcome.x, welcomeTarget) && Math.abs(welcome.v) < EPS) {
       spin.x += welcomeTarget
       spinTarget += welcomeTarget
       welcome.x = welcomeTarget = 0
+      welcome.v = 0
     }
     stepSpring(beat, 1, 190, 9, dt)
     stepSpring(kick, 0, 60, 8, dt)
 
     // floración: base + scroll + el toque
-    bloom = MathUtils.damp(bloom, MathUtils.clamp(0.3 + scroll * 0.7, 0, 1) + kick.x * 0.45, 4, dt)
-    placePetals(0.025)
+    const bloomTo = 0.3 + scroll * 0.7 + kick.x * 0.45
+    bloom = MathUtils.damp(bloom, bloomTo, 4, dt)
+    placePetals()
 
-    // inclinación hacia el cursor (o hacia donde arrastra el dedo) y respuesta al scroll
-    root.rotation.x = MathUtils.damp(root.rotation.x, 0.78 + pointerY * 0.28 - scroll * 0.25, 3.5, dt)
-    root.rotation.z = MathUtils.damp(root.rotation.z, -pointerX * 0.22, 3.5, dt)
-    root.position.y = MathUtils.damp(root.position.y, -0.35 + scroll * 0.3 + Math.sin(time * 0.8) * 0.04, 4, dt)
-    // zoom suave al scrollear (amortiguado, nunca a saltos) por el latido del toque
-    root.scale.setScalar(MathUtils.damp(root.scale.x, 1 + scroll * 0.42, 5, dt) * (reducedMotion ? 1 : beat.x))
-    spinner.rotation.y = spin.x + welcome.x + scroll * Math.PI * 0.9
+    // inclinación hacia el cursor (o hacia donde arrastra el dedo), respuesta al scroll y zoom
+    // suave (amortiguado, nunca a saltos) por el latido del toque
+    const rx = 0.78 + pointerY * 0.28 - scroll * 0.25
+    const rz = -pointerX * 0.22
+    const py = -0.35 + scroll * 0.3
+    const sz = 1 + scroll * 0.42
+    root.rotation.x = MathUtils.damp(root.rotation.x, rx, 3.5, dt)
+    root.rotation.z = MathUtils.damp(root.rotation.z, rz, 3.5, dt)
+    root.position.y = MathUtils.damp(root.position.y, py, 4, dt)
+    size = MathUtils.damp(size, sz, 5, dt)
+    root.scale.setScalar(size * (reducedMotion ? 1 : beat.x))
+    const turn = spin.x + welcome.x
+    spinner.rotation.y = turn + scroll * Math.PI * 0.9
+    // el polen acompaña el giro y el scroll, más lento: queda por detrás (profundidad)
+    pollen.rotation.y = -turn * 0.12 - scroll * 0.6
+    pollen.position.y = scroll * 0.2
 
-    pollen.rotation.y -= dt * (reducedMotion ? 0.01 : 0.05)
-    pollen.position.y = Math.sin(time * 0.5) * 0.08
+    return (
+      inertia !== 0 ||
+      far(spin.x, spinTarget) || Math.abs(spin.v) > EPS ||
+      welcomeTarget !== 0 ||
+      far(beat.x, 1) || Math.abs(beat.v) > EPS ||
+      far(kick.x, 0) || Math.abs(kick.v) > EPS ||
+      far(bloom, bloomTo) || far(root.rotation.x, rx) || far(root.rotation.z, rz) || far(root.position.y, py) || far(size, sz)
+    )
+  }
+
+  // ── bucle a demanda ──────────────────────────────────────────────────────
+  let raf = 0
+  let last = 0
+  let ready = false
+  const frame = (t: number) => {
+    raf = 0
+    // tope de 60 fps: en pantallas de 120 Hz se dibuja un cuadro sí y otro no
+    if (last && t - last < FRAME_MS - 2) {
+      raf = requestAnimationFrame(frame)
+      return
+    }
+    const dt = last ? Math.min((t - last) / 1000, 0.05) : 1 / 60
+    last = t
+    const full = Math.min(window.devicePixelRatio, 2)
+    const ratio = t - lastInput < MOTION_HOLD_MS ? Math.min(MOTION_DPR, full) : full
+    if (ratio !== renderer.getPixelRatio()) renderer.setPixelRatio(ratio)
+    const moving = update(dt) || ratio < full // el último cuadro siempre sale a resolución completa
+    renderer.render(scene, camera)
+    if (!ready) {
+      ready = true
+      requestAnimationFrame(() => onReady?.())
+    }
+    if (moving) raf = requestAnimationFrame(frame)
+    else last = 0 // se asentó: el próximo cuadro lo pide un evento
+  }
+  /** Pide un cuadro (y los que hagan falta hasta asentarse), solo si la flor se ve. */
+  const invalidate = () => {
+    if (raf || !visible || gone || document.hidden) return
+    raf = requestAnimationFrame(frame)
+  }
+  const halt = () => {
+    cancelAnimationFrame(raf)
+    raf = 0
+    last = 0
   }
 
   // ── tamaño ───────────────────────────────────────────────────────────────
@@ -375,113 +432,32 @@ export function createLily({ hitArea, container, onReady }: LilyOptions) {
     const w = container.clientWidth
     const h = container.clientHeight
     if (!w || !h) return
-    pixelRatio = Math.min(pixelRatio, deviceDpr())
-    renderer.setPixelRatio(pixelRatio)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.setSize(w, h, false)
     camera.aspect = w / h
     camera.updateProjectionMatrix()
+    invalidate()
   }
   const ro = new ResizeObserver(resize)
   ro.observe(container)
   resize()
 
-  // ── bucle: solo corre si se ve ─────────────────────────────────────────────
-  let raf = 0
-  let last = 0
-  let visible = true
-  let ready = false
-  let slow = 0 // cuánto viene costando sostener la página (sube con cada cuadro lento, baja con los buenos)
-  let prevRaf = 0
-  /** ¿Hay algo que pida fluidez completa? (gesto, inercia, bienvenida, scroll o cursor reciente) */
-  const active = (now: number) =>
-    drag !== null ||
-    Math.abs(inertia) > 0.05 ||
-    welcomeTarget !== 0 ||
-    Math.abs(beat.x - 1) > 0.002 ||
-    Math.abs(kick.x) > 0.005 ||
-    now - lastInput < 500
-  const loop = (t: number) => {
-    raf = requestAnimationFrame(loop)
-    // la señal es el ritmo de toda la página (no el de la flor): si no sostiene ~50 fps de forma
-    // sostenida, la flor baja un escalón de resolución (2 → 1,5 → 1,25 → 1). Se pierde un poco de
-    // nitidez, nunca la fluidez
-    if (prevRaf && time > 1) {
-      const gap = t - prevRaf
-      // un cuadro muy lento (< 30 fps) pesa el doble
-      slow = gap > 33 ? slow + 2 : gap > 20 ? slow + 1 : Math.max(0, slow - 1)
-      const next = DPR_STEPS.find((d) => d < pixelRatio - 0.01)
-      if (slow > 24 && next) {
-        pixelRatio = next
-        slow = 0
-        resize()
-      }
-    }
-    prevRaf = t
-    // tope de 60 fps (en pantallas de 120 Hz se dibuja un cuadro sí y otro no); en equipos de
-    // bajo consumo, 30 fps mientras la flor solo gira sola: es lenta y no se nota
-    const target = lowPower && !active(t) ? IDLE_FRAME_MS : FRAME_MS
-    if (last && t - last < target - 2) return
-    const elapsed = last ? t - last : FRAME_MS
-    last = t
-    update(Math.min(elapsed / 1000, 0.05))
-    renderer.render(scene, camera)
-    if (!ready) {
-      ready = true
-      requestAnimationFrame(() => onReady?.())
-    }
-  }
-  const sync = () => {
-    const run = visible && !gone && !document.hidden
-    if (run && !raf) {
-      last = 0
-      raf = requestAnimationFrame(loop)
-    } else if (!run && raf) {
-      cancelAnimationFrame(raf)
-      raf = 0
-      prevRaf = 0
-    }
-  }
-  const io = new IntersectionObserver(([entry]) => {
-    visible = entry.isIntersecting
-    sync()
-  }, { rootMargin: '80px' })
-  io.observe(hitArea)
-
+  // ── eventos (solo conectados mientras la flor está en pantalla) ───────────
   const onScroll = () => {
     lastInput = performance.now()
-    const h = window.innerHeight
-    scroll = MathUtils.clamp(window.scrollY / (h * HERO_SCROLL), 0, 1)
-    // ya atravesamos el follaje: el lirio es invisible, no se dibuja más
-    const wasGone = gone
-    gone = window.scrollY > h * LILY_GONE
-    if (gone !== wasGone) sync()
+    readScroll()
+    if (gone) halt()
+    else invalidate()
   }
-  onScroll()
-  window.addEventListener('scroll', onScroll, { passive: true })
-  document.addEventListener('visibilitychange', sync)
 
-  // si el sistema le quita el contexto WebGL al navegador, se espera a que lo devuelva
-  const onLost = (e: Event) => {
-    e.preventDefault()
-    cancelAnimationFrame(raf)
-    raf = 0
-    prevRaf = 0
-  }
-  const onRestored = () => sync()
-  canvas.addEventListener('webglcontextlost', onLost)
-  canvas.addEventListener('webglcontextrestored', onRestored)
-
-  // ── gestos ───────────────────────────────────────────────────────────────
   const turnPerPx = () => (Math.PI * 1.8) / Math.max(hitArea.clientWidth, 1) // cruzar la flor ≈ 0,9 vueltas
-
   const onDown = (e: PointerEvent) => {
     if (e.button > 0) return
     drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: e.timeStamp, lastX: e.clientX, lastT: e.timeStamp, v: 0, moved: false }
     inertia = 0
-    spinTarget = spin.x // agarra la flor donde está: no sigue girando sola bajo el dedo
+    spinTarget = spin.x // agarra la flor donde está
   }
   const onMove = (e: PointerEvent) => {
-    lastInput = performance.now()
     if (drag && e.pointerId === drag.id) {
       const dx = e.clientX - drag.lastX
       const dtm = Math.max(e.timeStamp - drag.lastT, 1)
@@ -490,12 +466,14 @@ export function createLily({ hitArea, container, onReady }: LilyOptions) {
         hitArea.setPointerCapture(e.pointerId)
       }
       spinTarget += dx * turnPerPx()
+      lastInput = performance.now()
       // velocidad suavizada (rad/s) para la inercia al soltar
       drag.v = drag.v * 0.6 + ((dx * turnPerPx()) / dtm) * 1000 * 0.4
       drag.lastX = e.clientX
       drag.lastT = e.timeStamp
       // la flor se inclina apenas hacia donde va el dedo
       pointerX = MathUtils.clamp(drag.v * 0.05, -0.6, 0.6)
+      invalidate()
       return
     }
     if (e.pointerType === 'mouse') {
@@ -503,6 +481,7 @@ export function createLily({ hitArea, container, onReady }: LilyOptions) {
       const rect = hitArea.getBoundingClientRect()
       pointerX = ((e.clientX - rect.left) / rect.width) * 2 - 1
       pointerY = ((e.clientY - rect.top) / rect.height) * 2 - 1
+      invalidate()
     }
   }
   const onUp = (e: PointerEvent) => {
@@ -518,40 +497,74 @@ export function createLily({ hitArea, container, onReady }: LilyOptions) {
       beat.v += reducedMotion ? 0 : 0.9 // ~6 % de escala en el pico
       kick.v += reducedMotion ? 1.2 : 2.2
     }
+    invalidate()
   }
   const onCancel = (e: PointerEvent) => {
     // el navegador tomó el gesto (scroll vertical): se suelta sin inercia ni bienvenida
     if (drag && e.pointerId === drag.id) drag = null
     pointerX = pointerY = 0
+    invalidate()
   }
   const onLeave = (e: PointerEvent) => {
-    if (e.pointerType === 'mouse' && !drag) pointerX = pointerY = 0
+    if (e.pointerType !== 'mouse' || drag) return
+    pointerX = pointerY = 0
+    invalidate()
+  }
+  const pointerEvents: [string, (e: PointerEvent) => void][] = [
+    ['pointerdown', onDown],
+    ['pointermove', onMove],
+    ['pointerup', onUp],
+    ['pointercancel', onCancel],
+    ['pointerleave', onLeave],
+  ]
+  let wired = false
+  const wire = (on: boolean) => {
+    if (on === wired) return
+    wired = on
+    const method = on ? 'addEventListener' : 'removeEventListener'
+    window[method]('scroll', onScroll, { passive: true } as AddEventListenerOptions)
+    for (const [type, fn] of pointerEvents) hitArea[method](type, fn as EventListener)
   }
   hitArea.style.touchAction = 'pan-y'
-  hitArea.addEventListener('pointerdown', onDown)
-  hitArea.addEventListener('pointermove', onMove)
-  hitArea.addEventListener('pointerup', onUp)
-  hitArea.addEventListener('pointercancel', onCancel)
-  hitArea.addEventListener('pointerleave', onLeave)
 
-  sync()
+  // fuera de pantalla (bajando a la carta, a la taza…) se corta todo: cuadros y listeners
+  const io = new IntersectionObserver(
+    ([entry]) => {
+      visible = entry.isIntersecting
+      wire(visible)
+      if (visible) {
+        readScroll()
+        invalidate()
+      } else {
+        drag = null
+        halt()
+      }
+    },
+    { rootMargin: '80px' },
+  )
+  io.observe(hitArea)
+
+  const onVisibility = () => (document.hidden ? halt() : invalidate())
+  document.addEventListener('visibilitychange', onVisibility)
+
+  // si el sistema le quita el contexto WebGL al navegador, se espera a que lo devuelva
+  const onLost = (e: Event) => {
+    e.preventDefault()
+    halt()
+  }
+  canvas.addEventListener('webglcontextlost', onLost)
+  canvas.addEventListener('webglcontextrestored', invalidate)
 
   return {
     /** Libera todo: bucle, observadores, eventos, geometrías, materiales, textura, contexto y canvas. */
     dispose() {
-      cancelAnimationFrame(raf)
-      raf = 0
+      halt()
       io.disconnect()
       ro.disconnect()
-      window.removeEventListener('scroll', onScroll)
-      document.removeEventListener('visibilitychange', sync)
-      hitArea.removeEventListener('pointerdown', onDown)
-      hitArea.removeEventListener('pointermove', onMove)
-      hitArea.removeEventListener('pointerup', onUp)
-      hitArea.removeEventListener('pointercancel', onCancel)
-      hitArea.removeEventListener('pointerleave', onLeave)
+      wire(false)
+      document.removeEventListener('visibilitychange', onVisibility)
       canvas.removeEventListener('webglcontextlost', onLost)
-      canvas.removeEventListener('webglcontextrestored', onRestored)
+      canvas.removeEventListener('webglcontextrestored', invalidate)
       outer.dispose()
       inner.dispose()
       for (const g of [outerGeo, innerGeo, staticGeo, pollenGeo]) g.dispose()

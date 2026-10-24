@@ -16,8 +16,14 @@ export default function LilyCanvas({ onReady }: { onReady?: () => void }) {
   readyRef.current = onReady
 
   useEffect(() => {
-    const lily = createLily({ hitArea: hitRef.current!, container: stageRef.current!, onReady: () => readyRef.current?.() })
-    return () => lily.dispose()
+    let lily: ReturnType<typeof createLily> | undefined
+    try {
+      lily = createLily({ hitArea: hitRef.current!, container: stageRef.current!, onReady: () => readyRef.current?.() })
+    } catch {
+      // sin WebGL (equipo viejo, aceleración desactivada): queda el boceto ilustrado del hero
+      stageRef.current?.replaceChildren()
+    }
+    return () => lily?.dispose()
   }, [])
 
   return (

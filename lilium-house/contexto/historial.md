@@ -86,3 +86,12 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - Gobernador de resolución (2 → 1,5 → 1,25 → 1 si la página baja de ~50 fps) y 30 fps en reposo en equipos de
   bajo consumo. Verificado: 25 montajes/desmontajes sin buffers, programas, listeners ni canvas sueltos.
 
+## 12. PR #12 — Lirio 3D a demanda y nítido
+
+- Pedido: la flor se veía borrosa (el gobernador bajaba la resolución) y el scroll seguía con tirones.
+- Render a demanda (0 cuadros en reposo), antialias + `high-performance` + `Math.min(dpr, 2)` en reposo, luz
+  ambiente + una direccional sin sombras, nada corre fuera de pantalla (ni listeners).
+- Resolución dinámica: 1x solo mientras el dedo o la rueda se mueven, 2x al soltar. Scroll del hero medido bien
+  (CPU 4x): sin flor 48 fps · producción anterior 27 · pedido estricto 17 · con resolución dinámica 29.
+- Arreglo: si el chunk del lirio fallaba o no había WebGL, la página entera quedaba en blanco.
+
