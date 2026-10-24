@@ -1,2 +1,5 @@
 .vercel
 .env*
+
+# Impeccable: el motor (binario de ~21 MB) no se versiona; el lanzador lo baja y verifica (SHA-256) si falta
+.claude/skills/impeccable/scripts/bin/

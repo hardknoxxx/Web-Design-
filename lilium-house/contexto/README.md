@@ -77,6 +77,11 @@ cada sección declara `data-phase="fondo|texto|hora"`.
 - Skill **ui-ux-pro-max** (nextlevelbuilder) — paletas, tipografías, guías UX.
 - **Playwright MCP** (`@playwright/mcp@0.0.83`, Microsoft) en `.mcp.json` (raíz del repo), headless con el
   Chromium del entorno (`/opt/pw-browsers/...`; en otra máquina, quitar `--executable-path`).
+- **Impeccable** (skill de diseño, `/impeccable`) en `.claude/` (raíz del repo), **sin hooks**: se instaló con
+  `npx impeccable@4.5.2 install -y --providers=claude --scope=project --no-hooks`, aunque el instalador bajó los
+  skills y el motor de la 4.7.0 (motor 0.1.16). El motor es un binario nativo no auditable: no se versiona
+  (`.gitignore`); el lanzador lo baja de los releases de GitHub y verifica su SHA-256 si falta. No activar
+  `/impeccable hooks on` sin decidirlo: correría el binario solo después de cada edición.
 - **Puppeteer MCP no se instaló**: `@modelcontextprotocol/server-puppeteer` está deprecado y sin soporte
   en npm; Playwright MCP cubre lo mismo.
 - Figma: archivo del storyboard de scroll `8a62hs9qgXqNI8zOzefJmC`.
