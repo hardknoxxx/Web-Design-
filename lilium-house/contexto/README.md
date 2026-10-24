@@ -20,7 +20,21 @@ pedido por pedido, está en [historial.md](./historial.md).
 - Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP + ScrollTrigger ·
   Lenis (scroll suave solo con rueda/trackpad) · three.js puro (lirio 3D, `components/three/lily.ts`). Comanda en stop-motion hecha con **Remotion** (`animaciones/`).
 
-### Concepto "Un día en Lilium"
+### Concepto vigente: "La mesa giratoria" (portada, `src/nuevo/`)
+
+Referencias: Madie (carta en láminas, color de marca fuerte, mapa con horario), TAB Kitchen & Bakery
+(ilustración plana, friso botánico) y Agrumea Farm (carrusel que gira con el scroll).
+
+| Sección | Qué pasa |
+| --- | --- |
+| Mesa (`MesaGiratoria.tsx`) | Mesa verde que gira con el scroll (el scroll es la hora: sin vuelta infinita); arrastre, flechas y ←/→; tocar un plato lo trae al frente y lo hace girar; los platos se colorean desde el centro al llegar al frente. Lirios, monstera y picaflor detrás |
+| Carta (`Carta.tsx`) | Láminas por momento (pestañas según la hora en Iguazú); dibujos y fotos se pintan al entrar |
+| Visita (`Visita.tsx`) | Mapa con calles reales de OpenStreetMap (`croquisDatos.ts`, generado), horario con "hoy", Cómo llegar / WhatsApp / Llamar; hornero y coatí |
+| Friso (`Friso.tsx`) | Franja botánica con lirios, tucán y mariposa; Instagram y WhatsApp |
+
+"Cómo llegar" flotante cuando la mesa queda atrás.
+
+### Concepto anterior "Un día en Lilium" (archivado en `/anterior.html`, `src/main.tsx`)
 
 El scroll es el paso del día (08:00 → 21:00). Un reloj en un cartelito de madera muestra la hora.
 Un solo fondo para toda la página que vira de color con la hora (`DayProvider` → `DayBackground`);

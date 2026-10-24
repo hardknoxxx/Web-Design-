@@ -132,3 +132,11 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - Nuevas secciones: carta en láminas con pestañas por momento (dibujos y fotos se pintan al entrar), visita con
   croquis propio de Av. Tres Fronteras (no a escala), horario con "hoy", y friso botánico al pie.
 - "Cómo llegar" flotante cuando la mesa queda atrás. Scroll a 60 fps con CPU 4× más lenta (390×844).
+
+## 17. La mesa giratoria pasa a ser la portada; mapa con calles reales
+
+- `index.html` carga `src/nuevo/main.tsx`. La versión "Un día en Lilium" queda archivada en `/anterior.html`
+  (noindex, `src/main.tsx`). `/nuevo.html` redirige a `/`.
+- Mapa de la visita redibujado con calles reales de OpenStreetMap (Overpass, geocodificado el 489 con Nominatim):
+  `src/nuevo/croquisDatos.ts` con río Iguazú, Costanera, Av. Tres Fronteras, Entre Ríos, Urquiza y Corrientes.
+  El local queda casi esquina Entre Ríos, a unos 200 m de la Costanera. Crédito OSM (ODbL) en el pie del mapa.
