@@ -6,3 +6,6 @@
 
 # salida de las sesiones de Playwright MCP (capturas, logs)
 .playwright-mcp/
+
+# Taste Skill: hoja de dirección y archivos de trabajo de cada sesión
+.taste-skill/
