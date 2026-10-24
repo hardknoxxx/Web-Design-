@@ -1,0 +1,82 @@
+# Contexto del proyecto — Lilium Coffee Lounge
+
+Resumen compacto de la conversación con Claude Code que construyó esta landing (oct. 2026).
+Sirve para retomar el trabajo en otra sesión sin perder decisiones. El historial detallado,
+pedido por pedido, está en [historial.md](./historial.md).
+
+## El negocio
+
+- **Lilium Coffee Lounge** (Google Maps: "Lilium House & Coffee"), Av. Tres Fronteras 467/489, N3370AWE,
+  Puerto Iguazú, Misiones. Instagram [@lilium.coffee](https://www.instagram.com/lilium.coffee/).
+- WhatsApp **+54 3757 31-7284** (`543757317284`). Teléfono fijo +54 3757 45-7085.
+- Horario: martes a sábado 08–21 · domingo 08–12 y 17–21 · lunes cerrado.
+- Desayunos, almuerzos y meriendas: café de especialidad, chipa, pastelería; manteles para colorear.
+- **Solo la cafetería**: nada de alojamiento/B&B.
+
+## Sitio
+
+- Producción: https://lilium-house.vercel.app (proyecto Vercel `hardknoxxx/lilium-house`, rootDirectory `lilium-house`).
+- Repo: `hardknoxxx/Web-Design-`, carpeta `lilium-house/`. Rama de trabajo `ccr-055fb50e-v2vhdy`.
+- Stack: React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · GSAP + ScrollTrigger ·
+  React Three Fiber (lirio 3D). Animaciones de menús hechas con **Remotion** (`animaciones/`).
+
+### Concepto "Un día en Lilium"
+
+El scroll es el paso del día (08:00 → 21:00). Un reloj en un cartelito de madera muestra la hora.
+Un solo fondo para toda la página que vira de color con la hora (`DayProvider` → `DayBackground`);
+cada sección declara `data-phase="fondo|texto|hora"`.
+
+| Escena | Hora | Qué pasa |
+| --- | --- | --- |
+| Amanecer | 08:00 | Lirio 3D (zoom suave), sotobosque, selva lejana; las plantas brotan y se abren hacia los costados |
+| Ritual | 09–11 | Café → chipa → pastelería; aparece debajo del final del amanecer (sin pantalla en blanco) |
+| Carta | 11:45 | Pestañas Desayunos/Almuerzos/Meriendas (misma altura); platos que llegan tirados por el mozo |
+| Mantel | 17:00 | Mandala para colorear + picaflor en un ceibo |
+| Selva | 18:00 | Tucán, coatí que camina con el scroll, mariposas, hojas asimétricas, sotobosque |
+| Opiniones | 19:30 | Puntaje Google 4,5, hornero con su nido |
+| Noche | 21:00 | Cartel que se enciende, luciérnagas que vagan, datos en Raleway, Instagram |
+
+### Piezas clave
+
+- **Menú-hoja (arriba a la derecha)**: película de Remotion `HojaMenu` (la hoja brota enrollada y se
+  desenrolla) + opciones que se abren como hojas de una planta (CSS: origen arriba al centro,
+  `scale(0.3) rotateX(-70deg)` → `scale(1) rotateX(0)`, `cubic-bezier(0.175, 0.885, 0.32, 1.275)` 0,6 s,
+  cascada de 50 ms).
+- **Botón de WhatsApp (abajo a la derecha)**: taza vista a ~55° sobre un tronco irregular en diagonal;
+  globo de "escribiendo" dibujado a lápiz; la comanda es la película `PapelComanda` (stop-motion:
+  la bola de papel sale de la taza y se desenvuelve).
+- Sprites: `public/anim/*.webp`, se precargan cuando el navegador está libre (`src/lib/sprite.ts`).
+- Regenerar animaciones: `cd lilium-house/animaciones && npm i && REMOTION_BROWSER=<chrome-headless-shell> npm run render && python3 sprites.py`.
+
+### Diseño
+
+- Paleta: menta del logo `#64BCB0` (`turquesa`), `turquesa-dark #277067`, laguna `#1C4A45`, madera
+  `#3D2314`, crema `#FAF7F2`, verdes de selva (musgo `#415521`, yerba `#6F7F2E`, helecho `#97AD3D`).
+- Tipografías auto-alojadas (OFL, auditadas): Bricolage Grotesque (títulos/texto), Caveat (notas a mano),
+  Courier Prime (tickets/comanda), Raleway (datos del cierre), Yellowtail (logo, Google Fonts).
+- Ilustraciones propias en SVG con volumen (Flora, Paisaje, Fauna, TablaMadera). Fotos del Instagram en
+  `public/fotos/` (recortes chicos: reemplazar por originales en buena resolución).
+
+## Preferencias del cliente (respetarlas)
+
+- Idioma: español rioplatense. Respuestas **concisas**, directo al grano.
+- **Antes de instalar o ejecutar cualquier cosa de GitHub/npm, revisarla** (prompts ocultos, scripts
+  de instalación, hooks, binarios descargados). Ej.: Impeccable no se instaló porque trae hooks que
+  descargan y ejecutan un binario; se usaron solo sus guías como texto.
+- **Cada cambio: commit → push → PR → merge a `main` → `vercel deploy --prod --yes`** (desde la raíz del repo).
+- Estética: botánica, orgánica, premium, nada genérico; transiciones suaves y conectadas; asimetría.
+- Probar en móvil (390×844) y escritorio (1440×900) antes de publicar; medir rendimiento cuando hay lag.
+
+## Herramientas instaladas
+
+- Skill **ui-ux-pro-max** (nextlevelbuilder) — paletas, tipografías, guías UX.
+- **Playwright MCP** (`@playwright/mcp@0.0.83`, Microsoft) en `.mcp.json` (raíz del repo), headless con el
+  Chromium del entorno (`/opt/pw-browsers/...`; en otra máquina, quitar `--executable-path`).
+- **Puppeteer MCP no se instaló**: `@modelcontextprotocol/server-puppeteer` está deprecado y sin soporte
+  en npm; Playwright MCP cubre lo mismo.
+- Figma: archivo del storyboard de scroll `8a62hs9qgXqNI8zOzefJmC`.
+
+## Pendientes
+
+- Confirmar con el local los nombres de la carta (sobre todo almuerzos) y conseguir fotos originales.
+- Probar en un teléfono real el rendimiento del lirio 3D, la selva y los menús.
