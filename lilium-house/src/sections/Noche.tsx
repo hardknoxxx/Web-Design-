@@ -1,5 +1,6 @@
 import { m, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
+import { HojasTransicion } from '../components/HojasTransicion'
 import { ArrowIcon, CupHoursIcon, InstagramIcon, LilyMark, LilyPinIcon, RotaryPhoneIcon } from '../components/Icons'
 import { SITE } from '../data/site'
 import { useOpenStatus } from '../hooks/useOpenStatus'
@@ -28,6 +29,7 @@ export function Noche() {
       className="relative z-[7] overflow-x-clip px-9 pt-28 pb-12 text-crema sm:px-14"
       aria-label="Visitanos"
     >
+      <HojasTransicion v="noche" />
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         {FIREFLIES.map((f, i) => (
           <span
@@ -60,7 +62,7 @@ export function Noche() {
             <div className="sm:pr-8">
               <CupHoursIcon className="h-9 w-9 text-arena" />
               <p className="mt-4 font-sans text-[0.7rem] font-semibold tracking-[0.3em] text-arena uppercase">Horario</p>
-              <p className="mt-2 text-xl font-medium">{SITE.hours.days}</p>
+              <p className="mt-2 text-xl font-normal tracking-[0.01em]">{SITE.hours.days}</p>
               <dl className="mt-2 space-y-1 text-[0.95rem]">
                 {SITE.hours.rows.map(([k, v]) => (
                   <div key={k} className="flex items-baseline gap-2">
@@ -86,7 +88,7 @@ export function Noche() {
             <a href={SITE.mapsHref} target="_blank" rel="noopener noreferrer" className="group block border-t border-dashed border-arena/20 pt-8 sm:border-t-0 sm:px-8 sm:pt-0">
               <LilyPinIcon className="h-9 w-9 text-arena" />
               <p className="mt-4 font-sans text-[0.7rem] font-semibold tracking-[0.3em] text-arena uppercase">Dirección</p>
-              <p className="mt-2 text-xl font-medium">{SITE.address}</p>
+              <p className="mt-2 text-xl font-normal tracking-[0.01em]">{SITE.address}</p>
               <p className="mt-1 text-[0.95rem] text-crema/70">{SITE.postalCode}</p>
               <p className="text-[0.95rem] text-crema/70">{SITE.city}</p>
               <span className="mt-4 inline-flex items-center gap-2 font-sans text-xs font-semibold tracking-[0.2em] text-arena uppercase">
@@ -98,7 +100,7 @@ export function Noche() {
             <a href={SITE.phoneHref} className="group block border-t border-dashed border-arena/20 pt-8 sm:border-t-0 sm:pt-0 sm:pl-8">
               <RotaryPhoneIcon className="h-9 w-9 text-arena" />
               <p className="mt-4 font-sans text-[0.7rem] font-semibold tracking-[0.3em] text-arena uppercase">Teléfono</p>
-              <p className="mt-2 text-xl font-medium tabular-nums">{SITE.phoneDisplay}</p>
+              <p className="mt-2 text-xl font-normal tracking-[0.01em] tabular-nums">{SITE.phoneDisplay}</p>
               <p className="mt-1 text-[0.95rem] text-crema/70">o tocá la taza para escribirnos</p>
               <span className="mt-4 inline-flex items-center gap-2 font-sans text-xs font-semibold tracking-[0.2em] text-arena uppercase">
                 Llamar
@@ -117,7 +119,7 @@ export function Noche() {
           <InstagramIcon className="h-9 w-9 shrink-0 text-turquesa" />
           <span className="flex-1">
             <span className="block font-sans text-[0.7rem] font-semibold tracking-[0.3em] text-arena uppercase">Lo del día, en Instagram</span>
-            <span className="mt-1 block text-xl font-medium italic">@{SITE.instagram}</span>
+            <span className="mt-1 block text-xl font-normal tracking-[0.01em]">@{SITE.instagram}</span>
           </span>
           <ArrowIcon className="h-5 w-5 text-arena transition-transform group-hover:translate-x-1" />
         </a>

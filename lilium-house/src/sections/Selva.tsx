@@ -1,5 +1,6 @@
 import { m, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
+import { HojasTransicion } from '../components/HojasTransicion'
 import { Butterfly, Leaf, Monstera, Toucan } from '../components/Botanica'
 import { BananaLeaf, Calathea, Fern, HeartLeaf, PalmFrond } from '../components/Flora'
 import { Sotobosque } from '../components/Paisaje'
@@ -15,6 +16,8 @@ export function Selva() {
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end end'] })
 
   const backY = useTransform(p, [0, 1], ['18%', '-12%'])
+  // la bruma aparece recién cuando la escena quedó fija: nunca un borde recto al entrar
+  const mistO = useTransform(p, [0.02, 0.2], [0, 1])
   // hojas de frente asimétricas: a la izquierda una monstera que sube rápido y se abre;
   // a la derecha banano y pindó, más lentos, que se inclinan hacia adentro tarde
   const frontLY = useTransform(p, [0, 1], ['42%', '-28%'])
@@ -36,13 +39,14 @@ export function Selva() {
 
   return (
     <section ref={ref} id="selva" className="relative z-[5] h-[240svh]" aria-label="La selva de Puerto Iguazú">
+      <HojasTransicion v="selva" />
       <div className="absolute top-0" data-phase="#415521|#FAF7F2|18:00" />
       {/* el borde inferior se funde con el fondo del día: sin cortes al pasar a la escena siguiente */}
       <div className="sticky top-0 h-[100svh] overflow-hidden text-crema">
         {/* bruma de las cataratas: nubes que se desvanecen en todas direcciones (sin bordes ni franjas) */}
-        <div aria-hidden="true" className="absolute -inset-x-[10%] -top-[10%] h-[80%]">
-          <div className="h-full w-full bg-[radial-gradient(40%_45%_at_18%_30%,rgb(255_255_255/0.10),transparent),radial-gradient(35%_40%_at_55%_18%,rgb(255_255_255/0.12),transparent),radial-gradient(42%_38%_at_85%_40%,rgb(255_255_255/0.08),transparent),radial-gradient(60%_30%_at_50%_62%,rgb(255_255_255/0.06),transparent)]" />
-        </div>
+        <m.div aria-hidden="true" style={{ opacity: mistO }} className="absolute -inset-x-[10%] top-0 h-[80%]">
+          <div className="h-full w-full bg-[radial-gradient(38%_30%_at_18%_45%,rgb(255_255_255/0.10),transparent),radial-gradient(34%_28%_at_55%_40%,rgb(255_255_255/0.12),transparent),radial-gradient(40%_30%_at_85%_50%,rgb(255_255_255/0.08),transparent),radial-gradient(60%_24%_at_50%_66%,rgb(255_255_255/0.06),transparent)]" />
+        </m.div>
 
         {/* hojas del fondo: cada una es su propia capa chica (no una capa de pantalla completa) */}
         <m.div style={{ y: backY }} className="absolute top-[18%] -left-6 w-28 will-change-transform">

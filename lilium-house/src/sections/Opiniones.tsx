@@ -1,5 +1,6 @@
 import { m, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
+import { HojasTransicion } from '../components/HojasTransicion'
 import { Monstera } from '../components/Botanica'
 import { HojasCayendo, Hornero } from '../components/Ambiente'
 import { ArrowIcon } from '../components/Icons'
@@ -32,6 +33,7 @@ export function Opiniones() {
       className="relative z-[6] overflow-x-clip px-9 pt-32 pb-48 text-laguna-deep sm:px-14"
       aria-label="Opiniones en Google"
     >
+      <HojasTransicion v="opiniones" />
       <HojasCayendo />
       <Hornero className="top-4 -right-2 w-56 sm:top-8 sm:right-[4%] sm:w-72 lg:w-80" />
       <div className="relative z-10 mx-auto max-w-3xl text-center">
