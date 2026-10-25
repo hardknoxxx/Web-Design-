@@ -260,3 +260,12 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - No se registraron todos los plugins de GSAP de la lista enviada: la mesa ya resuelve la inercia y el
   desenfoque sin ellos; sumar plugins que no se usan (GSDevTools, MotionPathHelper, Pixi, Easel…) solo agrega
   peso, y `@gsap/react` no es necesario porque las animaciones ya se limpian con `gsap.context`.
+
+## 26. anime.js instalado
+
+- Pedido: instalar el contenido de `juliangarnier/anime`. Se revisó el repositorio antes (MIT, versión 4.5.0, sin
+  dependencias ni scripts de instalación; three.js como dependencia opcional, que el proyecto ya tiene) y se
+  instaló el paquete publicado de ese repositorio, `animejs@4.5.0` (versión fija), en lugar de copiar el código.
+- Todavía no se usa en ninguna sección: no suma peso a la página hasta que se importe. Candidatos naturales:
+  su `createDraggable` o `createTimeline` para algún gesto puntual, o `svg.createDrawable`/`morphTo` para el
+  matorral; GSAP sigue siendo el motor principal, para no tener dos motores animando lo mismo.
