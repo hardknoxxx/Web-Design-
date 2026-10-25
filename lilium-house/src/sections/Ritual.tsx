@@ -1,4 +1,4 @@
-import { m, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { m, useScroll, useTransform, type MotionValue } from 'motion/react'
 import { useRef } from 'react'
 import { RitualDecor } from '../components/Ambiente'
 import { Fundido } from '../components/Fundido'

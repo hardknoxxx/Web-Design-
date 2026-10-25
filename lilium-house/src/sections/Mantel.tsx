@@ -1,4 +1,4 @@
-import { m } from 'framer-motion'
+import { m } from 'motion/react'
 import { HojasTransicion } from '../components/HojasTransicion'
 import { Picaflor } from '../components/Ambiente'
 import { MandalaColoring } from '../components/MandalaColoring'

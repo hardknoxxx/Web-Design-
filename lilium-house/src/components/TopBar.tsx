@@ -1,4 +1,4 @@
-import { m, useTransform } from 'framer-motion'
+import { m, useTransform } from 'motion/react'
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { SCENES, SITE } from '../data/site'
 import { useDay } from '../day/DayProvider'

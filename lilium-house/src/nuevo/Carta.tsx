@@ -1,14 +1,15 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react'
-import { Butterfly } from '../components/Botanica'
-import { Fern, Hummingbird } from '../components/Flora'
+import { useEffect, useState, type ComponentType } from 'react'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, SITE, whatsappLink, type CartaItem } from '../data/site'
-import { Lirio } from './Lirio'
-import { Pieza, Vida } from './vida/Vida'
+import { motion, MotionConfig } from 'motion/react'
+import { IconoMomento } from './IconoMomento'
+import { FondoAnimado } from './primitivas/FondoAnimado'
+import { Magnetic } from './primitivas/Magnetic'
+import { TextEffect } from './primitivas/TextEffect'
 
 /*
  * La carta como láminas de especímenes (referencia: Madie): cada plato con su dibujo, nombre y nota.
- * Los dibujos llegan sin pintar y se colorean al entrar en pantalla, igual que en la mesa.
+ * Siempre a color: al cambiar de momento las láminas entran sin pasar por gris.
  */
 
 const DIBUJOS: Record<string, ComponentType> = {
@@ -30,37 +31,17 @@ function momentoPorHora() {
 }
 
 function Lamina({ item }: { item: CartaItem }) {
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const el = ref.current!
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (!e.isIntersecting) return
-        el.dataset.pintado = ''
-        io.disconnect()
-      },
-      { threshold: 0.6 },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-
   if (item.kind === 'foto') {
     return (
-      <div ref={ref} className="lamina-foto">
+      <div className="lamina-foto">
         <img src={item.src} alt="" loading="lazy" decoding="async" width={300} height={300} />
       </div>
     )
   }
   const Dibujo = DIBUJOS[item.id]
   return (
-    <div ref={ref} className="lamina-plato">
-      <div className="plato-trazo">
-        <Dibujo />
-      </div>
-      <div className="plato-color">
-        <Dibujo />
-      </div>
+    <div className="lamina-plato">
+      <Dibujo />
     </div>
   )
 }
@@ -68,77 +49,92 @@ function Lamina({ item }: { item: CartaItem }) {
 export function Carta() {
   // el HTML se genera al compilar: arranca en desayunos y, ya en el navegador, abre la pestaña de la hora
   const [tab, setTab] = useState('desayunos')
+  // solo se anima cuando la persona cambia de pestaña (no en el HTML generado ni al abrir la de la hora)
+  const [cambio, setCambio] = useState(false)
   useEffect(() => setTab(momentoPorHora()), [])
+  const elegir = (id: string) => {
+    if (id === tab) return
+    setCambio(true)
+    setTab(id)
+  }
   const momento = CARTA.find((c) => c.id === tab)!
 
   return (
-    <section id="carta" aria-labelledby="carta-titulo" className="relative overflow-hidden bg-crema px-4 pt-24 pb-36 md:px-7 md:pt-32 md:pb-40">
-      <Vida>
-        {/* el lirio de la casa con su picaflor, y un helecho al otro lado */}
-        <Pieza clase="planta" fase={0.2} className="absolute bottom-0 left-[-1.5rem] h-[26rem] max-lg:hidden" style={{ aspectRatio: '400/760' }}>
-          <Lirio tilt={-6} bud />
-        </Pieza>
-        <Pieza clase="picaflor" fase={0.6} className="absolute bottom-[26.5rem] left-[1.5rem] h-16 max-lg:hidden" style={{ aspectRatio: '140/100' }}>
-          <Hummingbird />
-        </Pieza>
-        <Pieza clase="planta" fase={0.7} className="absolute -right-4 bottom-0 h-[15rem] md:h-[24rem]" style={{ aspectRatio: '120/215' }}>
-          <Fern />
-        </Pieza>
+    <section id="carta" aria-labelledby="carta-titulo" className="relative overflow-hidden bg-crema px-4 pt-20 pb-24 md:px-7 md:pt-28 md:pb-32">
       <div className="relative z-10 mx-auto max-w-5xl">
         <div className="flex items-start gap-3">
-          <h2 id="carta-titulo" className="font-display text-[2.6rem] leading-none font-semibold text-laguna-deep md:text-[4.5rem]">
+          <h2 id="carta-titulo" className="titulo-vitrina text-[3.4rem] leading-[0.88] text-laguna-deep md:text-[6.5rem]">
             La carta
           </h2>
-          <Pieza clase="mariposa" fase={0.35} className="relative mt-1 ml-12 h-14 max-md:hidden" style={{ aspectRatio: '48/40' }}>
-            <Butterfly />
-          </Pieza>
         </div>
         <p className="mt-4 max-w-[46ch] font-elegante text-lg text-madera-soft">
           Desayunos, almuerzos y meriendas. Lo que sale de la vitrina cambia cada día: lo contamos en Instagram.
         </p>
 
-        <div role="tablist" aria-label="Momento del día" className="mt-10 flex flex-wrap gap-2">
-          {CARTA.map((c) => (
-            <button
-              key={c.id}
-              role="tab"
-              id={`tab-${c.id}`}
-              aria-selected={tab === c.id}
-              aria-controls="carta-panel"
-              onClick={() => setTab(c.id)}
-              className="pestana"
-            >
-              {c.label} <span className="tabular-nums opacity-70">desde {c.time}</span>
-            </button>
-          ))}
-        </div>
-
-        <div id="carta-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="mt-10">
-          <p className="font-hand text-[1.6rem] leading-tight text-turquesa-dark">{momento.intro}</p>
-          <ul key={tab} className="mt-8 grid gap-x-12 gap-y-10 md:grid-cols-2">
-            {momento.items.map((item) => (
-              <li key={item.name} className="especimen">
-                <Lamina item={item} />
-                <div className="min-w-0">
-                  <h3 className="font-display text-[1.35rem] leading-tight font-semibold text-laguna-deep">{item.name}</h3>
-                  <p className="font-hand text-[1.3rem] leading-tight text-turquesa-dark">{item.note}</p>
-                  <p className="mt-1 text-base leading-snug text-madera-soft">{item.desc}</p>
-                </div>
-              </li>
+        <MotionConfig reducedMotion="user">
+          <div role="tablist" aria-label="Momento del día" className="mt-10 flex flex-wrap gap-2" data-sin-flotante="">
+            {CARTA.map((c) => (
+              <Magnetic key={c.id}>
+                <motion.button
+                  role="tab"
+                  id={`tab-${c.id}`}
+                  aria-selected={tab === c.id}
+                  aria-controls="carta-panel"
+                  onClick={() => elegir(c.id)}
+                  className="pestana"
+                  whileTap={{ scale: 0.94 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                >
+                  {tab === c.id && <FondoAnimado grupo="carta-pestana" className="rounded-full bg-laguna-deep" />}
+                  <IconoMomento id={c.id} activo={tab === c.id} />
+                  {c.label} <span className="tabular-nums opacity-70">desde {c.time}</span>
+                </motion.button>
+              </Magnetic>
             ))}
-          </ul>
-        </div>
+          </div>
 
-        <div className="mt-14 flex flex-wrap items-center gap-3">
-          <a href={SITE.instagramHref} target="_blank" rel="noopener" className="boton">
+          <div id="carta-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="mt-10">
+            {/* al cambiar de momento, la frase entra palabra por palabra y los platos llegan en cascada */}
+            <TextEffect key={`intro-${tab}`} animar={cambio} className="font-hand text-[1.6rem] leading-tight text-turquesa-dark">
+              {momento.intro}
+            </TextEffect>
+            <motion.ul
+              key={tab}
+              className="mt-8 grid gap-x-12 gap-y-10 md:grid-cols-2"
+              initial={cambio ? 'oculto' : false}
+              animate="visible"
+              variants={{ visible: { transition: { staggerChildren: 0.07, delayChildren: 0.12 } } }}
+            >
+              {momento.items.map((item) => (
+                <motion.li
+                  key={item.name}
+                  className="especimen"
+                  variants={{
+                    oculto: { opacity: 0, y: 18, filter: 'blur(6px)' },
+                    visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.55, ease: [0.23, 1, 0.32, 1] } },
+                  }}
+                >
+                  <Lamina item={item} />
+                  <div className="min-w-0">
+                    <h3 className="titulo-vitrina text-[1.6rem] leading-[0.95] text-laguna-deep md:text-[1.9rem]">{item.name}</h3>
+                    <p className="font-hand text-[1.3rem] leading-tight text-turquesa-dark">{item.note}</p>
+                    <p className="mt-1 text-base leading-snug text-madera-soft">{item.desc}</p>
+                  </div>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </div>
+        </MotionConfig>
+
+        <div className="mt-14 flex flex-wrap items-center gap-3" data-sin-flotante="">
+          <a href={SITE.instagramHref} target="_blank" rel="noopener" className="pildora pildora-laguna">
             Ver la vitrina de hoy en Instagram
           </a>
-          <a href={whatsappLink('Hola Lilium! Quería hacer un pedido para llevar: ')} target="_blank" rel="noopener" className="boton boton-claro">
+          <a href={whatsappLink('Hola Lilium! Quería hacer un pedido para llevar: ')} target="_blank" rel="noopener" className="pildora pildora-kraft">
             Pedir para llevar
           </a>
         </div>
       </div>
-      </Vida>
     </section>
   )
 }

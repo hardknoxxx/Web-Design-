@@ -10,10 +10,13 @@
 
 /* Tipografías auto-alojadas (licencias en /fonts/licencias): Bricolage Grotesque, Raleway y Caveat (OFL 1.1),
    Yellowtail (Apache 2.0, el script del logo). */
+/* Bricolage Grotesque variable completa (latín): tamaño óptico, ancho 75–100 y peso 200–800.
+   El ancho condensado es la voz de los títulos de la vitrina. */
 @font-face {
   font-family: 'Bricolage Grotesque';
   src: url('/fonts/bricolage-grotesque.woff2') format('woff2');
-  font-weight: 300 700;
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
   font-style: normal;
   font-display: swap;
 }

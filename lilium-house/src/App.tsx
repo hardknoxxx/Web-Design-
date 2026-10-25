@@ -1,4 +1,4 @@
-import { LazyMotion, MotionConfig, domAnimation, m } from 'framer-motion'
+import { LazyMotion, MotionConfig, domAnimation, m } from 'motion/react'
 import { useEffect } from 'react'
 import { startSmoothScroll } from './lib/scroll'
 import { preloadSprites } from './lib/sprite'

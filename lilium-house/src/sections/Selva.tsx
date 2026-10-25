@@ -1,4 +1,4 @@
-import { m, useScroll, useTransform } from 'framer-motion'
+import { m, useScroll, useTransform } from 'motion/react'
 import { useRef } from 'react'
 import { HojasTransicion } from '../components/HojasTransicion'
 import { Butterfly, Leaf, Monstera, Toucan } from '../components/Botanica'

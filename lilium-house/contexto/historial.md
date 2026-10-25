@@ -162,3 +162,90 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - Yellowtail auto-alojado (Apache 2.0, licencia en `public/fonts/licencias`); sin Google Fonts en la portada.
 - Horario único (`HORARIO` en `site.ts`) para el estado, la tabla y el JSON-LD generado.
 - Medición local (Playwright, 390×844, 4G lento + CPU 4×): primer contenido 1,75 s → 0,83 s. Capturas idénticas.
+
+## 20. Dirección "Vitrina" (propuesta A, referencia LATTE)
+
+- Cliente: prototipo para presentar al negocio; usar las 3 fotos del sitio oficial (autorizado); horario y teléfono
+  se confirman más adelante (fuentes públicas no coinciden: Visit Iguazú y Tripadvisor).
+- Logo oficial vectorizado a SVG (calco propio con Python: umbral, contornos, curvas) + "COFFEE LOUNGE" en Raleway Bold.
+- Bricolage Grotesque reemplazada por la variable completa (ancho 75–100, peso 200–800) para los títulos condensados.
+- Nuevo: cabecera fija y menú overlay; hero con título condensado, sticker y cinta; sección "Elegí tu favorito" con
+  las fotos reales; carta, visita y botones con el mismo sistema. Primer contenido local 0,87 s (4G lento + CPU 4×).
+
+## 21. 3D con three.js y coreografía GSAP
+
+- Pedido: portada más limpia en el teléfono, nada de flora/fauna flotando sin contexto, platos 3D que giren sobre su
+  eje como en Agrumea, animaciones GSAP en textos, secciones, menú y transiciones.
+- Hero: platos 3D procedurales (`src/nuevo/tres/`) sentados en el borde de la mesa, giran en reposo, al viajar y al
+  tocarlos; los de los costados quedan "sin pintar" (mantel para colorear). Los platos DOM quedan como respaldo sin WebGL.
+- Teléfono: la portada muestra solo título, mesa y nombre del plato (sin estado, cinta ni bajada).
+- Se quitaron lirios, picaflor, helecho, mariposa y animales sueltos de carta, visita y friso. En su lugar, al pie, un
+  "rincón verde" 3D con contexto: mostrador de madera con monstera, florero de lirios, helecho, lápices y café; un
+  picaflor va de flor en flor y una mariposa rodea la monstera. Carga diferida y shaders precompilados.
+- GSAP (ScrollTrigger, SplitText, DrawSVG): mandala que se dibuja, títulos por líneas, fotos que se reparten, mapa
+  que se abre, horario renglón por renglón, menú con secciones que suben. Con movimiento reducido no se anima nada.
+- Referencias revisadas (React Bits, Motion Primitives, Godly, Refero, GSAP, Spline, etc.): se tomó lo alineado a la
+  marca (GSAP, criterios editoriales); se descartó lo de estética SaaS/tech y Spline por peso.
+- Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,83 s, CLS 0,03, sin errores. Los cuadros por
+  segundo medidos usan WebGL por software (sin GPU) y no representan un teléfono real.
+
+## 22. Platos que se giran a mano, mazo de fotos y matorral
+
+- Pedido: platos quietos que se giran con el cursor/dedo, con inercia al soltar y desenfoque al ir rápido (como el
+  video de Agrumea); modelos más fieles; carta siempre a color; fotos reales como cartas que se dan vuelta o se
+  cambian (Madie); animaciones de Motion Primitives; cierre ilustrado (no 3D) con animales, sin nada flotando.
+- `motion` instalado (reemplaza a `framer-motion`, misma versión 14.6; imports migrados a `motion/react`).
+  `npx motion-ai` es interactivo (pide terminal): se auditó y se copió a mano su skill a `.claude/skills/motion`
+  (ver SOURCE.md); los servidores MCP remotos de Motion no se configuraron. Tailwind y su plugin ya estaban.
+- Platos 3D rehechos (`tres/objetos.ts`): porciones con cortes que muestran capas (bizcocho húmedo, frambuesa,
+  ganache; cheesecake con base de galletita y coulis), tostado de miga con jamón, queso y marcas de plancha, chipa
+  con costra, ensalada con hojas, tomates cortados y huevo, tetera y taza esmaltadas. Texturas pintadas con ruido,
+  relieve, entorno de estudio (RoomEnvironment) y sombras. Se cargan de a uno, del frente hacia los costados.
+- Interacción (`MesaGiratoria.tsx`): sin giro constante; arrastrar un plato lo gira, al soltar sigue con la
+  inercia del gesto unos segundos; se ladea al girar rápido. Desenfoque de movimiento real en `mesa3d.ts`: varias
+  muestras por cuadro entre la pose anterior y la actual, solo mientras algo se mueve rápido.
+- Carta: las láminas siempre a color; la pestaña elegida tiene un fondo que viaja (FondoAnimado).
+- Vitrina: mazo de fotos impresas: arrastrar pasa la de arriba al fondo, tocar la da vuelta (dorso con la
+  descripción); con mouse se inclina (Tilt); "Hoy en la vitrina: tortas / budines / tentaciones" (TextLoop).
+  Adaptados de Motion Primitives (MIT): Tilt, TextLoop, AnimatedBackground (`src/nuevo/primitivas/`).
+- Menú: con mouse, una banda se desliza detrás de la sección señalada.
+- Cierre (`Matorral.tsx`): árbol con tucán en la rama y nido de hornero, picaflor libando del lirio, mariposa
+  "88" en la monstera, coatí que camina por el suelo; plantas que nacen del suelo y se mecen. Solo CSS, se pausa
+  fuera de pantalla y queda quieto con movimiento reducido. Se quitó el rincón 3D.
+- Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,94 s, CLS 0,006, sin errores. El 3D en este
+  entorno corre por software (sin GPU): la fluidez debe probarse en un teléfono real.
+
+## 23. Giro directo, velocidad al cambiar de plato y pulido final
+
+- Platos: el giro sobre su eje sigue al dedo/cursor y se queda donde se suelta (sin inercia ni desenfoque).
+  La inercia (~1,5 s) y el desenfoque son solo del cambio de plato; además los platos se ladean hacia donde
+  viaja la mesa. Cada plato está en su propia profundidad (z) para que nunca se atraviesen.
+- Mazo de fotos más rápido (salida 0,18 s, resortes más firmes, umbral de arrastre más corto).
+- /impeccable polish: mesa más arriba y platos más grandes en el teléfono (menos vacío bajo el título);
+  sticker de la portada oculto por debajo de 1100 px (pisaba el título en tablet); el botón flotante
+  "Cómo llegar" se esconde cuando taparía controles (flechas del mazo, pestañas y botones de la carta);
+  dorso de la foto sin renglones desalineados y con texto de contraste AA.
+
+## 24. La mesa como Agrumea, decodificada (sin 3D en vivo)
+
+- Análisis del video y de agrumeafarm.it (Playwright): Nuxt + GSAP + Lenis. Cada frasco es una imagen
+  (`jar-slider__base`) con un `canvas` 2D que redibuja la etiqueta para simular el giro; cada uno se mueve con
+  `transform` (arco, inclinación ±15–20°, escala 0,6–1,3 por profundidad) y `filter: brightness() blur()` por
+  profundidad; la rueda tiene inercia de varios segundos.
+- Nuestra versión anterior dibujaba 3D en vivo (sombras, materiales físicos, varias pasadas por cuadro): se
+  trababa en teléfonos. Ahora, igual que Agrumea, sin WebGL: `scripts/sprites/render.ts` fotografía cada plato
+  3D (los modelos pasaron a `scripts/sprites/objetos.ts`) girando en 36 cuadros con cámara y luz fijas, y
+  `build-sheets.py` arma hojas WebP de 6 × 6 en dos tamaños (`public/platos/*-giro-{m,d}.webp`) y la foto
+  quieta de cada plato (`*-{m,d}.webp`, la que trae el HTML). La página solo mueve transform, filter y el cuadro.
+  Para regenerar: `npx vite --port 5199` y `node scripts/sprites/render.cjs http://localhost:5199 <salida>`,
+  después `python3 scripts/sprites/build-sheets.py <salida> public/platos`.
+- Interacción: al soltar la mesa sigue con la velocidad del dedo y frena en ~2,5 s; el desenfoque crece con la
+  velocidad (hasta ~10 px) y los platos se ladean hacia donde viajan; los de los costados quedan apenas
+  desenfocados y más oscuros (profundidad). Arrastrar el plato del frente lo gira sobre su eje (sin inercia).
+  En el teléfono solo se bajan las hojas de los platos cercanos al frente y se sueltan las lejanas.
+- Lenis (ya estaba en el proyecto) para la rueda y el trackpad en computadora; el menú lo pausa.
+- Carta: pestañas con imán (Magnetic), toque con resorte, íconos dibujados que se animan (sol que asoma, sol
+  que gira, taza con vapor), frase que entra palabra por palabra (TextEffect) y platos en cascada con
+  desenfoque (AnimatedGroup). Adaptados de Motion Primitives (MIT).
+- Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,89 s, LCP 1,4 s, CLS 0,03; scroll y reposo
+  a 60 cuadros por segundo sin tareas largas.

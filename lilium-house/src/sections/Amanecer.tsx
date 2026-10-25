@@ -1,4 +1,4 @@
-import { m } from 'framer-motion'
+import { m } from 'motion/react'
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react'
 import { Leaf, Monstera } from '../components/Botanica'
 import { LirioBoceto } from '../components/LirioBoceto'
