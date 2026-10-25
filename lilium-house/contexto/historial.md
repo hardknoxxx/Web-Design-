@@ -225,3 +225,27 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   sticker de la portada oculto por debajo de 1100 px (pisaba el título en tablet); el botón flotante
   "Cómo llegar" se esconde cuando taparía controles (flechas del mazo, pestañas y botones de la carta);
   dorso de la foto sin renglones desalineados y con texto de contraste AA.
+
+## 24. La mesa como Agrumea, decodificada (sin 3D en vivo)
+
+- Análisis del video y de agrumeafarm.it (Playwright): Nuxt + GSAP + Lenis. Cada frasco es una imagen
+  (`jar-slider__base`) con un `canvas` 2D que redibuja la etiqueta para simular el giro; cada uno se mueve con
+  `transform` (arco, inclinación ±15–20°, escala 0,6–1,3 por profundidad) y `filter: brightness() blur()` por
+  profundidad; la rueda tiene inercia de varios segundos.
+- Nuestra versión anterior dibujaba 3D en vivo (sombras, materiales físicos, varias pasadas por cuadro): se
+  trababa en teléfonos. Ahora, igual que Agrumea, sin WebGL: `scripts/sprites/render.ts` fotografía cada plato
+  3D (los modelos pasaron a `scripts/sprites/objetos.ts`) girando en 36 cuadros con cámara y luz fijas, y
+  `build-sheets.py` arma hojas WebP de 6 × 6 en dos tamaños (`public/platos/*-giro-{m,d}.webp`) y la foto
+  quieta de cada plato (`*-{m,d}.webp`, la que trae el HTML). La página solo mueve transform, filter y el cuadro.
+  Para regenerar: `npx vite --port 5199` y `node scripts/sprites/render.cjs http://localhost:5199 <salida>`,
+  después `python3 scripts/sprites/build-sheets.py <salida> public/platos`.
+- Interacción: al soltar la mesa sigue con la velocidad del dedo y frena en ~2,5 s; el desenfoque crece con la
+  velocidad (hasta ~10 px) y los platos se ladean hacia donde viajan; los de los costados quedan apenas
+  desenfocados y más oscuros (profundidad). Arrastrar el plato del frente lo gira sobre su eje (sin inercia).
+  En el teléfono solo se bajan las hojas de los platos cercanos al frente y se sueltan las lejanas.
+- Lenis (ya estaba en el proyecto) para la rueda y el trackpad en computadora; el menú lo pausa.
+- Carta: pestañas con imán (Magnetic), toque con resorte, íconos dibujados que se animan (sol que asoma, sol
+  que gira, taza con vapor), frase que entra palabra por palabra (TextEffect) y platos en cascada con
+  desenfoque (AnimatedGroup). Adaptados de Motion Primitives (MIT).
+- Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,89 s, LCP 1,4 s, CLS 0,03; scroll y reposo
+  a 60 cuadros por segundo sin tareas largas.

@@ -1,7 +1,11 @@
 import { useEffect, useState, type ComponentType } from 'react'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, SITE, whatsappLink, type CartaItem } from '../data/site'
+import { motion, MotionConfig } from 'motion/react'
+import { IconoMomento } from './IconoMomento'
 import { FondoAnimado } from './primitivas/FondoAnimado'
+import { Magnetic } from './primitivas/Magnetic'
+import { TextEffect } from './primitivas/TextEffect'
 
 /*
  * La carta como láminas de especímenes (referencia: Madie): cada plato con su dibujo, nombre y nota.
@@ -45,7 +49,14 @@ function Lamina({ item }: { item: CartaItem }) {
 export function Carta() {
   // el HTML se genera al compilar: arranca en desayunos y, ya en el navegador, abre la pestaña de la hora
   const [tab, setTab] = useState('desayunos')
+  // solo se anima cuando la persona cambia de pestaña (no en el HTML generado ni al abrir la de la hora)
+  const [cambio, setCambio] = useState(false)
   useEffect(() => setTab(momentoPorHora()), [])
+  const elegir = (id: string) => {
+    if (id === tab) return
+    setCambio(true)
+    setTab(id)
+  }
   const momento = CARTA.find((c) => c.id === tab)!
 
   return (
@@ -60,38 +71,60 @@ export function Carta() {
           Desayunos, almuerzos y meriendas. Lo que sale de la vitrina cambia cada día: lo contamos en Instagram.
         </p>
 
-        <div role="tablist" aria-label="Momento del día" className="mt-10 flex flex-wrap gap-2" data-sin-flotante="">
-          {CARTA.map((c) => (
-            <button
-              key={c.id}
-              role="tab"
-              id={`tab-${c.id}`}
-              aria-selected={tab === c.id}
-              aria-controls="carta-panel"
-              onClick={() => setTab(c.id)}
-              className="pestana"
-            >
-              {tab === c.id && <FondoAnimado grupo="carta-pestana" className="rounded-full bg-laguna-deep" />}
-              {c.label} <span className="tabular-nums opacity-70">desde {c.time}</span>
-            </button>
-          ))}
-        </div>
-
-        <div id="carta-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="mt-10">
-          <p className="font-hand text-[1.6rem] leading-tight text-turquesa-dark">{momento.intro}</p>
-          <ul key={tab} className="mt-8 grid gap-x-12 gap-y-10 md:grid-cols-2">
-            {momento.items.map((item) => (
-              <li key={item.name} className="especimen">
-                <Lamina item={item} />
-                <div className="min-w-0">
-                  <h3 className="titulo-vitrina text-[1.6rem] leading-[0.95] text-laguna-deep md:text-[1.9rem]">{item.name}</h3>
-                  <p className="font-hand text-[1.3rem] leading-tight text-turquesa-dark">{item.note}</p>
-                  <p className="mt-1 text-base leading-snug text-madera-soft">{item.desc}</p>
-                </div>
-              </li>
+        <MotionConfig reducedMotion="user">
+          <div role="tablist" aria-label="Momento del día" className="mt-10 flex flex-wrap gap-2" data-sin-flotante="">
+            {CARTA.map((c) => (
+              <Magnetic key={c.id}>
+                <motion.button
+                  role="tab"
+                  id={`tab-${c.id}`}
+                  aria-selected={tab === c.id}
+                  aria-controls="carta-panel"
+                  onClick={() => elegir(c.id)}
+                  className="pestana"
+                  whileTap={{ scale: 0.94 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                >
+                  {tab === c.id && <FondoAnimado grupo="carta-pestana" className="rounded-full bg-laguna-deep" />}
+                  <IconoMomento id={c.id} activo={tab === c.id} />
+                  {c.label} <span className="tabular-nums opacity-70">desde {c.time}</span>
+                </motion.button>
+              </Magnetic>
             ))}
-          </ul>
-        </div>
+          </div>
+
+          <div id="carta-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="mt-10">
+            {/* al cambiar de momento, la frase entra palabra por palabra y los platos llegan en cascada */}
+            <TextEffect key={`intro-${tab}`} animar={cambio} className="font-hand text-[1.6rem] leading-tight text-turquesa-dark">
+              {momento.intro}
+            </TextEffect>
+            <motion.ul
+              key={tab}
+              className="mt-8 grid gap-x-12 gap-y-10 md:grid-cols-2"
+              initial={cambio ? 'oculto' : false}
+              animate="visible"
+              variants={{ visible: { transition: { staggerChildren: 0.07, delayChildren: 0.12 } } }}
+            >
+              {momento.items.map((item) => (
+                <motion.li
+                  key={item.name}
+                  className="especimen"
+                  variants={{
+                    oculto: { opacity: 0, y: 18, filter: 'blur(6px)' },
+                    visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.55, ease: [0.23, 1, 0.32, 1] } },
+                  }}
+                >
+                  <Lamina item={item} />
+                  <div className="min-w-0">
+                    <h3 className="titulo-vitrina text-[1.6rem] leading-[0.95] text-laguna-deep md:text-[1.9rem]">{item.name}</h3>
+                    <p className="font-hand text-[1.3rem] leading-tight text-turquesa-dark">{item.note}</p>
+                    <p className="mt-1 text-base leading-snug text-madera-soft">{item.desc}</p>
+                  </div>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </div>
+        </MotionConfig>
 
         <div className="mt-14 flex flex-wrap items-center gap-3" data-sin-flotante="">
           <a href={SITE.instagramHref} target="_blank" rel="noopener" className="pildora pildora-laguna">

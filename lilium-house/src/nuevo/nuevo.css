@@ -247,6 +247,9 @@ main section[id] {
 }
 
 .pestana {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   min-height: 2.75rem;
   padding: 0 1.2rem;
   border-radius: 999px;
@@ -375,22 +378,10 @@ main section[id] {
   will-change: transform;
 }
 
-.mesa-lienzo {
-  position: absolute;
-  inset: 0;
-  z-index: 19;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
 .mesa-mandala {
   stroke: var(--color-turquesa);
   stroke-opacity: 0.28;
   stroke-width: 2;
-}
-.escenario[data-tresd] .plato {
-  opacity: 0 !important;
-  transition: opacity 300ms ease;
 }
 .escenario {
   position: absolute;
@@ -404,35 +395,44 @@ main section[id] {
 .escenario[data-dragging] {
   cursor: grabbing;
 }
+/*
+ * Cada plato es una foto de su modelo 3D (un cuadro de 4:3) apoyada en el borde de la mesa: el centro del plato
+ * cae al 62 % del alto del cuadro. El script mueve transform y filter; acá queda la posición inicial (HTML).
+ */
 .plato {
   /* separación entre platos y caída del arco: las mismas que usa el script (measure / render) */
   --sp: min(27vw, var(--size) * 1.05, 430px);
   --yk: 0.07;
   --size: min(44svh, 400px);
+  --borde: 64svh;
   position: absolute;
-  left: calc(50% - var(--size) / 2);
-  top: calc(64svh - var(--size) * 0.66);
-  width: var(--size);
-  height: var(--size);
-  cursor: pointer;
-  will-change: transform, opacity;
-  transform: translate3d(calc(var(--xf, 0) * var(--sp)), calc(var(--yf, 0) * var(--sp) * var(--yk)), 0) rotate(calc(var(--rot, 0) * 1deg))
-    scale(var(--s, 1));
+  left: 50%;
+  top: calc(var(--borde) + var(--size) * 0.06);
+  width: calc(var(--size) * 1.207);
+  aspect-ratio: 4 / 3;
+  transform-origin: 50% 62%;
+  will-change: transform, filter;
+  transform: translate(-50%, -62%) translate3d(calc(var(--xf, 0) * var(--sp)), calc(var(--yf, 0) * var(--sp) * var(--yk)), 0)
+    rotate(calc(var(--rot, 0) * 1deg)) scale(var(--s, 1));
 }
-.plato-trazo,
-.plato-color {
+.plato-cuerpo,
+.plato-quieto,
+.plato-cuadro {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
 }
-/* Sin pintar, como el mantel para colorear: solo el trazo sobre el papel */
-.plato-trazo svg * {
-  fill: none !important;
-  stroke: var(--color-madera) !important;
-  stroke-width: 1.1px !important;
-  stroke-opacity: 0.85 !important;
+.plato-quieto {
+  pointer-events: none;
+  user-select: none;
 }
-.plato-trazo svg > circle:first-of-type {
-  fill: #fffdf8 !important;
+.plato-cuadro {
+  background-repeat: no-repeat;
+  background-size: 600% 600%;
+}
+.plato[data-hoja] .plato-quieto {
+  visibility: hidden;
 }
 
 .pie-mesa {
@@ -470,7 +470,7 @@ main section[id] {
     --sp: 70vw;
     --yk: 0.12;
     --size: min(70vw, 36svh);
-    top: calc(50svh - var(--size) * 0.7);
+    --borde: 50svh;
   }
   .pie-mesa {
     gap: 0.5rem;
@@ -483,18 +483,6 @@ main section[id] {
   grid-template-columns: 6.5rem 1fr;
   gap: 1.25rem;
   align-items: center;
-  animation: especimen-in 360ms var(--ease-out) backwards;
-}
-.especimen:nth-child(2) { animation-delay: 50ms; }
-.especimen:nth-child(3) { animation-delay: 100ms; }
-.especimen:nth-child(4) { animation-delay: 150ms; }
-.especimen:nth-child(5) { animation-delay: 200ms; }
-.especimen:nth-child(6) { animation-delay: 250ms; }
-@keyframes especimen-in {
-  from {
-    opacity: 0;
-    translate: 0 8px;
-  }
 }
 .lamina-plato {
   position: relative;
@@ -1035,11 +1023,6 @@ svg .mecer-copa {
   outline-offset: 3px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .especimen {
-    animation: none;
-  }
-}
 
 /* ---------- Portada de la mesa ---------- */
 .mesa-portada {
@@ -1087,7 +1070,7 @@ svg .mecer-copa {
   }
   .plato {
     --size: min(38svh, 360px);
-    top: calc(66svh - var(--size) * 0.66);
+    --borde: 66svh;
   }
   .mesa-bajada {
     margin-top: 0.6rem;

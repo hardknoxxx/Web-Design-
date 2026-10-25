@@ -27,7 +27,7 @@ import {
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 
 /*
- * Vajilla y comida de Lilium en 3D, modelada en código (sin modelos externos ni fotos inventadas).
+ * Vajilla y comida de Lilium en 3D (fuente de las fotos de giro de la mesa: ver render.ts), modelada en código (sin modelos externos ni fotos inventadas).
  * El realismo sale de tres cosas: cortes que muestran el interior (capas de bizcocho, relleno, miga, queso),
  * texturas pintadas con ruido (poros, costra, marcas de plancha, nervaduras) que además dan relieve (bumpMap),
  * y cerámica brillante que refleja el entorno de estudio que arma mesa3d.ts. Unidades: el plato mide ~1,7.

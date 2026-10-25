@@ -7,6 +7,7 @@ import { LogoDefs } from './LogoLilium'
 import { MesaGiratoria } from './MesaGiratoria'
 import { Rincon } from './Rincon'
 import { Vitrina } from './Vitrina'
+import { scrollSuave } from './suave'
 import { Visita } from './Visita'
 
 /** "Cómo llegar" siempre a mano: cuando la mesa queda atrás, el botón baja a la esquina. */
@@ -54,6 +55,7 @@ function LlegarFlotante() {
 }
 
 export function NuevoApp() {
+  useEffect(() => scrollSuave(), [])
   return (
     <>
       <LogoDefs />

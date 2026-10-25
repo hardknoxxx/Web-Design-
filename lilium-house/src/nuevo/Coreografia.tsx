@@ -40,7 +40,8 @@ export function Coreografia() {
 
       // la carta
       lineas('#carta-titulo')
-      gsap.from('#carta [role="tab"]', { x: -24, opacity: 0, duration: 0.7, stagger: 0.07, scrollTrigger: { trigger: '#carta [role="tablist"]', start: 'top 88%', once: true } })
+      // las pestañas llegan en fila (opacidad y desenfoque: su transform es del imán y del toque)
+      gsap.from('#carta [role="tab"]', { opacity: 0, filter: 'blur(6px)', duration: 0.7, stagger: 0.08, scrollTrigger: { trigger: '#carta [role="tablist"]', start: 'top 88%', once: true } })
 
       // visitanos
       lineas('#visita-titulo')

@@ -5,6 +5,7 @@ import { useOpenStatus } from '../hooks/useOpenStatus'
 import { gsap, reducido } from './animar'
 import { LogoLilium } from './LogoLilium'
 import { Estado } from './Piezas'
+import { pausarScroll } from './suave'
 import { FondoAnimado } from './primitivas/FondoAnimado'
 
 /*
@@ -53,10 +54,12 @@ export function Cabecera() {
       gsap.fromTo(panel.querySelectorAll('.menu-pie > *'), { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, stagger: 0.04, delay: 0.3 })
     }
     document.documentElement.style.overflow = 'hidden'
+    pausarScroll(true)
     addEventListener('keydown', onKey)
     return () => {
       removeEventListener('keydown', onKey)
       document.documentElement.style.overflow = ''
+      pausarScroll(false)
       botonRef.current?.focus({ preventScroll: true })
     }
   }, [abierto])
