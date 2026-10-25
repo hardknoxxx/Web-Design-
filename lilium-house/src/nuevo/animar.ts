@@ -1,4 +1,5 @@
 import { gsap } from 'gsap'
+import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
 
@@ -14,7 +15,7 @@ import { SplitText } from 'gsap/SplitText'
  * preferencia, que `reducido()` lea la media query y `MOTION_REDUCIDO` sea 'user'.
  */
 
-gsap.registerPlugin(ScrollTrigger, SplitText)
+gsap.registerPlugin(ScrollTrigger, SplitText, MorphSVGPlugin)
 gsap.defaults({ ease: 'expo.out', duration: 0.9 })
 
 export const reducido = () => false

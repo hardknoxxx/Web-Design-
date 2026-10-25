@@ -7,7 +7,7 @@ import type { OpenStatus } from '../hooks/useOpenStatus'
  */
 
 /** Contorno ondulado alrededor de una elipse: `k` ondas de amplitud `a` (0–1). viewBox -100 -100 200 200. */
-function ondulado(k: number, a: number, rx = 96, ry = 96) {
+export function ondulado(k: number, a: number, rx = 96, ry = 96) {
   const n = k * 8
   let d = ''
   for (let i = 0; i <= n; i++) {

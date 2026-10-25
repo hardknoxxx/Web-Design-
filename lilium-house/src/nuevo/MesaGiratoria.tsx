@@ -33,6 +33,9 @@ const ANCHO_CUADRO = 1.207 // ancho del cuadro respecto del diámetro del plato
 const hoja = (id: string, t: 'm' | 'd') => `/platos/${id}-giro-${t}.webp`
 const quieto = (id: string, t: 'm' | 'd') => `/platos/${id}-${t}.webp`
 
+// los lápices de la mesa: colores de la marca para pintar el mantel
+const LAPICES = ['#64BCB0', '#C7D87E', '#E6D7BC', '#97AD3D', '#F2B6A0', '#FAF7F2']
+
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v))
 /** distancia de un plato al frente, por el lado más corto de la mesa: [-N/2, N/2) */
 const wrap = (d: number) => ((((d + N / 2) % N) + N) % N) - N / 2
@@ -72,6 +75,7 @@ export function MesaGiratoria() {
   const capaB = useRef<(HTMLDivElement | null)[]>([])
   const tituloRef = useRef<HTMLHeadingElement>(null)
   const nombreRef = useRef<HTMLSpanElement>(null)
+  const cursorRef = useRef<HTMLDivElement>(null)
   const nudgeRef = useRef<(step: number) => void>(() => {})
   const [focus, setFocus] = useState(0)
   const [aviso, setAviso] = useState('')
@@ -272,8 +276,78 @@ export function MesaGiratoria() {
       velDedo = 0
       bajo = platoBajo(e)
     }
+    // ---- el mantel para colorear: tocar un pétalo del mandala lo pinta con un color de lápiz (y se recuerda)
+    const petalos = [...mesaRef.current!.querySelectorAll<SVGPathElement>('.petalo')]
+    const pintura: number[] = (() => {
+      try {
+        const v = JSON.parse(localStorage.getItem('lilium-mantel') || '[]')
+        return Array.isArray(v) && v.length === petalos.length ? v : petalos.map(() => -1)
+      } catch {
+        return petalos.map(() => -1)
+      }
+    })()
+    let proximo = 0
+    const pintar = (k: number, animar: boolean) => {
+      const p = petalos[k]
+      const c = pintura[k]
+      if (c < 0) {
+        p.style.fill = ''
+        p.removeAttribute('mask')
+        return
+      }
+      p.style.fill = LAPICES[c]
+      p.setAttribute('mask', 'url(#trazo-lapiz)')
+      // se "colorea" de a poco, como con lápiz: el color sube desde transparente
+      if (animar) gsap.fromTo(p, { fillOpacity: 0 }, { fillOpacity: 1, duration: 0.55, ease: 'power2.out' })
+    }
+    pintura.forEach((_, k) => pintar(k, false))
+    /** El pétalo bajo un punto de la pantalla (índice) o null; 'mesa' si cae en el disco pero fuera de los pétalos. */
+    const petaloEn = (cx: number, cy: number): number | 'mesa' | null => {
+      const r = mesaRef.current!.parentElement!.getBoundingClientRect()
+      const esc = r.width / 1000
+      const x = (cx - (r.left + r.width / 2)) / esc
+      const y = (cy - (r.top + r.height / 2)) / esc
+      // deshace el giro del disco (rotate(-current·360/N)) para leer el punto en coordenadas del mandala
+      const a = (current * 2 * Math.PI) / N
+      const xr = x * Math.cos(a) - y * Math.sin(a)
+      const yr = x * Math.sin(a) + y * Math.cos(a)
+      const d = Math.hypot(xr, yr)
+      if (d > 500) return null
+      const t = ((Math.atan2(xr, -yr) * 180) / Math.PI + 360) % 360
+      if (d >= 330 && d <= 452) return Math.round(t / 15) % 24
+      if (d >= 170 && d <= 300) return 24 + (((Math.round((t - 7.5) / 30) % 12) + 12) % 12)
+      return 'mesa'
+    }
+
+    // ---- con mouse, una etiqueta acompaña al cursor y dice qué hace el gesto ahí
+    const cursor = cursorRef.current!
+    const cx = gsap.quickTo(cursor, 'x', { duration: 0.35, ease: 'power3' })
+    const cy = gsap.quickTo(cursor, 'y', { duration: 0.35, ease: 'power3' })
+    let etiqueta = ''
+    const pista = (e: PointerEvent) => {
+      const r = stage.getBoundingClientRect()
+      const i = platoBajo(e)
+      const m = i === null ? petaloEn(e.clientX, e.clientY) : null
+      const texto = i !== null ? (Math.abs(wrap(i - current)) < 0.5 ? 'Girá' : 'Traer') : typeof m === 'number' ? 'Pintá' : m === 'mesa' ? 'Arrastrá' : ''
+      if (texto !== etiqueta) {
+        etiqueta = texto
+        if (texto) cursor.firstElementChild!.textContent = texto
+        cursor.dataset.visible = texto ? '' : undefined!
+        if (!texto) delete cursor.dataset.visible
+      }
+      cx(e.clientX - r.left)
+      cy(e.clientY - r.top)
+    }
+    const fuera = () => {
+      etiqueta = ''
+      delete cursor.dataset.visible
+    }
+
     const onMove = (e: PointerEvent) => {
-      if (!dragging) return
+      if (!dragging) {
+        if (e.pointerType === 'mouse') pista(e)
+        return
+      }
       if (!moved) {
         if (Math.abs(e.clientX - downX) < 6) return
         if (Math.abs(e.clientY - downY) > Math.abs(e.clientX - downX)) {
@@ -314,7 +388,20 @@ export function MesaGiratoria() {
         return
       }
       if (!moved) {
-        if (bajo === null) return
+        if (bajo === null) {
+          const k = petaloEn(e.clientX, e.clientY)
+          if (typeof k !== 'number') return
+          // cada toque pasa al color siguiente; después del último, el pétalo vuelve a quedar sin pintar
+          pintura[k] = pintura[k] < 0 ? proximo++ % LAPICES.length : pintura[k] + 1 < LAPICES.length ? pintura[k] + 1 : -1
+          pintar(k, true)
+          firstTouch()
+          try {
+            localStorage.setItem('lilium-mantel', JSON.stringify(pintura))
+          } catch {
+            // sin almacenamiento el mantel se pinta igual, solo no se recuerda
+          }
+          return
+        }
         const i = bajo
         if (Math.abs(wrap(i - current)) < 0.5) return
         offset = Math.round(current + wrap(i - current)) - scrollPart
@@ -371,6 +458,7 @@ export function MesaGiratoria() {
     stage.addEventListener('pointermove', onMove)
     stage.addEventListener('pointerup', onUp)
     stage.addEventListener('pointercancel', onCancel)
+    stage.addEventListener('pointerleave', fuera)
     return () => {
       cancelAnimationFrame(raf)
       for (let i = 0; i < N; i++) hojas[i] = null
@@ -380,6 +468,7 @@ export function MesaGiratoria() {
       stage.removeEventListener('pointermove', onMove)
       stage.removeEventListener('pointerup', onUp)
       stage.removeEventListener('pointercancel', onCancel)
+      stage.removeEventListener('pointerleave', fuera)
     }
   }, [])
 
@@ -410,7 +499,9 @@ export function MesaGiratoria() {
         }
       }}
     >
-      <div className="sticky top-0 h-svh overflow-hidden bg-crema">
+      <div className="mesa-sticky sticky top-0 h-svh overflow-hidden bg-crema">
+        {/* velo que oscurece la portada mientras la vitrina la tapa */}
+        <div className="mesa-velo" aria-hidden="true" />
         {/* la vitrina: título condensado enorme; en el teléfono, nada más que el título y la mesa */}
         <div className="mesa-portada">
           <Sticker className="mesa-sticker" giro={-9}>
@@ -427,16 +518,26 @@ export function MesaGiratoria() {
         <div aria-hidden="true" className="mesa-wrap">
           <div ref={mesaRef} className="mesa">
             <svg viewBox="-500 -500 1000 1000" className="h-full w-full">
+              <defs>
+                {/* trazo de lápiz de color: el relleno se ve rayado en diagonal, con el papel asomando */}
+                <pattern id="rayado-lapiz" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
+                  <rect width="9" height="9" fill="#fff" fillOpacity="0.62" />
+                  <rect width="5.5" height="9" fill="#fff" />
+                </pattern>
+                <mask id="trazo-lapiz" maskContentUnits="userSpaceOnUse">
+                  <rect x="-500" y="-500" width="1000" height="1000" fill="url(#rayado-lapiz)" />
+                </mask>
+              </defs>
               <circle r="500" className="fill-laguna-deep" />
               <g className="mesa-mandala" fill="none">
                 <circle r="470" />
                 <circle r="452" strokeDasharray="2 14" strokeLinecap="round" strokeWidth="4" />
                 <circle r="300" />
                 {Array.from({ length: 24 }, (_, k) => (
-                  <path key={k} transform={`rotate(${k * 15})`} d="M0-448C26-420 26-372 0-330C-26-372-26-420 0-448Z" />
+                  <path key={k} className="petalo" transform={`rotate(${k * 15})`} d="M0-448C26-420 26-372 0-330C-26-372-26-420 0-448Z" />
                 ))}
                 {Array.from({ length: 12 }, (_, k) => (
-                  <path key={k} transform={`rotate(${k * 30 + 7.5})`} d="M0-300C40-262 40-206 0-170C-40-206-40-262 0-300Z" />
+                  <path key={k} className="petalo" transform={`rotate(${k * 30 + 7.5})`} d="M0-300C40-262 40-206 0-170C-40-206-40-262 0-300Z" />
                 ))}
               </g>
             </svg>
@@ -465,13 +566,17 @@ export function MesaGiratoria() {
           ))}
         </div>
 
+        <div ref={cursorRef} className="mesa-cursor" aria-hidden="true">
+          <span />
+        </div>
+
         <div className="pie-mesa">
           <button type="button" className="flecha" aria-label="Plato anterior" onClick={() => nudgeRef.current(-1)}>
             <ArrowIcon className="h-5 w-5 rotate-180" />
           </button>
           <p className="min-w-0 flex-1 text-center">
             <span className="pista" data-oculta={tocada || undefined} aria-hidden="true">
-              Girá un plato o deslizá la mesa
+              Girá un plato, deslizá la mesa o pintá el mantel
             </span>
             <span className="block overflow-hidden">
               <span ref={nombreRef} className="titulo-vitrina block text-[2.3rem] leading-[0.95] text-crema md:text-[3.4rem]">

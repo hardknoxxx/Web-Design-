@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { animate, motion, MotionConfig, useMotionValue, useTransform, type PanInfo } from 'motion/react'
 import { ArrowIcon } from '../components/Icons'
 import { SITE } from '../data/site'
 import { MOTION_REDUCIDO } from './animar'
-import { Cinta, Mancha, Sticker } from './Piezas'
+import { gsap } from './animar'
+import { Cinta, ondulado, Sticker } from './Piezas'
 import { TextLoop } from './primitivas/TextLoop'
 import { Tilt } from './primitivas/Tilt'
 
@@ -107,7 +108,15 @@ function Foto({
   )
 }
 
+// la mancha de fondo cambia de forma y de color con cada foto, como los recortes de LATTE sobre fondos ondulados
+const MANCHAS = [
+  { d: ondulado(10, 0.07), color: '#64BCB0' },
+  { d: ondulado(7, 0.1, 98, 90), color: '#E6D7BC' },
+  { d: ondulado(13, 0.05, 92, 98), color: '#C7D87E' },
+]
+
 function Mazo() {
+  const manchaRef = useRef<SVGPathElement>(null)
   const [orden, setOrden] = useState([0, 1, 2])
   const [vuelta, setVuelta] = useState(false)
   const pasar = (dir: 1 | -1) => {
@@ -115,10 +124,21 @@ function Mazo() {
     setOrden((o) => (dir === 1 ? [...o.slice(1), o[0]] : [o[o.length - 1], ...o.slice(0, -1)]))
   }
   const arriba = FOTOS[orden[0]]
+  const primera = useRef(true)
+  useEffect(() => {
+    const m = MANCHAS[orden[0]]
+    if (primera.current) {
+      primera.current = false
+      return
+    }
+    gsap.to(manchaRef.current, { morphSVG: m.d, fill: m.color, duration: 0.7, ease: 'expo.out' })
+  }, [orden])
   return (
     <MotionConfig reducedMotion={MOTION_REDUCIDO}>
       <div className="mazo">
-        <Mancha className="mazo-mancha" color="var(--color-menta)" ondas={10} />
+        <svg viewBox="-100 -100 200 200" className="mazo-mancha" aria-hidden="true">
+          <path ref={manchaRef} d={MANCHAS[0].d} fill={MANCHAS[0].color} />
+        </svg>
         <div className="mazo-pila">
           {FOTOS.map((f, i) => (
             <Foto key={f.src} f={f} lugar={orden.indexOf(i)} vuelta={orden[0] === i && vuelta} onVuelta={() => setVuelta((v) => !v)} onPasar={pasar} />

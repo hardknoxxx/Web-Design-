@@ -383,6 +383,47 @@ main section[id] {
   stroke-opacity: 0.28;
   stroke-width: 2;
 }
+/* pétalos pintados con lápiz: el borde queda más marcado, como el trazo que rodea lo coloreado */
+.mesa-mandala .petalo[mask] {
+  stroke-opacity: 0.6;
+}
+/* etiqueta que acompaña al cursor sobre la mesa (solo con mouse) */
+.mesa-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  translate: 14px 14px;
+  transition: opacity 160ms var(--ease-out);
+}
+.mesa-cursor > span {
+  display: block;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: var(--lima);
+  color: var(--color-laguna-deep);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 1rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+  scale: 0.85;
+  transition: scale 160ms var(--ease-out);
+}
+.mesa-cursor[data-visible] {
+  opacity: 1;
+}
+.mesa-cursor[data-visible] > span {
+  scale: 1;
+}
+@media (hover: none), (pointer: coarse) {
+  .mesa-cursor {
+    display: none;
+  }
+}
 .escenario {
   position: absolute;
   inset: 0;
@@ -477,6 +518,82 @@ main section[id] {
   }
 }
 
+/* ---------- El manifiesto ---------- */
+.manifiesto {
+  padding: 6rem 1rem;
+  background: var(--lima-suave);
+}
+.manifiesto-grilla {
+  display: grid;
+  gap: 2.5rem;
+  max-width: 72rem;
+  margin-inline: auto;
+  align-items: center;
+}
+.manifiesto-frase {
+  max-width: 24ch;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: clamp(2.1rem, 4.6vw, 4rem);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--color-laguna-deep);
+}
+/* figuritas pegadas entre las palabras (referencia LATTE): redondas, del alto de la línea */
+.figurita {
+  display: inline-block;
+  width: 0.95em;
+  height: 0.95em;
+  padding: 0.08em;
+  margin-inline: 0.06em;
+  vertical-align: -0.12em;
+  border-radius: 50%;
+}
+/* sello de Google que gira (referencias neutomni / LATTE) */
+.sello {
+  position: relative;
+  justify-self: end;
+  width: clamp(8.5rem, 16vw, 11rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-laguna-deep);
+  color: var(--lima);
+}
+.sello-texto {
+  width: 100%;
+  height: 100%;
+}
+.sello-texto text {
+  fill: currentColor;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 17px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.sello-centro {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  color: var(--color-crema);
+}
+@media (min-width: 768px) {
+  .manifiesto {
+    padding: 9rem 2rem;
+  }
+  .manifiesto-grilla {
+    grid-template-columns: 1fr auto;
+    gap: 4rem;
+  }
+}
+
 /* ---------- La carta ---------- */
 .especimen {
   display: grid;
@@ -556,11 +673,38 @@ main section[id] {
   color: var(--color-turquesa-dark);
 }
 .rincon-pie {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 1.5rem;
   padding: 1rem;
   background: var(--color-laguna-deep);
   color: var(--color-menta);
   font-size: 0.9rem;
   text-align: center;
+}
+.reloj {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--color-crema);
+}
+/* el punto late despacio cuando el local está abierto */
+.reloj-punto {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-madera-soft);
+}
+.reloj[data-open] .reloj-punto {
+  background: var(--lima);
+  animation: latido 2.4s ease-in-out infinite;
+}
+@keyframes latido {
+  50% {
+    scale: 1.6;
+    opacity: 0.55;
+  }
 }
 @media (min-width: 768px) {
   .rincon-cabeza {
@@ -1072,11 +1216,31 @@ svg .mecer-copa {
   }
 }
 
+/* ---------- Portada que se achica: la vitrina sube y la tapa como una hoja nueva ---------- */
+#mesa {
+  background: var(--color-menta);
+}
+.mesa-sticky {
+  transform-origin: 50% 35%;
+  will-change: transform;
+}
+.mesa-velo {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  background: var(--color-laguna-deep);
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* ---------- La vitrina ---------- */
 .vitrina {
   position: relative;
+  z-index: 2;
   overflow: hidden;
+  margin-top: -38svh;
   padding: 7rem 1rem 6rem;
+  border-radius: 1.75rem 1.75rem 0 0;
   background: var(--color-crema);
 }
 .vitrina-grilla {

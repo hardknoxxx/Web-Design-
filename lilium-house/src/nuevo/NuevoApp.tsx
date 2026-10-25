@@ -4,6 +4,7 @@ import { Cabecera } from './Cabecera'
 import { Carta } from './Carta'
 import { Coreografia } from './Coreografia'
 import { LogoDefs } from './LogoLilium'
+import { Manifiesto } from './Manifiesto'
 import { MesaGiratoria } from './MesaGiratoria'
 import { Rincon } from './Rincon'
 import { Vitrina } from './Vitrina'
@@ -64,6 +65,7 @@ export function NuevoApp() {
       <main>
         <MesaGiratoria />
         <Vitrina />
+        <Manifiesto />
         <Carta />
         <Visita />
       </main>
