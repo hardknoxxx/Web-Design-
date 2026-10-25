@@ -249,3 +249,14 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   desenfoque (AnimatedGroup). Adaptados de Motion Primitives (MIT).
 - Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,89 s, LCP 1,4 s, CLS 0,03; scroll y reposo
   a 60 cuadros por segundo sin tareas largas.
+
+## 25. Mismos efectos en PC que en el teléfono
+
+- Causa: muchas PC con Windows tienen las animaciones del sistema apagadas y el navegador lo informa como
+  `prefers-reduced-motion: reduce`. El sitio respetaba esa preferencia y apagaba la inercia y el desenfoque de
+  la mesa, el scroll suave (Lenis), las animaciones del matorral, la cinta y las entradas con GSAP.
+- Decisión del cliente: el sitio se ve igual en todos los equipos. Quedó centralizado en `animar.ts`
+  (`reducido()` y `MOTION_REDUCIDO`), con la indicación de cómo volver a respetar la preferencia.
+- No se registraron todos los plugins de GSAP de la lista enviada: la mesa ya resuelve la inercia y el
+  desenfoque sin ellos; sumar plugins que no se usan (GSDevTools, MotionPathHelper, Pixi, Easel…) solo agrega
+  peso, y `@gsap/react` no es necesario porque las animaciones ya se limpian con `gsap.context`.

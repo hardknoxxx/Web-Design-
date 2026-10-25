@@ -1,14 +1,15 @@
 import { Children, useEffect, useState, type ReactNode } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
+import { reducido } from '../animar'
 
 /*
  * Palabras que se turnan en el mismo lugar. Adaptado de Motion Primitives (TextLoop, MIT): la que sale sube y se
- * desvanece, la que entra llega desde abajo. Se detiene fuera de pantalla y con movimiento reducido.
+ * desvanece, la que entra llega desde abajo. Se detiene fuera de pantalla.
  */
 export function TextLoop({ children, className, intervalo = 2.4 }: { children: ReactNode[]; className?: string; intervalo?: number }) {
   const items = Children.toArray(children)
   const [i, setI] = useState(0)
-  const quieto = useReducedMotion()
+  const quieto = reducido()
   const [el, setEl] = useState<HTMLSpanElement | null>(null)
   useEffect(() => {
     if (quieto || !el) return

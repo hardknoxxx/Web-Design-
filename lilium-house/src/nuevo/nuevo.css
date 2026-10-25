@@ -989,12 +989,6 @@ svg .mecer-copa {
 .matorral:not([data-vivo]) {
   animation-play-state: paused !important;
 }
-@media (prefers-reduced-motion: reduce) {
-  .matorral,
-  .matorral * {
-    animation: none !important;
-  }
-}
 
 /* ---------- Cómo llegar flotante ---------- */
 .llegar-flotante {
@@ -1248,9 +1242,4 @@ svg .mecer-copa {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .cinta-pista {
-    animation: none;
-  }
-}
 }

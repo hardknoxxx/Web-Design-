@@ -10,8 +10,7 @@ import { Lirio } from './Lirio'
  * - un picaflor libando de los lirios de la casa;
  * - una mariposa "88" (la de Iguazú) que revolotea alrededor de la monstera y se posa en una hoja;
  * - un coatí que pasea por el suelo, entre las plantas, y da la vuelta.
- * Todo se anima con CSS (sin JavaScript por cuadro); fuera de pantalla las animaciones se pausan y con
- * movimiento reducido quedan quietas.
+ * Todo se anima con CSS (sin JavaScript por cuadro); fuera de pantalla las animaciones se pausan.
  */
 
 const TINTA = '#2A1A10'
