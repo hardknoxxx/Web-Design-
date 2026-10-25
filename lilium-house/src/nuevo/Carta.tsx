@@ -1,26 +1,36 @@
-import { useEffect, useState, type ComponentType } from 'react'
-import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { CARTA, SITE, whatsappLink, type CartaItem } from '../data/site'
 import { motion, MotionConfig } from 'motion/react'
 import { MOTION_REDUCIDO } from './animar'
 import { IconoMomento } from './IconoMomento'
+import { CartelDePapel, HojaParaPintar } from './Papeles'
+import { ondulado } from './Piezas'
 import { FondoAnimado } from './primitivas/FondoAnimado'
 import { Magnetic } from './primitivas/Magnetic'
 import { TextEffect } from './primitivas/TextEffect'
 
 /*
- * La carta como láminas de especímenes (referencia: Madie): cada plato con su dibujo, nombre y nota.
- * Siempre a color: al cambiar de momento las láminas entran sin pasar por gris.
+ * La carta como láminas de especímenes (referencia: Madie): cada plato con su foto, nombre y nota.
  */
 
-const DIBUJOS: Record<string, ComponentType> = {
-  cafe: CafePlato,
-  chipa: ChipaPlato,
-  te: TePlato,
-  tostado: TostadoPlato,
-  ensalada: EnsaladaPlato,
-  cheesecake: CheesecakePlato,
-  torta: TortaPlato,
+/*
+ * Cada lámina es una foto de estudio recortada con una forma ondulada del color de su fondo, con sombra
+ * (referencia LATTE). Los platos que no tienen foto propia del local llevan una imagen generada con IA
+ * (Gemini, vía Figma) en /carta: es ILUSTRATIVA para el prototipo y debe reemplazarse por fotos reales del
+ * local antes de publicar el sitio definitivo. Las fotos reales (Instagram del local) llevan su mancha detrás.
+ */
+const COLOR_FOTO: Record<string, string> = {
+  'Box de desayuno': '#F2B6A0',
+  'Tabla para compartir': '#C7D87E',
+  'Torta Oreo': '#64BCB0',
+  'Budín glaseado': '#E6D7BC',
+  'Red velvet': '#64BCB0',
+  'Tarta de frutos rojos': '#E2EBBD',
+}
+// forma ondulada distinta para cada lámina, como recortes hechos a mano
+const forma = (k: number) => {
+  const d = ondulado(8 + (k % 4) * 2, 0.045 + (k % 3) * 0.015, 96 - (k % 2) * 6, 92 + (k % 2) * 6)
+  return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='-100 -100 200 200'><path d='${d}'/></svg>`)}")`
 }
 
 // la pestaña que se abre primero depende de la hora en Puerto Iguazú
@@ -31,18 +41,27 @@ function momentoPorHora() {
   return h >= 12 && h < 16 ? 'almuerzos' : h >= 16 ? 'meriendas' : 'desayunos'
 }
 
-function Lamina({ item }: { item: CartaItem }) {
+function Lamina({ item, k }: { item: CartaItem; k: number }) {
   if (item.kind === 'foto') {
     return (
-      <div className="lamina-foto">
+      <div className="lamina lamina-real" style={{ '--mancha': COLOR_FOTO[item.name] ?? '#E6D7BC', '--forma': forma(k + 1) } as CSSProperties}>
+        <span className="lamina-fondo" aria-hidden="true" />
         <img src={item.src} alt="" loading="lazy" decoding="async" width={300} height={300} />
       </div>
     )
   }
-  const Dibujo = DIBUJOS[item.id]
   return (
-    <div className="lamina-plato">
-      <Dibujo />
+    <div className="lamina lamina-estudio" style={{ '--forma': forma(k) } as CSSProperties}>
+      <img
+        src={`/carta/${item.id}-360.webp`}
+        srcSet={`/carta/${item.id}-360.webp 360w, /carta/${item.id}-720.webp 720w`}
+        sizes="(min-width: 768px) 11rem, 9rem"
+        alt=""
+        loading="lazy"
+        decoding="async"
+        width={360}
+        height={360}
+      />
     </div>
   )
 }
@@ -62,6 +81,8 @@ export function Carta() {
 
   return (
     <section id="carta" aria-labelledby="carta-titulo" className="relative overflow-hidden bg-crema px-4 pt-20 pb-24 md:px-7 md:pt-28 md:pb-32">
+      {/* la hoja del mantel con los lápices, pintándose con el scroll */}
+      <HojaParaPintar className="carta-hoja" />
       <div className="relative z-10 mx-auto max-w-5xl">
         <div className="flex items-start gap-3">
           <h2 id="carta-titulo" className="titulo-vitrina text-[3.4rem] leading-[0.88] text-laguna-deep md:text-[6.5rem]">
@@ -94,7 +115,15 @@ export function Carta() {
             ))}
           </div>
 
-          <div id="carta-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="mt-10">
+          <div id="carta-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="relative mt-10">
+            {/* la palabra gigante del momento elegido, detrás de la lista (referencia: henrietta) */}
+            <p key={`palabra-${tab}`} className="carta-palabra" aria-hidden="true">
+              {momento.label.split('').map((l, i) => (
+                <span key={i} style={{ animationDelay: `${i * 45}ms` }}>
+                  {l}
+                </span>
+              ))}
+            </p>
             {/* al cambiar de momento, la frase entra palabra por palabra y los platos llegan en cascada */}
             <TextEffect key={`intro-${tab}`} animar={cambio} className="font-hand text-[1.6rem] leading-tight text-turquesa-dark">
               {momento.intro}
@@ -106,7 +135,7 @@ export function Carta() {
               animate="visible"
               variants={{ visible: { transition: { staggerChildren: 0.07, delayChildren: 0.12 } } }}
             >
-              {momento.items.map((item) => (
+              {momento.items.map((item, k) => (
                 <motion.li
                   key={item.name}
                   className="especimen"
@@ -115,7 +144,7 @@ export function Carta() {
                     visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.55, ease: [0.23, 1, 0.32, 1] } },
                   }}
                 >
-                  <Lamina item={item} />
+                  <Lamina item={item} k={k} />
                   <div className="min-w-0">
                     <h3 className="titulo-vitrina text-[1.6rem] leading-[0.95] text-laguna-deep md:text-[1.9rem]">{item.name}</h3>
                     <p className="font-hand text-[1.3rem] leading-tight text-turquesa-dark">{item.note}</p>
@@ -127,14 +156,19 @@ export function Carta() {
           </div>
         </MotionConfig>
 
-        <div className="mt-14 flex flex-wrap items-center gap-3" data-sin-flotante="">
-          <a href={SITE.instagramHref} target="_blank" rel="noopener" className="pildora pildora-laguna">
-            Ver la vitrina de hoy en Instagram
-          </a>
-          <a href={whatsappLink('Hola Lilium! Quería hacer un pedido para llevar: ')} target="_blank" rel="noopener" className="pildora pildora-kraft">
-            Pedir para llevar
-          </a>
-        </div>
+        {/* el aviso de papel: llega hecho un bollo y se abre */}
+        <CartelDePapel className="carta-cartel">
+          <p className="cartel-titulo">¿Para llevar o una torta entera?</p>
+          <p className="cartel-texto">Pedila por WhatsApp. Lo que sale de la vitrina hoy, en Instagram.</p>
+          <div className="mt-5 flex flex-wrap items-center gap-3" data-sin-flotante="">
+            <a href={whatsappLink('Hola Lilium! Quería hacer un pedido para llevar: ')} target="_blank" rel="noopener" className="pildora pildora-laguna">
+              Pedir por WhatsApp
+            </a>
+            <a href={SITE.instagramHref} target="_blank" rel="noopener" className="pildora pildora-borde">
+              Ver la vitrina de hoy
+            </a>
+          </div>
+        </CartelDePapel>
       </div>
     </section>
   )

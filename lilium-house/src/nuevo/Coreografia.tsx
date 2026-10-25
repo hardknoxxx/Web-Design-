@@ -48,6 +48,12 @@ export function Coreografia() {
       // las pestañas llegan en fila (opacidad y desenfoque: su transform es del imán y del toque)
       gsap.from('#carta [role="tab"]', { opacity: 0, filter: 'blur(6px)', duration: 0.7, stagger: 0.08, scrollTrigger: { trigger: '#carta [role="tablist"]', start: 'top 88%', once: true } })
 
+      // visitanos entra desde la derecha: la sección se abre como una puerta corrediza y las franjas de color
+      // pasan por delante y se van hacia la izquierda (referencia henrietta)
+      const entra = { trigger: '#visita', start: 'top bottom', end: 'top 20%', scrub: true }
+      gsap.fromTo('#visita', { clipPath: 'inset(0% 0% 0% 100% round 2rem)' }, { clipPath: 'inset(0% 0% 0% 0% round 0rem)', ease: 'none', scrollTrigger: entra })
+      gsap.fromTo('.visita-franjas span', { scaleX: 1 }, { scaleX: 0, transformOrigin: '0% 50%', stagger: 0.12, ease: 'none', scrollTrigger: entra })
+
       // visitanos
       lineas('#visita-titulo')
       gsap.from('#visita figure svg', { clipPath: 'inset(0% 0% 100% 0% round 1.25rem)', duration: 1.3, ease: 'power3.inOut', scrollTrigger: { trigger: '#visita figure', start: 'top 85%', once: true } })

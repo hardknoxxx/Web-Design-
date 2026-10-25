@@ -4,6 +4,7 @@ import { ArrowIcon } from '../components/Icons'
 import { SITE } from '../data/site'
 import { MOTION_REDUCIDO } from './animar'
 import { gsap } from './animar'
+import { Estampilla } from './Papeles'
 import { Cinta, ondulado, Sticker } from './Piezas'
 import { TextLoop } from './primitivas/TextLoop'
 import { Tilt } from './primitivas/Tilt'
@@ -143,6 +144,10 @@ function Mazo() {
           {FOTOS.map((f, i) => (
             <Foto key={f.src} f={f} lugar={orden.indexOf(i)} vuelta={orden[0] === i && vuelta} onVuelta={() => setVuelta((v) => !v)} onPasar={pasar} />
           ))}
+          <Estampilla className="mazo-estampilla" color="#C7D87E" giro={8}>
+            <span className="estampilla-lugar">Hecho en casa</span>
+            <span className="estampilla-pie">Delicias caseras</span>
+          </Estampilla>
           <Sticker className="mazo-sticker" giro={-10} color="var(--color-kraft)">
             tan rico que
             <br />

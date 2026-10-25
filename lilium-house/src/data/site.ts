@@ -25,6 +25,7 @@ export const SITE = {
   phoneHref: 'tel:+543757457085',
   // Número de WhatsApp del perfil de Instagram (wa.link/k3hzi5)
   whatsapp: '543757317284',
+  whatsappDisplay: '+54 3757 31-7284',
   instagram: 'lilium.coffee',
   instagramHref: 'https://www.instagram.com/lilium.coffee/',
   mapsHref:

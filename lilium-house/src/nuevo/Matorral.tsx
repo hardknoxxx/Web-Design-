@@ -71,24 +71,53 @@ function HorneroEnSuNido() {
   )
 }
 
+// hoja lanceolada con punta: largo 42, apoyada en (0,0) y creciendo hacia arriba
+const HOJA = 'M0 0C9-9 10-28 0-42C-10-28-9-9 0 0Z'
+const VERDES = ['#2F4A22', '#3B5426', '#415521', '#4A5E22', '#6F7F2E']
+const azar = (n: number) => {
+  const x = Math.sin(n * 91.7 + 13.3) * 43758.5453
+  return x - Math.floor(x)
+}
+
+/** Racimo de follaje: hojas en abanico alrededor de un centro, las de atrás más oscuras, con nervio claro. */
+function Racimo({ x, y, r, semilla }: { x: number; y: number; r: number; semilla: number }) {
+  const hojas = Array.from({ length: 22 }, (_, k) => {
+    const a = (k / 22) * 360 + azar(semilla * 31 + k) * 16
+    const d = r * (0.18 + azar(semilla * 7 + k) * 0.5)
+    const e = (r / 42) * (0.75 + azar(semilla * 3 + k) * 0.45)
+    return { a, d, e, c: VERDES[Math.floor(azar(semilla * 11 + k) * VERDES.length)], atras: k % 3 === 0 }
+  })
+  return (
+    <g>
+      {[...hojas.filter((h) => h.atras), ...hojas.filter((h) => !h.atras)].map((h, k) => {
+        const rad = (h.a * Math.PI) / 180
+        return (
+          <g key={k} transform={`translate(${(x + Math.sin(rad) * h.d).toFixed(1)} ${(y - Math.cos(rad) * h.d).toFixed(1)}) rotate(${h.a.toFixed(1)}) scale(${h.e.toFixed(2)})`}>
+            <path d={HOJA} fill={h.atras ? '#22351E' : h.c} />
+            {!h.atras && <path d="M0-2C1-14 1-26 0-38" stroke="#97AD3D" strokeOpacity=".55" strokeWidth="1.6" fill="none" strokeLinecap="round" />}
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+const RACIMOS: [number, number, number][] = [
+  [120, 130, 80],
+  [235, 95, 92],
+  [335, 150, 74],
+  [175, 195, 78],
+  [285, 215, 70],
+  [85, 220, 60],
+  [215, 160, 70],
+]
+
 /** Árbol del monte: tronco con raíces, dos ramas habitadas y la copa que se mece. */
 function Arbol() {
   return (
     <svg viewBox="0 0 460 700" className="h-full w-full" aria-hidden="true" overflow="visible">
       <g className="mecer-copa" style={{ '--dur': '7s' } as CSSProperties}>
-        {[
-          [120, 120, 96, '#2F4A22'],
-          [230, 90, 104, '#415521'],
-          [330, 150, 86, '#2F4A22'],
-          [170, 190, 92, '#4A5E22'],
-          [280, 210, 84, '#415521'],
-          [90, 220, 70, '#4A5E22'],
-          [210, 150, 80, '#6F7F2E'],
-        ].map(([x, y, r, c], i) => (
-          <g key={i}>
-            <circle cx={x as number} cy={y as number} r={r as number} fill={c as string} />
-            <circle cx={(x as number) - (r as number) * 0.25} cy={(y as number) - (r as number) * 0.3} r={(r as number) * 0.55} fill="#97AD3D" opacity=".22" />
-          </g>
+        {RACIMOS.map(([x, y, r], i) => (
+          <Racimo key={i} x={x} y={y} r={r} semilla={i} />
         ))}
       </g>
       {/* tronco */}
@@ -172,19 +201,23 @@ function Coati() {
   )
 }
 
-/** Fondo del matorral: arbustos en dos tonos, para que nada quede contra el vacío. */
+/** Fondo del matorral: matas de hojas largas en abanico, para que nada quede contra el vacío. */
 function Arbustos() {
-  const bultos = Array.from({ length: 22 }, (_, i) => {
-    const x = (i / 21) * 1640 - 20
-    const r = 70 + ((i * 37) % 50)
-    return { x, r, c: i % 2 ? '#2F4A22' : '#3B5426' }
-  })
+  const matas = Array.from({ length: 24 }, (_, i) => ({ x: (i / 23) * 1640 - 20, alto: 90 + azar(i) * 80, i }))
   return (
     <svg viewBox="0 0 1600 260" preserveAspectRatio="xMidYMax slice" className="h-full w-full" aria-hidden="true">
-      {bultos.map((b, i) => (
-        <g key={i}>
-          <circle cx={b.x} cy={260 - b.r * 0.55} r={b.r} fill={b.c} />
-          <circle cx={b.x - b.r * 0.3} cy={260 - b.r * 0.85} r={b.r * 0.45} fill="#4A5E22" opacity=".45" />
+      {matas.map((m) => (
+        <g key={m.i} transform={`translate(${m.x.toFixed(1)} 262)`}>
+          {Array.from({ length: 11 }, (_, k) => {
+            const a = -75 + k * 15 + (azar(m.i * 5 + k) - 0.5) * 10
+            const e = (m.alto / 42) * (0.55 + azar(m.i * 9 + k) * 0.5) * (1 - Math.abs(a) / 160)
+            return (
+              <g key={k} transform={`rotate(${a.toFixed(1)}) scale(${(e * 0.55).toFixed(2)} ${e.toFixed(2)})`}>
+                <path d={HOJA} fill={VERDES[(m.i + k) % 3]} />
+                <path d="M0-2C1-14 1-26 0-38" stroke="#22351E" strokeOpacity=".35" strokeWidth="1.2" fill="none" />
+              </g>
+            )
+          })}
         </g>
       ))}
     </svg>
