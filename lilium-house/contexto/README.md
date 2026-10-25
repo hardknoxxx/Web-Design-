@@ -118,6 +118,7 @@ cada sección declara `data-phase="fondo|texto|hora"`.
   (oct. 2026); si vuelve a fallar, buscar la carpeta `chromium-*` vigente en `/opt/pw-browsers/`.
 - **Figma MCP** (servidor oficial remoto `https://mcp.figma.com/mcp`, HTTP) en `.mcp.json`. Requiere autenticarse una
   vez: en Claude Code, `/mcp` → figma → Authenticate → "Allow Access" en el navegador.
+- **Motion** (skill de `motion-ai`, MIT) en `.claude/skills/motion/`, copiada a mano y auditada (ver SOURCE.md); sin los MCP remotos. Componentes adaptados de **Motion Primitives** (MIT) en `src/nuevo/primitivas/`.
 - **UI UX Pro Max** (`nextlevelbuilder/ui-ux-pro-max-skill`, MIT) en `.claude/skills/ui-ux-pro-max/`, auditado (commit
   `d14efff`, ver `SOURCE.md`): datos CSV locales y scripts de Python sin red; solo escribe con `--persist`.
   Uso: `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<consulta>" --domain <dominio>`.

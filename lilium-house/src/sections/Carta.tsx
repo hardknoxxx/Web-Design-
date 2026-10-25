@@ -1,4 +1,4 @@
-import { m } from 'framer-motion'
+import { m } from 'motion/react'
 import { useRef, useState } from 'react'
 import { HojasTransicion } from '../components/HojasTransicion'
 import { Reveal, RevealWords } from '../components/Reveal'

@@ -1,4 +1,4 @@
-import { m, useTransform } from 'framer-motion'
+import { m, useTransform } from 'motion/react'
 import { useDay } from '../day/DayProvider'
 
 /**

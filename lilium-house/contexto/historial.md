@@ -188,3 +188,29 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   marca (GSAP, criterios editoriales); se descartó lo de estética SaaS/tech y Spline por peso.
 - Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,83 s, CLS 0,03, sin errores. Los cuadros por
   segundo medidos usan WebGL por software (sin GPU) y no representan un teléfono real.
+
+## 22. Platos que se giran a mano, mazo de fotos y matorral
+
+- Pedido: platos quietos que se giran con el cursor/dedo, con inercia al soltar y desenfoque al ir rápido (como el
+  video de Agrumea); modelos más fieles; carta siempre a color; fotos reales como cartas que se dan vuelta o se
+  cambian (Madie); animaciones de Motion Primitives; cierre ilustrado (no 3D) con animales, sin nada flotando.
+- `motion` instalado (reemplaza a `framer-motion`, misma versión 14.6; imports migrados a `motion/react`).
+  `npx motion-ai` es interactivo (pide terminal): se auditó y se copió a mano su skill a `.claude/skills/motion`
+  (ver SOURCE.md); los servidores MCP remotos de Motion no se configuraron. Tailwind y su plugin ya estaban.
+- Platos 3D rehechos (`tres/objetos.ts`): porciones con cortes que muestran capas (bizcocho húmedo, frambuesa,
+  ganache; cheesecake con base de galletita y coulis), tostado de miga con jamón, queso y marcas de plancha, chipa
+  con costra, ensalada con hojas, tomates cortados y huevo, tetera y taza esmaltadas. Texturas pintadas con ruido,
+  relieve, entorno de estudio (RoomEnvironment) y sombras. Se cargan de a uno, del frente hacia los costados.
+- Interacción (`MesaGiratoria.tsx`): sin giro constante; arrastrar un plato lo gira, al soltar sigue con la
+  inercia del gesto unos segundos; se ladea al girar rápido. Desenfoque de movimiento real en `mesa3d.ts`: varias
+  muestras por cuadro entre la pose anterior y la actual, solo mientras algo se mueve rápido.
+- Carta: las láminas siempre a color; la pestaña elegida tiene un fondo que viaja (FondoAnimado).
+- Vitrina: mazo de fotos impresas: arrastrar pasa la de arriba al fondo, tocar la da vuelta (dorso con la
+  descripción); con mouse se inclina (Tilt); "Hoy en la vitrina: tortas / budines / tentaciones" (TextLoop).
+  Adaptados de Motion Primitives (MIT): Tilt, TextLoop, AnimatedBackground (`src/nuevo/primitivas/`).
+- Menú: con mouse, una banda se desliza detrás de la sección señalada.
+- Cierre (`Matorral.tsx`): árbol con tucán en la rama y nido de hornero, picaflor libando del lirio, mariposa
+  "88" en la monstera, coatí que camina por el suelo; plantas que nacen del suelo y se mecen. Solo CSS, se pausa
+  fuera de pantalla y queda quieto con movimiento reducido. Se quitó el rincón 3D.
+- Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,94 s, CLS 0,006, sin errores. El 3D en este
+  entorno corre por software (sin GPU): la fluidez debe probarse en un teléfono real.

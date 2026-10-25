@@ -5,6 +5,7 @@ import { useOpenStatus } from '../hooks/useOpenStatus'
 import { gsap, reducido } from './animar'
 import { LogoLilium } from './LogoLilium'
 import { Estado } from './Piezas'
+import { FondoAnimado } from './primitivas/FondoAnimado'
 
 /*
  * Cabecera fija (barra crema con el logo, como la de la referencia) y menú a pantalla completa: un panel menta
@@ -22,6 +23,7 @@ const SECCIONES = [
 export function Cabecera() {
   const status = useOpenStatus()
   const [abierto, setAbierto] = useState(false)
+  const [senalada, setSenalada] = useState<string | null>(null)
   const botonRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
 
@@ -97,9 +99,16 @@ export function Cabecera() {
       </header>
 
       <div ref={panelRef} id="menu-panel" className="menu-panel" data-abierto={abierto || undefined} role="dialog" aria-modal="true" aria-label="Menú" inert={!abierto}>
-        <nav aria-label="Secciones" className="menu-secciones">
+        <nav aria-label="Secciones" className="menu-secciones" onPointerLeave={() => setSenalada(null)}>
           {SECCIONES.map((s) => (
-            <a key={s.href} href={s.href} className="menu-enlace" onClick={() => setAbierto(false)}>
+            <a
+              key={s.href}
+              href={s.href}
+              className="menu-enlace"
+              onClick={() => setAbierto(false)}
+              onPointerEnter={(e) => e.pointerType === 'mouse' && setSenalada(s.href)}
+            >
+              {senalada === s.href && <FondoAnimado grupo="menu-senal" className="rounded-[1.25rem] bg-laguna-deep" />}
               <span className="menu-enlace-texto">{s.label}</span>
             </a>
           ))}

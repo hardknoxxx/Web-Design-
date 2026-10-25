@@ -9,10 +9,11 @@ import type { Mesa3D, Pose } from './tres/mesa3d'
 /*
  * La mesa giratoria (referencia: el carrusel de frascos de Agrumea Farm).
  * Una mesa verde que no termina: el scroll le da una vuelta entera (de la mañana a la noche y otra vez al café)
- * y el arrastre o las flechas la siguen girando sin tope, como el carrusel de la referencia. Tocar un plato lo
- * trae al frente por el camino más corto y lo hace girar sobre la mesa.
- * Los platos son objetos 3D (three.js, tres/mesa3d.ts) que giran sobre su eje y se pintan al llegar al frente,
- * como el mantel para colorear. Mientras three.js baja (o si no hay WebGL) se ven los dibujos planos del HTML.
+ * y el arrastre o las flechas la siguen girando sin tope, como el carrusel de la referencia.
+ * Los platos son objetos 3D (three.js, tres/mesa3d.ts) quietos sobre la mesa: arrastrar un plato lo hace girar
+ * sobre su eje, y al soltarlo sigue girando con la inercia del gesto unos segundos hasta frenar (con desenfoque de
+ * movimiento mientras va rápido). Tocar un plato de un costado lo trae al frente.
+ * Mientras three.js baja (o si no hay WebGL) se ven los dibujos planos del HTML.
  * Todo corre en un rAF que escribe estilos o dibuja el lienzo: sin re-render por cuadro.
  */
 
@@ -86,10 +87,14 @@ export function MesaGiratoria() {
     let shown = -1
     let spacing = 0
     let narrow = false
-    // giro extra de cada plato al tocarlo: objetivo y valor actual (resorte con un poco de rebote)
-    const spinTarget = new Float32Array(N)
-    const spin = new Float32Array(N)
-    const spinVel = new Float32Array(N)
+    // giro propio de cada plato (radianes) y su velocidad (rad/s): el gesto la carga y la fricción la frena
+    const angulo = new Float64Array(N)
+    const velAng = new Float64Array(N)
+    const ladeo = new Float64Array(N)
+    // el plato que se está girando con el dedo o el cursor (-1: ninguno)
+    let girando = -1
+    let ultimo = performance.now()
+    let animarHasta = 0
     let announce = false
 
     // medidas en píxeles: borde de la mesa y tamaño del plato salen del CSS (los mismos que usa el HTML inicial)
@@ -112,8 +117,7 @@ export function MesaGiratoria() {
 
     let mesa3d: Mesa3D | null = null
     let visible = true
-    let t0 = performance.now()
-    const poses: Pose[] = Array.from({ length: N }, () => ({ x: 0, y: 0, s: 1, d: 0, spin: 0 }))
+    const poses: Pose[] = Array.from({ length: N }, () => ({ x: 0, y: 0, s: 1, d: 0, giro: 0, ladeo: 0 }))
 
     const render = () => {
       for (let i = 0; i < N; i++) {
@@ -129,18 +133,19 @@ export function MesaGiratoria() {
           p.y = mesaTop + size * 0.06 + y
           p.s = s
           p.d = d
-          p.spin = spin[i]
+          p.giro = angulo[i]
+          p.ladeo = ladeo[i]
           continue
         }
         const el = itemRefs.current[i]!
-        el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${(GIRO[i] - d * 24 + spin[i]).toFixed(2)}deg) scale(${s.toFixed(3)})`
+        el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${(GIRO[i] - d * 24 + (angulo[i] * 180) / Math.PI).toFixed(2)}deg) scale(${s.toFixed(3)})`
         el.style.opacity = String(clamp(3 - a, 0, 1))
         el.style.zIndex = String(10 - Math.round(a * 2))
         // se pinta como con lápiz: el color se abre desde el centro del plato
         const c = clamp(1.5 - a * 1.5, 0, 1)
         colorRefs.current[i]!.style.clipPath = c >= 1 ? 'none' : `circle(${(c * 72).toFixed(1)}% at 50% 50%)`
       }
-      if (mesa3d) mesa3d.render(poses, (performance.now() - t0) / 1000)
+      if (mesa3d) mesa3d.render(poses)
       mesaRef.current!.style.transform = `rotate(${(-current * (360 / N)).toFixed(2)}deg)`
       const idx = mod(Math.round(current))
       if (idx !== shown) {
@@ -150,28 +155,34 @@ export function MesaGiratoria() {
       }
     }
 
-    const frame = () => {
+    const frame = (now: number) => {
       raf = 0
+      const dt = Math.min(0.05, Math.max(0.001, (now - ultimo) / 1000))
+      ultimo = now
       const target = scrollPart + offset
-      current = reduced ? target : current + (target - current) * 0.12
+      current = reduced ? target : current + (target - current) * (1 - Math.exp(-dt * 7.5))
       if (Math.abs(target - current) < 1e-3) current = target
       let spinning = false
+      // inercia: la velocidad cae a la mitad cada ~0,55 s, así el plato sigue girando unos segundos al soltarlo
+      const friccion = Math.exp(-dt * 1.25)
       for (let i = 0; i < N; i++) {
-        if (reduced) {
-          spin[i] = spinTarget[i]
-          continue
+        if (i !== girando) {
+          angulo[i] += velAng[i] * dt
+          velAng[i] *= friccion
+          if (Math.abs(velAng[i]) < 0.02) velAng[i] = 0
         }
-        spinVel[i] = (spinVel[i] + (spinTarget[i] - spin[i]) * 0.06) * 0.82
-        spin[i] += spinVel[i]
-        if (Math.abs(spinTarget[i] - spin[i]) < 0.05 && Math.abs(spinVel[i]) < 0.05) spin[i] = spinTarget[i]
-        else spinning = true
+        // se ladea apenas contra el giro, como un objeto con peso, y vuelve a su lugar al frenar
+        const objetivo = reduced ? 0 : clamp(-velAng[i] * 0.018, -0.22, 0.22)
+        ladeo[i] += (objetivo - ladeo[i]) * (1 - Math.exp(-dt * 8))
+        if (velAng[i] !== 0 || Math.abs(ladeo[i]) > 1e-3 || i === girando) spinning = true
       }
       render()
-      // con los platos 3D el bucle sigue mientras la mesa está en pantalla: giran sobre su eje en reposo
-      if (current !== target || spinning || (mesa3d && visible && !reduced)) raf = requestAnimationFrame(frame)
+      if (current !== target || spinning || now < animarHasta) raf = requestAnimationFrame(frame)
     }
     const invalidate = () => {
-      if (!raf) raf = requestAnimationFrame(frame)
+      if (raf) return
+      ultimo = performance.now()
+      raf = requestAnimationFrame(frame)
     }
     const firstTouch = () => setTocada(true)
 
@@ -184,8 +195,10 @@ export function MesaGiratoria() {
       invalidate()
     }
 
-    // Arrastre horizontal: la mesa sigue al dedo y al soltar se acomoda en el plato más cercano.
-    // Un toque sin arrastre hace girar el plato tocado (y lo trae al frente si estaba a un costado).
+    // Gestos (horizontales; el vertical es scroll de la página):
+    // - arrastrar un plato lo hace girar sobre su eje; al soltar sigue con la velocidad del gesto;
+    // - arrastrar la mesa (fuera de los platos) la hace girar y al soltar se acomoda en el plato más cercano;
+    // - tocar un plato de un costado lo trae al frente; tocar el del frente le da un envión.
     let downX = 0
     let downY = 0
     let dragFrom = 0
@@ -194,6 +207,14 @@ export function MesaGiratoria() {
     let velocity = 0
     let dragging = false
     let moved = false
+    let bajo: number | null = null
+    // cuántos radianes gira un plato por cada píxel arrastrado (una vuelta ≈ dos anchos de plato)
+    const radPorPx = () => (Math.PI * 2) / Math.max(size * 2, 200)
+    const platoBajo = (e: PointerEvent) => {
+      if (mesa3d) return mesa3d.pick(e.clientX, e.clientY)
+      const hit = (document.elementFromPoint(e.clientX, e.clientY) as Element | null)?.closest<HTMLElement>('.plato')
+      return hit ? Number(hit.dataset.i) : null
+    }
     const onDown = (e: PointerEvent) => {
       if (e.button !== 0) return
       dragging = true
@@ -203,12 +224,12 @@ export function MesaGiratoria() {
       lastT = e.timeStamp
       dragFrom = offset
       velocity = 0
+      bajo = platoBajo(e)
     }
     const onMove = (e: PointerEvent) => {
       if (!dragging) return
       if (!moved) {
-        if (Math.abs(e.clientX - downX) < 8) return
-        // gesto vertical: es scroll, no arrastre
+        if (Math.abs(e.clientX - downX) < 6) return
         if (Math.abs(e.clientY - downY) > Math.abs(e.clientX - downX)) {
           dragging = false
           return
@@ -217,10 +238,21 @@ export function MesaGiratoria() {
         stage.setPointerCapture(e.pointerId)
         stage.dataset.dragging = ''
         firstTouch()
+        if (bajo !== null) {
+          girando = bajo
+          velAng[bajo] = 0
+        }
       }
-      offset = dragFrom - (e.clientX - downX) / spacing
+      const dx = e.clientX - lastX
       const dt = Math.max(e.timeStamp - lastT, 1)
-      velocity = (lastX - e.clientX) / spacing / dt
+      if (girando >= 0) {
+        angulo[girando] += dx * radPorPx()
+        // velocidad suavizada del gesto (rad/s), para que el envión al soltar sea el del final del gesto
+        velAng[girando] = velAng[girando] * 0.6 + ((dx * radPorPx()) / dt) * 1000 * 0.4
+      } else {
+        offset = dragFrom - (e.clientX - downX) / spacing
+        velocity = (lastX - e.clientX) / spacing / dt
+      }
       lastX = e.clientX
       lastT = e.timeStamp
       invalidate()
@@ -230,40 +262,40 @@ export function MesaGiratoria() {
       dragging = false
       delete stage.dataset.dragging
       announce = true
+      if (girando >= 0) {
+        // si el dedo frenó antes de soltar, no hay envión
+        if (e.timeStamp - lastT > 90) velAng[girando] = 0
+        velAng[girando] = clamp(velAng[girando], -40, 40)
+        girando = -1
+        invalidate()
+        return
+      }
       if (!moved) {
-        let i: number
-        let izquierda: boolean
-        if (mesa3d) {
-          const k = mesa3d.pick(e.clientX, e.clientY)
-          if (k === null) return
-          i = k
-          izquierda = e.clientX < poses[k].x
-        } else {
-          const hit = (document.elementFromPoint(e.clientX, e.clientY) as Element | null)?.closest<HTMLElement>('.plato')
-          if (!hit) return
-          i = Number(hit.dataset.i)
-          izquierda = e.clientX < hit.getBoundingClientRect().left + hit.offsetWidth / 2
-        }
-        spinTarget[i] += 360 * (izquierda ? -1 : 1)
-        offset = Math.round(current + wrap(i - current)) - scrollPart
+        if (bajo === null) return
+        const i = bajo
+        const lado = mesa3d ? e.clientX < poses[i].x : e.clientX < itemRefs.current[i]!.getBoundingClientRect().left + size / 2
+        const alFrente = Math.abs(wrap(i - current)) < 0.5
+        // el envión gira hacia el lado tocado, como empujar el borde del plato
+        velAng[i] += (alFrente ? 9 : 5) * (lado ? -1 : 1)
+        if (!alFrente) offset = Math.round(current + wrap(i - current)) - scrollPart
         firstTouch()
         invalidate()
         return
       }
-      // inercia corta y encaje en el plato más cercano (el total, no solo el arrastre)
       const fling = clamp(velocity * 180, -3, 3)
       offset = Math.round(scrollPart + offset + fling) - scrollPart
       invalidate()
     }
     const onCancel = () => {
       dragging = false
+      girando = -1
       delete stage.dataset.dragging
     }
     nudgeRef.current = (step) => {
       announce = true
       offset = Math.round(scrollPart + offset) + step - scrollPart
-      // un giro corto del plato que llega, como si lo acomodaran en la mesa
-      spinTarget[mod(Math.round(scrollPart + offset))] += 40 * step
+      // el plato que llega da media vuelta, como si lo acomodaran en la mesa
+      velAng[mod(Math.round(scrollPart + offset))] += 4 * step
       firstTouch()
       invalidate()
     }
@@ -290,21 +322,33 @@ export function MesaGiratoria() {
     import('./tres/mesa3d')
       .then(({ createMesa3D }) => {
         if (cancelado) return
-        mesa3d = createMesa3D(canvasRef.current!, PLATOS.map((p) => p.id))
+        const m = createMesa3D(canvasRef.current!, PLATOS.map((p) => p.id))
+        mesa3d = m
         measure()
-        t0 = performance.now()
-        stage.dataset.tresd = ''
-        if (!reduced) {
-          const orden = [...mesa3d.entradas.keys()].sort((a, b) => Math.abs(wrap(a - current)) - Math.abs(wrap(b - current)))
-          orden.forEach((i, k) => {
-            const e = mesa3d!.entradas[i]
-            gsap.fromTo(e, { y: H * 0.22, s: 0.55 }, { y: 0, s: 1, duration: 1.15, delay: 0.05 + k * 0.08, ease: 'expo.out' })
-          })
-        }
-        invalidate()
+        // los modelos llegan de a uno, del frente hacia los costados; cada uno "se sirve" sobre la mesa al llegar
+        const orden = [...m.entradas.keys()].sort((a, b) => Math.abs(wrap(a - current)) - Math.abs(wrap(b - current)))
+        let primero = true
+        return m.cargar(orden, () => {
+          if (primero) {
+            primero = false
+            stage.dataset.tresd = ''
+            if (!reduced)
+              orden.forEach((i, k) => {
+                const e = m.entradas[i]
+                gsap.fromTo(e, { y: H * 0.22, s: 0.55 }, { y: 0, s: 1, duration: 1.15, delay: 0.05 + k * 0.08, ease: 'expo.out' })
+              })
+            animarHasta = performance.now() + 2200
+          }
+          invalidate()
+        })
       })
       // sin WebGL quedan los platos dibujados del HTML
-      .catch(() => delete stage.dataset.tresd)
+      .catch(() => {
+        delete stage.dataset.tresd
+        mesa3d?.dispose()
+        mesa3d = null
+        render()
+      })
     addEventListener('scroll', onScroll, { passive: true })
     addEventListener('resize', onResize)
     stage.addEventListener('pointerdown', onDown)
@@ -406,7 +450,7 @@ export function MesaGiratoria() {
           </button>
           <p className="min-w-0 flex-1 text-center">
             <span className="pista" data-oculta={tocada || undefined} aria-hidden="true">
-              Tocá un plato o deslizá la mesa
+              Girá un plato o deslizá la mesa
             </span>
             <span className="block overflow-hidden">
               <span ref={nombreRef} className="titulo-vitrina block text-[2.3rem] leading-[0.95] text-crema md:text-[3.4rem]">

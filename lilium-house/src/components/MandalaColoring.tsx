@@ -1,4 +1,4 @@
-import { m, useScroll, useTransform } from 'framer-motion'
+import { m, useScroll, useTransform } from 'motion/react'
 import { memo, useCallback, useMemo, useRef, useState, type ReactNode } from 'react'
 import { PencilJar } from './Botanica'
 

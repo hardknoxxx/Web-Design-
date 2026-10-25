@@ -1,4 +1,4 @@
-import { m, type MotionValue } from 'framer-motion'
+import { m, type MotionValue } from 'motion/react'
 
 /* Piezas de la escena "Ritual" del sitio anterior que se mueven con Framer Motion. Viven aparte de
    Botanica.tsx para que la portada nueva, que solo usa las ilustraciones quietas, no cargue Framer Motion. */

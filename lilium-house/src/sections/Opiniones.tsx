@@ -1,4 +1,4 @@
-import { animate, m, useInView, useMotionValue, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { animate, m, useInView, useMotionValue, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import { HojasTransicion } from '../components/HojasTransicion'
 import { Monstera } from '../components/Botanica'

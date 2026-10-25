@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState, type ComponentType } from 'react'
+import { useEffect, useState, type ComponentType } from 'react'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, SITE, whatsappLink, type CartaItem } from '../data/site'
+import { FondoAnimado } from './primitivas/FondoAnimado'
 
 /*
  * La carta como láminas de especímenes (referencia: Madie): cada plato con su dibujo, nombre y nota.
- * Los dibujos llegan sin pintar y se colorean al entrar en pantalla, igual que en la mesa.
+ * Siempre a color: al cambiar de momento las láminas entran sin pasar por gris.
  */
 
 const DIBUJOS: Record<string, ComponentType> = {
@@ -26,37 +27,17 @@ function momentoPorHora() {
 }
 
 function Lamina({ item }: { item: CartaItem }) {
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const el = ref.current!
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (!e.isIntersecting) return
-        el.dataset.pintado = ''
-        io.disconnect()
-      },
-      { threshold: 0.6 },
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
-
   if (item.kind === 'foto') {
     return (
-      <div ref={ref} className="lamina-foto">
+      <div className="lamina-foto">
         <img src={item.src} alt="" loading="lazy" decoding="async" width={300} height={300} />
       </div>
     )
   }
   const Dibujo = DIBUJOS[item.id]
   return (
-    <div ref={ref} className="lamina-plato">
-      <div className="plato-trazo">
-        <Dibujo />
-      </div>
-      <div className="plato-color">
-        <Dibujo />
-      </div>
+    <div className="lamina-plato">
+      <Dibujo />
     </div>
   )
 }
@@ -90,6 +71,7 @@ export function Carta() {
               onClick={() => setTab(c.id)}
               className="pestana"
             >
+              {tab === c.id && <FondoAnimado grupo="carta-pestana" className="rounded-full bg-laguna-deep" />}
               {c.label} <span className="tabular-nums opacity-70">desde {c.time}</span>
             </button>
           ))}

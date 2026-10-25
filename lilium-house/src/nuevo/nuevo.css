@@ -140,6 +140,14 @@ main section[id] {
 .menu-enlace-texto {
   display: block;
 }
+/* resaltado del menú con mouse: una banda que se desliza detrás de la sección señalada */
+.menu-enlace {
+  position: relative;
+  isolation: isolate;
+  margin-inline: -0.75rem;
+  padding-inline: 0.75rem;
+  border-radius: 1.25rem;
+}
 .menu-pie {
   display: flex;
   flex-wrap: wrap;
@@ -254,8 +262,13 @@ main section[id] {
 .pestana:active {
   transform: scale(0.97);
 }
+/* la pestaña elegida: el fondo oscuro viaja de una a otra (FondoAnimado) */
+.pestana {
+  position: relative;
+  isolation: isolate;
+}
 .pestana[aria-selected='true'] {
-  background: var(--color-laguna-deep);
+  background: transparent;
   color: var(--color-crema);
 }
 
@@ -278,6 +291,10 @@ main section[id] {
   }
   .pildora-linea:hover {
     background: var(--color-laguna);
+  }
+  .pildora-borde:hover {
+    background: var(--color-laguna-deep);
+    color: var(--color-crema);
   }
   .menu-boton:hover {
     background: var(--color-menta);
@@ -483,23 +500,11 @@ main section[id] {
   position: relative;
   aspect-ratio: 1;
 }
-.lamina-plato .plato-color {
-  clip-path: circle(0% at 50% 50%);
-  transition: clip-path 900ms var(--ease-in-out) 120ms;
-}
-.lamina-plato[data-pintado] .plato-color {
-  clip-path: circle(72% at 50% 50%);
-}
 .lamina-foto img {
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: 1.25rem;
-  filter: grayscale(1) contrast(0.9);
-  transition: filter 900ms var(--ease-in-out) 120ms;
-}
-.lamina-foto[data-pintado] img {
-  filter: none;
 }
 @media (min-width: 768px) {
   .especimen {
@@ -535,7 +540,7 @@ main section[id] {
   font-family: var(--font-script);
   font-size: 34px;
 }
-/* ---------- El cierre: rincón verde en 3D ---------- */
+/* ---------- El cierre: logo, frase y el matorral ---------- */
 .rincon {
   position: relative;
   background: var(--color-crema);
@@ -562,12 +567,6 @@ main section[id] {
   line-height: 1.15;
   color: var(--color-turquesa-dark);
 }
-.rincon-lienzo {
-  display: block;
-  width: 100%;
-  height: clamp(18rem, 52svh, 30rem);
-  margin-top: 0.5rem;
-}
 .rincon-pie {
   padding: 1rem;
   background: var(--color-laguna-deep);
@@ -579,8 +578,433 @@ main section[id] {
   .rincon-cabeza {
     padding-top: 7rem;
   }
-  .rincon-lienzo {
-    height: clamp(24rem, 64svh, 38rem);
+}
+
+/* el matorral: todo se apoya sobre el suelo (abajo); cada capa tapa la base de la anterior */
+.matorral {
+  --piso: 2.1rem;
+  position: relative;
+  height: 27rem;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+.matorral > * {
+  position: absolute;
+}
+.matorral-fondo {
+  inset: auto 0 calc(var(--piso) - 0.5rem) 0;
+  height: 42%;
+  z-index: 0;
+}
+.matorral-planta {
+  bottom: var(--piso);
+}
+.matorral-planta > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.matorral-arbol {
+  bottom: calc(var(--piso) - 0.4rem);
+  left: -16%;
+  height: 90%;
+  aspect-ratio: 460 / 700;
+  z-index: 1;
+}
+.matorral-palma {
+  left: 26%;
+  height: 58%;
+  aspect-ratio: 240 / 290;
+  z-index: 2;
+}
+.coati-pista {
+  inset: auto 0 calc(var(--piso) - 0.6rem) 0;
+  height: 5.2rem;
+  z-index: 3;
+  --pista: 58vw;
+}
+.coati-paseo {
+  position: absolute;
+  left: 4vw;
+  bottom: 0;
+  height: 100%;
+  aspect-ratio: 240 / 140;
+}
+.coati-cuerpo {
+  height: 100%;
+}
+.matorral-lirios {
+  bottom: 0;
+  left: 44%;
+  height: 80%;
+  aspect-ratio: 560 / 760;
+  z-index: 4;
+}
+.matorral-lirios > * {
+  position: absolute;
+}
+.lirio-a {
+  left: 0;
+  bottom: var(--piso);
+  height: calc(100% - var(--piso));
+  aspect-ratio: 400 / 760;
+}
+.lirio-b {
+  right: 0;
+  bottom: var(--piso);
+  height: calc(80% - var(--piso));
+  aspect-ratio: 400 / 760;
+}
+.picaflor {
+  left: 8%;
+  top: 19%;
+  width: 24%;
+  aspect-ratio: 140 / 100;
+}
+.matorral-monstera {
+  bottom: 0;
+  left: auto;
+  right: -12%;
+  height: 40%;
+  aspect-ratio: 400 / 232;
+  z-index: 5;
+}
+.matorral-monstera > * {
+  position: absolute;
+}
+.monstera-a {
+  left: 0;
+  bottom: var(--piso);
+  height: calc(100% - var(--piso));
+  aspect-ratio: 260 / 232;
+}
+.monstera-b {
+  right: 0;
+  bottom: var(--piso);
+  height: calc(72% - var(--piso));
+  aspect-ratio: 260 / 232;
+}
+.mariposa {
+  left: 34%;
+  top: -18%;
+  width: 3rem;
+  aspect-ratio: 68 / 56;
+}
+.mariposa-cuerpo {
+  height: 100%;
+}
+.matorral-helecho {
+  left: 72%;
+  height: 46%;
+  aspect-ratio: 120 / 215;
+  z-index: 6;
+}
+.matorral-banano-a {
+  left: -12%;
+  height: 56%;
+  aspect-ratio: 140 / 340;
+  z-index: 6;
+}
+.matorral-banano-b {
+  right: -6%;
+  height: 80%;
+  aspect-ratio: 140 / 340;
+  z-index: 6;
+}
+.matorral-suelo {
+  inset: auto 0 0 0;
+  height: calc(var(--piso) + 0.6rem);
+  z-index: 7;
+}
+@media (max-width: 767px) {
+  .matorral-palma,
+  .matorral-helecho,
+  .matorral-banano-b {
+    display: none;
+  }
+}
+@media (min-width: 768px) {
+  .matorral {
+    --piso: 2.4rem;
+    height: clamp(26rem, 62svh, 36rem);
+  }
+  .matorral-arbol {
+    left: -2%;
+    height: 96%;
+  }
+  .matorral-lirios {
+    left: 37%;
+    height: 90%;
+  }
+  .matorral-monstera {
+    right: auto;
+    left: 58%;
+    height: 48%;
+  }
+  .matorral-banano-a {
+    left: -5%;
+    height: 66%;
+  }
+  .coati-pista {
+    height: 8.4rem;
+    --pista: 68vw;
+  }
+  .mariposa {
+    width: 3.6rem;
+  }
+}
+
+/* animaciones del matorral */
+.mecer {
+  transform-origin: 50% 100%;
+  animation: mecer var(--dur, 6s) ease-in-out infinite alternate;
+}
+svg .mecer,
+svg .mecer-copa {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.mecer-copa {
+  --ang: 1.2deg;
+  animation: mecer var(--dur, 7s) ease-in-out infinite alternate;
+}
+@keyframes mecer {
+  from {
+    transform: rotate(calc(var(--ang, 2deg) * -1));
+  }
+  to {
+    transform: rotate(var(--ang, 2deg));
+  }
+}
+.tucan {
+  animation: tucan-salto 7s ease-out infinite;
+}
+@keyframes tucan-salto {
+  0%,
+  78%,
+  86%,
+  100% {
+    transform: translateY(0);
+  }
+  82% {
+    transform: translateY(-14px);
+  }
+  89% {
+    transform: translateY(-5px);
+  }
+  92% {
+    transform: translateY(0);
+  }
+}
+.tucan-cabeza {
+  transform-box: fill-box;
+  transform-origin: 20% 85%;
+  animation: tucan-cabeza 4.6s ease-in-out infinite;
+}
+@keyframes tucan-cabeza {
+  0%,
+  55%,
+  100% {
+    transform: rotate(0);
+  }
+  62% {
+    transform: rotate(-14deg);
+  }
+  70% {
+    transform: rotate(5deg);
+  }
+  78% {
+    transform: rotate(0);
+  }
+}
+.tucan-parpado {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  transform: scaleY(0);
+  animation: parpadeo 3.7s infinite;
+}
+@keyframes parpadeo {
+  0%,
+  92%,
+  97%,
+  100% {
+    transform: scaleY(0);
+  }
+  94.5% {
+    transform: scaleY(1);
+  }
+}
+.tucan-cola {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: mecer 2.8s ease-in-out infinite alternate;
+  --ang: 5deg;
+}
+.hornero-cabeza {
+  transform-box: fill-box;
+  transform-origin: 20% 90%;
+  animation: tucan-cabeza 3.4s ease-in-out infinite;
+}
+.picaflor {
+  animation: picaflor 3.6s ease-in-out infinite;
+}
+@keyframes picaflor {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  14% {
+    transform: translate(7%, 3%);
+  }
+  28% {
+    transform: translate(0, 0);
+  }
+  42% {
+    transform: translate(6%, 2%);
+  }
+  58% {
+    transform: translate(-28%, -30%);
+  }
+  74% {
+    transform: translate(-20%, -16%);
+  }
+  88% {
+    transform: translate(0, 0);
+  }
+}
+.picaflor [data-wing] {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: aleteo 70ms linear infinite alternate;
+}
+@keyframes aleteo {
+  to {
+    transform: scaleY(0.3);
+  }
+}
+.mariposa {
+  animation: mariposa 15s ease-in-out infinite;
+}
+@keyframes mariposa {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-10deg);
+  }
+  10% {
+    transform: translate(3rem, -2.2rem) rotate(12deg);
+  }
+  20% {
+    transform: translate(6.5rem, -0.5rem) rotate(20deg);
+  }
+  30% {
+    transform: translate(4rem, 1.8rem) rotate(-6deg);
+  }
+  40% {
+    transform: translate(0.5rem, -1rem) rotate(-14deg);
+  }
+  50%,
+  72% {
+    transform: translate(-1.6rem, 2.6rem) rotate(4deg);
+  }
+  84% {
+    transform: translate(2rem, -1.5rem) rotate(10deg);
+  }
+}
+.mariposa .ala {
+  transform-box: fill-box;
+  animation: ala 0.24s ease-in-out infinite alternate;
+}
+.mariposa .ala-izq {
+  transform-origin: 100% 50%;
+}
+.mariposa .ala-der {
+  transform-origin: 0% 50%;
+}
+@keyframes ala {
+  to {
+    transform: scaleX(0.22);
+  }
+}
+.coati-paseo {
+  animation: paseo 32s linear infinite;
+}
+@keyframes paseo {
+  0% {
+    transform: translateX(0) scaleX(1);
+  }
+  42%,
+  46% {
+    transform: translateX(var(--pista)) scaleX(1);
+  }
+  48% {
+    transform: translateX(var(--pista)) scaleX(-1);
+  }
+  90%,
+  94% {
+    transform: translateX(0) scaleX(-1);
+  }
+  96%,
+  100% {
+    transform: translateX(0) scaleX(1);
+  }
+}
+.coati-cuerpo {
+  animation: trote 0.32s ease-in-out infinite alternate;
+}
+@keyframes trote {
+  to {
+    transform: translateY(-2px);
+  }
+}
+.coati-pata {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: pata 0.64s ease-in-out infinite alternate;
+  animation-delay: calc(var(--k) * -0.64s);
+}
+@keyframes pata {
+  from {
+    transform: rotate(-18deg);
+  }
+  to {
+    transform: rotate(18deg);
+  }
+}
+.coati-cabeza {
+  transform-box: fill-box;
+  transform-origin: 10% 60%;
+  animation: olfatea 3.2s ease-in-out infinite;
+}
+@keyframes olfatea {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0);
+  }
+  70% {
+    transform: rotate(9deg);
+  }
+  76% {
+    transform: rotate(4deg);
+  }
+  82% {
+    transform: rotate(10deg);
+  }
+}
+.coati-cola {
+  transform-box: fill-box;
+  transform-origin: 100% 100%;
+  animation: mecer 2.2s ease-in-out infinite alternate;
+  --ang: 7deg;
+}
+.matorral:not([data-vivo]) *,
+.matorral:not([data-vivo]) {
+  animation-play-state: paused !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .matorral,
+  .matorral * {
+    animation: none !important;
   }
 }
 
@@ -614,10 +1038,6 @@ main section[id] {
 @media (prefers-reduced-motion: reduce) {
   .especimen {
     animation: none;
-  }
-  .lamina-plato .plato-color,
-  .lamina-foto img {
-    transition-duration: 200ms;
   }
 }
 
@@ -678,66 +1098,141 @@ main section[id] {
 }
 .vitrina-grilla {
   display: grid;
-  gap: 2.5rem 1rem;
+  gap: 3.5rem;
   max-width: 72rem;
   margin-inline: auto;
-  grid-template-columns: 1fr 1fr;
 }
 .vitrina-texto {
   position: relative;
   grid-column: 1 / -1;
 }
-.lamina-sticker {
-  position: absolute;
-  left: -0.5rem;
-  top: -0.5rem;
-  z-index: 2;
-}
-.lamina-foto-vitrina {
+/* el mazo de fotos: cada foto es una copia impresa con borde y nota a mano */
+.mazo {
   position: relative;
-  display: grid;
-  place-items: center;
-  padding: 1.25rem;
+  width: min(80vw, 25rem);
+  margin-inline: auto;
 }
-.lamina-foto-vitrina img {
+.mazo-mancha {
+  position: absolute;
+  left: -14%;
+  top: -6%;
+  width: 128%;
+  height: 100%;
+  rotate: -10deg;
+}
+.mazo-pila {
+  position: relative;
+  aspect-ratio: 4 / 5.25;
+}
+.mazo-lugar {
+  position: absolute;
+  inset: 0;
+}
+.mazo-carta {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  perspective: 1400px;
+  touch-action: pan-y;
+}
+.mazo-carta:active {
+  cursor: grabbing;
+}
+.mazo-caras {
   position: relative;
   width: 100%;
-  height: auto;
-  border-radius: 1.75rem;
-  border: 6px solid var(--color-crema);
-}
-.lamina-mancha {
-  position: absolute;
-  left: -9%;
-  top: 4%;
-  width: 112%;
   height: 100%;
-  rotate: -8deg;
+  transform-style: preserve-3d;
 }
-.lamina-1 .lamina-mancha {
-  left: 0;
-  top: -4%;
-  rotate: 12deg;
+.mazo-frente,
+.mazo-dorso {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 1.1rem;
+  box-shadow:
+    0 1px 2px rgb(28 74 69 / 0.12),
+    0 18px 40px -18px rgb(28 74 69 / 0.45);
 }
-.lamina-2 .lamina-mancha {
-  left: -4%;
-  top: 8%;
-  rotate: -18deg;
+.mazo-frente {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0.75rem 0;
+  background: #fffdf8;
 }
-.lamina-nota {
-  position: relative;
-  margin-top: 0.5rem;
+.mazo-frente img {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 0.6rem;
+  pointer-events: none;
+  user-select: none;
+}
+.mazo-frente figcaption {
+  padding: 0.55rem 0 0.7rem;
+  text-align: center;
   font-family: var(--font-hand);
-  font-size: 1.35rem;
+  font-size: 1.55rem;
+  line-height: 1;
   color: var(--color-turquesa-dark);
 }
-.lamina-0 {
-  grid-column: 1 / -1;
-  width: 86%;
-  justify-self: center;
+.mazo-dorso {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 2rem 1.75rem;
+  transform: rotateY(180deg);
+  background:
+    repeating-linear-gradient(0deg, transparent 0 2.1rem, rgb(61 35 20 / 0.08) 2.1rem calc(2.1rem + 1px)),
+    var(--color-kraft);
+  color: var(--color-madera);
 }
-.lamina-2 {
-  margin-top: 3rem;
+.mazo-dorso-titulo {
+  font-family: var(--font-hand);
+  font-size: 2.3rem;
+  line-height: 1;
+  color: var(--color-laguna-deep);
+}
+.mazo-dorso-texto {
+  font-family: var(--font-elegante);
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+.mazo-dorso-pie {
+  font-family: var(--font-hand);
+  font-size: 1.25rem;
+  color: var(--color-turquesa-dark);
+}
+.mazo-sticker {
+  position: absolute;
+  left: -1.25rem;
+  top: -1.5rem;
+  z-index: 20;
+  pointer-events: none;
+}
+.mazo-controles {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+.mazo-pista {
+  position: relative;
+  margin-top: 0.6rem;
+  text-align: center;
+  font-family: var(--font-hand);
+  font-size: 1.25rem;
+  color: var(--color-turquesa-dark);
+}
+.pildora-borde {
+  background: transparent;
+  color: var(--color-laguna-deep);
+  box-shadow: inset 0 0 0 1.5px var(--color-laguna-deep);
 }
 .vitrina {
   overflow: visible;
@@ -754,32 +1249,15 @@ main section[id] {
     padding: 9rem 2rem 8rem;
   }
   .vitrina-grilla {
-    grid-template-columns: 1.15fr 1fr 0.8fr;
-    align-items: start;
-    gap: 2rem;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 3rem;
   }
   .vitrina-texto {
     grid-column: 1;
-    grid-row: 1 / span 2;
-    align-self: center;
   }
-  .lamina-sticker {
-    left: -2.5rem;
-    top: -1rem;
-  }
-  .lamina-0 {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    width: 100%;
-  }
-  .lamina-1 {
-    grid-column: 3;
-    grid-row: 1;
-  }
-  .lamina-2 {
-    grid-column: 3;
-    grid-row: 2;
-    margin-top: 0;
+  .mazo {
+    width: min(34vw, 27rem);
   }
 }
 

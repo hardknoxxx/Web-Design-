@@ -1,4 +1,4 @@
-import { useMotionValue, useMotionValueEvent, useScroll, type MotionValue } from 'framer-motion'
+import { useMotionValue, useMotionValueEvent, useScroll, type MotionValue } from 'motion/react'
 import { createContext, useContext, useEffect, useRef, type ReactNode } from 'react'
 
 /**

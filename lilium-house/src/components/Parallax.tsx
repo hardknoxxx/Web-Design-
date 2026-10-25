@@ -1,4 +1,4 @@
-import { m, useScroll, useTransform } from 'framer-motion'
+import { m, useScroll, useTransform } from 'motion/react'
 import { useRef, type ReactNode } from 'react'
 
 /*

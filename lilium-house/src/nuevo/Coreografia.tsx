@@ -8,7 +8,7 @@ gsap.registerPlugin(DrawSVGPlugin)
  * Coreografía de la página con GSAP + ScrollTrigger. Cada sección entra a su manera (nada de un mismo fundido
  * para todo), una sola vez, cuando su borde superior llega al 80–88 % de la pantalla:
  * - la mesa: el mandala del mantel se dibuja trazo a trazo, como un mantel para colorear;
- * - la vitrina: el título sube por líneas y las fotos se reparten sobre la mesa como láminas;
+ * - la vitrina: el título sube por líneas y el mazo de fotos cae sobre la mesa y se acomoda;
  * - la carta: el título sube, las pestañas llegan en fila y cada lámina se asienta;
  * - visitanos: el mapa se abre como una persiana y el horario aparece renglón por renglón;
  * - el cierre: el logo se asienta y la frase sube.
@@ -33,19 +33,10 @@ export function Coreografia() {
       // la vitrina
       lineas('#vitrina-titulo')
       gsap.from('.vitrina-texto p, .vitrina-texto .pildora', { y: 24, opacity: 0, duration: 0.8, stagger: 0.09, delay: 0.25, scrollTrigger: { trigger: '.vitrina-texto', start: 'top 82%', once: true } })
-      gsap.utils.toArray<HTMLElement>('.lamina-foto-vitrina').forEach((el, i) => {
-        gsap.from(el, {
-          y: 90,
-          rotate: i % 2 ? 9 : -9,
-          scale: 0.92,
-          opacity: 0,
-          duration: 1.1,
-          delay: i * 0.08,
-          scrollTrigger: { trigger: el, start: 'top 90%', once: true },
-        })
-        // deriva lenta de la foto mientras se scrollea: la lámina "respira" sobre su mancha
-        gsap.to(el.querySelector('img'), { yPercent: -6, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } })
-      })
+      // el mazo llega como si lo dejaran sobre la mesa: cae torcido y se acomoda; la mancha se abre detrás
+      gsap.from('.mazo-pila', { y: 120, rotate: -12, opacity: 0, duration: 1.2, scrollTrigger: { trigger: '.mazo', start: 'top 88%', once: true } })
+      gsap.from('.mazo-mancha', { scale: 0.6, opacity: 0, duration: 1.4, delay: 0.1, scrollTrigger: { trigger: '.mazo', start: 'top 88%', once: true } })
+      gsap.from('.mazo-controles > *, .mazo-pista', { y: 16, opacity: 0, duration: 0.7, stagger: 0.06, delay: 0.5, scrollTrigger: { trigger: '.mazo', start: 'top 80%', once: true } })
 
       // la carta
       lineas('#carta-titulo')

@@ -1,4 +1,4 @@
-import { m, useScroll, useSpring, useTransform, useVelocity } from 'framer-motion'
+import { m, useScroll, useSpring, useTransform, useVelocity } from 'motion/react'
 import { useEffect, useId, useRef, useState } from 'react'
 import { WHATSAPP_OPTIONS, whatsappLink } from '../data/site'
 import { useDay } from '../day/DayProvider'
