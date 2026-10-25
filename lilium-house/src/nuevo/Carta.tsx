@@ -2,6 +2,7 @@ import { useEffect, useState, type ComponentType } from 'react'
 import { CafePlato, CheesecakePlato, ChipaPlato, EnsaladaPlato, TePlato, TortaPlato, TostadoPlato } from '../components/Platos'
 import { CARTA, SITE, whatsappLink, type CartaItem } from '../data/site'
 import { motion, MotionConfig } from 'motion/react'
+import { MOTION_REDUCIDO } from './animar'
 import { IconoMomento } from './IconoMomento'
 import { FondoAnimado } from './primitivas/FondoAnimado'
 import { Magnetic } from './primitivas/Magnetic'
@@ -71,7 +72,7 @@ export function Carta() {
           Desayunos, almuerzos y meriendas. Lo que sale de la vitrina cambia cada día: lo contamos en Instagram.
         </p>
 
-        <MotionConfig reducedMotion="user">
+        <MotionConfig reducedMotion={MOTION_REDUCIDO}>
           <div role="tablist" aria-label="Momento del día" className="mt-10 flex flex-wrap gap-2" data-sin-flotante="">
             {CARTA.map((c) => (
               <Magnetic key={c.id}>

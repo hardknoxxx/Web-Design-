@@ -12,7 +12,7 @@ gsap.registerPlugin(DrawSVGPlugin)
  * - la carta: el título sube, las pestañas llegan en fila y cada lámina se asienta;
  * - visitanos: el mapa se abre como una persiana y el horario aparece renglón por renglón;
  * - el cierre: el logo se asienta y la frase sube.
- * Con movimiento reducido no se ejecuta: todo queda en su estado final, que es el del HTML.
+ * Movimiento reducido: ver animar.ts.
  */
 export function Coreografia() {
   useEffect(() => {

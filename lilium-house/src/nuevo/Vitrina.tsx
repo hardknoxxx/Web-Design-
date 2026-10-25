@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { animate, motion, MotionConfig, useMotionValue, useTransform, type PanInfo } from 'motion/react'
 import { ArrowIcon } from '../components/Icons'
 import { SITE } from '../data/site'
+import { MOTION_REDUCIDO } from './animar'
 import { Cinta, Mancha, Sticker } from './Piezas'
 import { TextLoop } from './primitivas/TextLoop'
 import { Tilt } from './primitivas/Tilt'
@@ -10,7 +11,7 @@ import { Tilt } from './primitivas/Tilt'
  * La vitrina: las fotos reales del local (de su sitio oficial) como un mazo de fotos impresas sobre la mesa
  * (referencia: las láminas de Madie). La de arriba se arrastra hacia un costado y pasa al fondo del mazo; tocarla
  * la da vuelta y en el dorso está anotado qué es. Con mouse, la foto de arriba se inclina siguiendo el cursor.
- * Botones para lo mismo (teclado y lectores de pantalla); con movimiento reducido, los cambios son inmediatos.
+ * Botones para lo mismo (teclado y lectores de pantalla).
  */
 
 const FOTOS = [
@@ -115,7 +116,7 @@ function Mazo() {
   }
   const arriba = FOTOS[orden[0]]
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion={MOTION_REDUCIDO}>
       <div className="mazo">
         <Mancha className="mazo-mancha" color="var(--color-menta)" ondas={10} />
         <div className="mazo-pila">

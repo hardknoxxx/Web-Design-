@@ -20,7 +20,7 @@ function ondulado(k: number, a: number, rx = 96, ry = 96) {
   return d + 'Z'
 }
 
-/** Cinta que cruza la página con un texto que corre sin fin (se queda quieta con movimiento reducido). */
+/** Cinta que cruza la página con un texto que corre sin fin. */
 export function Cinta({ items, className = '', inversa = false }: { items: string[]; className?: string; inversa?: boolean }) {
   const linea = items.flatMap((t) => [t, '✦'])
   return (

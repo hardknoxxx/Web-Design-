@@ -80,7 +80,7 @@ export function MesaGiratoria() {
   useEffect(() => {
     const section = sectionRef.current!
     const stage = stageRef.current!
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduced = reducido()
     let scrollPart = 0
     let offset = 0
     let current = 0
