@@ -214,3 +214,14 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   fuera de pantalla y queda quieto con movimiento reducido. Se quitó el rincón 3D.
 - Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,94 s, CLS 0,006, sin errores. El 3D en este
   entorno corre por software (sin GPU): la fluidez debe probarse en un teléfono real.
+
+## 23. Giro directo, velocidad al cambiar de plato y pulido final
+
+- Platos: el giro sobre su eje sigue al dedo/cursor y se queda donde se suelta (sin inercia ni desenfoque).
+  La inercia (~1,5 s) y el desenfoque son solo del cambio de plato; además los platos se ladean hacia donde
+  viaja la mesa. Cada plato está en su propia profundidad (z) para que nunca se atraviesen.
+- Mazo de fotos más rápido (salida 0,18 s, resortes más firmes, umbral de arrastre más corto).
+- /impeccable polish: mesa más arriba y platos más grandes en el teléfono (menos vacío bajo el título);
+  sticker de la portada oculto por debajo de 1100 px (pisaba el título en tablet); el botón flotante
+  "Cómo llegar" se esconde cuando taparía controles (flechas del mazo, pestañas y botones de la carta);
+  dorso de la foto sin renglones desalineados y con texto de contraste AA.

@@ -60,7 +60,7 @@ export function Carta() {
           Desayunos, almuerzos y meriendas. Lo que sale de la vitrina cambia cada día: lo contamos en Instagram.
         </p>
 
-        <div role="tablist" aria-label="Momento del día" className="mt-10 flex flex-wrap gap-2">
+        <div role="tablist" aria-label="Momento del día" className="mt-10 flex flex-wrap gap-2" data-sin-flotante="">
           {CARTA.map((c) => (
             <button
               key={c.id}
@@ -93,7 +93,7 @@ export function Carta() {
           </ul>
         </div>
 
-        <div className="mt-14 flex flex-wrap items-center gap-3">
+        <div className="mt-14 flex flex-wrap items-center gap-3" data-sin-flotante="">
           <a href={SITE.instagramHref} target="_blank" rel="noopener" className="pildora pildora-laguna">
             Ver la vitrina de hoy en Instagram
           </a>

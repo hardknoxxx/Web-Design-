@@ -37,7 +37,7 @@ import { liberar, MODELOS } from './objetos'
  * da reflejos a la cerámica y un sol con sombras para que la comida se apoye en el plato.
  *
  * Los platos no giran solos: giran cuando la mesa viaja y cuando alguien los arrastra (el ángulo llega en la pose).
- * Si algo se mueve rápido, el cuadro se arma con varias muestras entre la pose anterior y la actual y se promedia:
+ * Si la mesa viaja rápido, el cuadro se arma con varias muestras entre la pose anterior y la actual y se promedia:
  * desenfoque de movimiento real (como el obturador de una cámara), solo mientras dura el movimiento.
  */
 
@@ -82,7 +82,7 @@ export function createMesa3D(canvas: HTMLCanvasElement, ids: string[]) {
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = PCFShadowMap
   const scene = new Scene()
-  const camera = new OrthographicCamera(0, 1, 0, -1, -4000, 4000)
+  const camera = new OrthographicCamera(0, 1, 0, -1, -20000, 20000)
 
   // estudio: reflejos suaves del entorno + un sol cálido desde arriba a la izquierda
   const pmrem = new PMREMGenerator(renderer)
@@ -105,7 +105,7 @@ export function createMesa3D(canvas: HTMLCanvasElement, ids: string[]) {
   const geoToque = new CylinderGeometry(0.9, 0.9, 0.7, 24)
   const matToque = new MeshBasicMaterial({ visible: false })
 
-  type Estado = { x: number; y: number; z: number; e: number; ry: number; rz: number }
+  type Estado = { x: number; y: number; z: number; e: number; ry: number; rz: number; viaje: number }
   type Item = {
     raiz: Group
     giro: Group
@@ -131,7 +131,7 @@ export function createMesa3D(canvas: HTMLCanvasElement, ids: string[]) {
     raiz.add(inclinado)
     raiz.userData.i = i
     scene.add(raiz)
-    const cero = { x: 0, y: 0, z: 0, e: 1, ry: 0, rz: 0 }
+    const cero = { x: 0, y: 0, z: 0, e: 1, ry: 0, rz: 0, viaje: 0 }
     return { raiz, giro, sat: { value: 1 }, entrada: { y: 0, s: 1, o: 1 }, antes: { ...cero }, ahora: { ...cero }, listo: false }
   })
 
@@ -208,7 +208,7 @@ export function createMesa3D(canvas: HTMLCanvasElement, ids: string[]) {
     camera.updateProjectionMatrix()
     // el sol cubre todo el lienzo con su sombra
     sol.target.position.set(w / 2, -h * 0.62, 0)
-    sol.position.set(w / 2 - 900, -h * 0.62 + 2200, 1400)
+    sol.position.set(w / 2 - 1800, -h * 0.62 + 4400, 2800)
     const c = sol.shadow.camera
     const lado = Math.max(w, h) * 0.75
     c.left = -lado
@@ -216,7 +216,7 @@ export function createMesa3D(canvas: HTMLCanvasElement, ids: string[]) {
     c.top = lado
     c.bottom = -lado
     c.near = 100
-    c.far = 6000
+    c.far = 16000
     c.updateProjectionMatrix()
     const mapa = angosto ? 1024 : 2048
     if (sol.shadow.mapSize.x !== mapa) {
@@ -250,9 +250,12 @@ export function createMesa3D(canvas: HTMLCanvasElement, ids: string[]) {
       it.antes = { ...ahora }
       ahora.x = p.x
       ahora.y = -(p.y - e.y)
-      ahora.z = -a * 100
+      // cada plato en su propia profundidad (mucho más que lo que mide): nunca se atraviesan entre sí;
+      // los de la derecha un escalón más atrás, para que dos platos a la misma distancia del frente tampoco
+      ahora.z = -a * 1400 - (p.d > 0 ? 500 : 0)
       ahora.e = px * p.s * e.s
-      ahora.ry = i * 0.9 - p.d * 0.9 + p.giro
+      ahora.viaje = -p.d * 0.9
+      ahora.ry = i * 0.9 + ahora.viaje + p.giro
       ahora.rz = p.ladeo
       it.raiz.visible = e.o > 0.01 && a < 3
       it.sat.value = 0.72 + 0.28 * Math.max(0, 1 - a * 1.1)
@@ -260,7 +263,8 @@ export function createMesa3D(canvas: HTMLCanvasElement, ids: string[]) {
       // cuánto se movió el borde del plato desde el cuadro anterior, en píxeles
       const radio = (DIAMETRO / 2) * ahora.e
       const b = it.antes
-      mov = Math.max(mov, Math.abs(ahora.ry - b.ry) * radio * 0.55 + Math.hypot(ahora.x - b.x, ahora.y - b.y) + Math.abs(ahora.rz - b.rz) * radio)
+      // solo cuenta el viaje de la mesa: girar un plato a mano no lo desenfoca
+      mov = Math.max(mov, Math.abs(ahora.viaje - b.viaje) * radio * 0.55 + Math.hypot(ahora.x - b.x, ahora.y - b.y) + Math.abs(ahora.rz - b.rz) * radio)
     })
     const n = mov > 3 && muestra && acum ? Math.min(10, Math.ceil(mov / 5) + 1) : 1
     if (n === 1) {

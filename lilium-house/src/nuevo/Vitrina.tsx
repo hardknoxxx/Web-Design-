@@ -26,7 +26,7 @@ const LUGAR = [
   { rotate: -7, x: '-7%', y: '4.5%', scale: 0.92 },
 ]
 
-const muelle = { type: 'spring', stiffness: 260, damping: 28 } as const
+const muelle = { type: 'spring', stiffness: 440, damping: 34 } as const
 
 function Foto({
   f,
@@ -47,14 +47,14 @@ function Foto({
   const giro = useTransform(x, [-260, 260], [-14, 14])
 
   const soltar = (_: unknown, info: PanInfo) => {
-    const lejos = Math.abs(info.offset.x) > 90 || Math.abs(info.velocity.x) > 550
+    const lejos = Math.abs(info.offset.x) > 70 || Math.abs(info.velocity.x) > 450
     if (!lejos) {
       animate(x, 0, muelle)
       return
     }
     const dir = Math.sign(info.offset.x || info.velocity.x)
     // sale volando hacia ese lado, pasa al fondo y vuelve a deslizarse por debajo del mazo
-    animate(x, dir * 420, { duration: 0.28, ease: [0.23, 1, 0.32, 1] }).then(() => {
+    animate(x, dir * 420, { duration: 0.18, ease: [0.23, 1, 0.32, 1] }).then(() => {
       onPasar(1)
       animate(x, 0, { ...muelle, delay: 0.02 })
     })
@@ -69,7 +69,7 @@ function Foto({
       onDragEnd={soltar}
       onTap={() => arriba && onVuelta()}
     >
-      <motion.div className="mazo-caras" animate={{ rotateY: vuelta ? 180 : 0 }} transition={{ type: 'spring', stiffness: 180, damping: 22 }}>
+      <motion.div className="mazo-caras" animate={{ rotateY: vuelta ? 180 : 0 }} transition={{ type: 'spring', stiffness: 320, damping: 28 }}>
         <figure className="mazo-frente">
           <img
             src={`/fotos/oficial/${f.src}-800.webp`}
@@ -128,7 +128,7 @@ function Mazo() {
             vas a volver
           </Sticker>
         </div>
-        <div className="mazo-controles">
+        <div className="mazo-controles" data-sin-flotante="">
           <button type="button" className="flecha" aria-label="Foto anterior" onClick={() => pasar(-1)}>
             <ArrowIcon className="h-5 w-5 rotate-180" />
           </button>

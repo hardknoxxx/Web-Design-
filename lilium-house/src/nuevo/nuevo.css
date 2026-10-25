@@ -463,14 +463,14 @@ main section[id] {
 
 @media (max-width: 767px) {
   .mesa-wrap {
-    top: 54svh;
+    top: 50svh;
     width: 230vw;
   }
   .plato {
-    --sp: 62vw;
+    --sp: 70vw;
     --yk: 0.12;
-    --size: min(64vw, 34svh);
-    top: calc(54svh - var(--size) * 0.7);
+    --size: min(70vw, 36svh);
+    top: calc(50svh - var(--size) * 0.7);
   }
   .pie-mesa {
     gap: 0.5rem;
@@ -1074,6 +1074,12 @@ svg .mecer-copa {
     display: none;
   }
 }
+/* tablet: el título ocupa casi todo el ancho y el sticker lo pisaría */
+@media (max-width: 1099px) {
+  .mesa-sticker {
+    display: none;
+  }
+}
 /* pantallas bajas (notebooks con la barra del navegador): mesa más abajo y platos más chicos */
 @media (min-width: 768px) and (max-height: 780px) {
   .mesa-wrap {
@@ -1185,9 +1191,7 @@ svg .mecer-copa {
   gap: 0.9rem;
   padding: 2rem 1.75rem;
   transform: rotateY(180deg);
-  background:
-    repeating-linear-gradient(0deg, transparent 0 2.1rem, rgb(61 35 20 / 0.08) 2.1rem calc(2.1rem + 1px)),
-    var(--color-kraft);
+  background: var(--color-kraft);
   color: var(--color-madera);
 }
 .mazo-dorso-titulo {
@@ -1204,7 +1208,7 @@ svg .mecer-copa {
 .mazo-dorso-pie {
   font-family: var(--font-hand);
   font-size: 1.25rem;
-  color: var(--color-turquesa-dark);
+  color: var(--color-laguna-deep);
 }
 .mazo-sticker {
   position: absolute;
