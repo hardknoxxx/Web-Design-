@@ -673,39 +673,13 @@ main section[id] {
   color: var(--color-turquesa-dark);
 }
 .rincon-pie {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.35rem 1.5rem;
   padding: 1rem;
   background: var(--color-laguna-deep);
   color: var(--color-menta);
   font-size: 0.9rem;
   text-align: center;
 }
-.reloj {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  color: var(--color-crema);
-}
-/* el punto late despacio cuando el local está abierto */
-.reloj-punto {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--color-madera-soft);
-}
-.reloj[data-open] .reloj-punto {
-  background: var(--lima);
-  animation: latido 2.4s ease-in-out infinite;
-}
-@keyframes latido {
-  50% {
-    scale: 1.6;
-    opacity: 0.55;
-  }
-}
+
 @media (min-width: 768px) {
   .rincon-cabeza {
     padding-top: 7rem;
