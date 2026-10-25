@@ -30,6 +30,11 @@ export function Coreografia() {
       // la mesa: el mandala se dibuja al cargar
       gsap.from('.mesa-mandala > *', { drawSVG: 0, duration: 1.6, stagger: 0.02, ease: 'power2.inOut', delay: 0.3 })
 
+      // la portada se achica y se oscurece mientras la vitrina sube y la tapa (las dos secciones se apilan)
+      const tapa = { trigger: '.vitrina', start: 'top bottom', end: 'top 25%', scrub: true }
+      gsap.to('.mesa-sticky', { scale: 0.9, borderRadius: 32, ease: 'none', scrollTrigger: tapa })
+      gsap.to('.mesa-velo', { opacity: 0.35, ease: 'none', scrollTrigger: tapa })
+
       // la vitrina
       lineas('#vitrina-titulo')
       gsap.from('.vitrina-texto p, .vitrina-texto .pildora', { y: 24, opacity: 0, duration: 0.8, stagger: 0.09, delay: 0.25, scrollTrigger: { trigger: '.vitrina-texto', start: 'top 82%', once: true } })

@@ -269,3 +269,24 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
 - Todavía no se usa en ninguna sección: no suma peso a la página hasta que se importe. Candidatos naturales:
   su `createDraggable` o `createTimeline` para algún gesto puntual, o `svg.createDrawable`/`morphTo` para el
   matorral; GSAP sigue siendo el motor principal, para no tener dos motores animando lo mismo.
+
+## 27. Más experiencia, misma base (referencias LATTE, neutomni, nickho)
+
+- Análisis: videos de LATTE (títulos que se rellenan, cintas cruzadas, stickers, fondos ondulados, tarjetas de
+  colores, sello "5.0"), neutomni (morph del logo con MorphSVG, paneles que suben en escalera, texto en círculo
+  que gira, tarjetas repartidas, reloj local en el pie) y nickho (manifiesto con palabras que se iluminan,
+  palabras gigantes de fondo, lista con foto que sigue al cursor). Las tres usan GSAP + Lenis + SplitText.
+- Criterio (taste-skill + emil-design-eng): cada efecto sale de algo propio de Lilium y tiene propósito; curvas
+  ease-out fuertes, transform/opacity/clip-path, sin adornos sueltos.
+- Sumado:
+  - **Pintá el mantel:** tocar un pétalo del mandala de la mesa lo colorea con un lápiz de la marca (trazo
+    rayado con máscara SVG); cada toque pasa al color siguiente y el mantel se recuerda (localStorage).
+  - **Pista del cursor** sobre la mesa (solo con mouse): "Girá", "Traer", "Pintá", "Arrastrá".
+  - **La portada se achica:** la vitrina sube por encima y la portada se vuelve una tarjeta redondeada sobre
+    fondo menta, oscureciéndose.
+  - **Morph:** la mancha detrás del mazo cambia de forma y color con cada foto (MorphSVGPlugin de GSAP).
+  - **Manifiesto:** frase real del local con figuritas (hoja, lirio, lápiz); las palabras se encienden con el
+    scroll. Al lado, sello "4,5 ★ en Google · 45 opiniones" que gira y acelera con el scroll.
+  - **Reloj en vivo** en el pie: la hora de Puerto Iguazú y si el local está abierto.
+- Medición local 390×844 (4G lento + CPU 4×): primer contenido 1,07 s, LCP 1,44 s, CLS 0,02; scroll a 51
+  cuadros por segundo de promedio (antes 59) con 0,9 % de cuadros lentos y 21 ms de bloqueo total.
