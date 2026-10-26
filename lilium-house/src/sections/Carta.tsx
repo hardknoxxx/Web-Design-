@@ -35,11 +35,12 @@ function tabByHour() {
 }
 
 function Item({ item }: { item: CartaItem }) {
-  if (item.kind === 'foto') {
+  if (item.kind === 'foto' || item.kind === 'recorte') {
+    const src = item.kind === 'recorte' ? `${item.src}-360.webp` : item.src
     // foto de la casa: copia impresa apoyada sobre la mesa
     return (
       <div data-plato="" className="w-[86%] max-w-[240px] bg-[#FFFDF7] p-2 pb-7 shadow-[0_18px_22px_-12px_rgb(0_0_0/0.6)]">
-        <img src={item.src} alt={item.name} loading="lazy" decoding="async" width={300} height={300} className="aspect-square w-full object-cover" />
+        <img src={src} alt={item.name} loading="lazy" decoding="async" width={300} height={300} className="aspect-square w-full object-cover" />
       </div>
     )
   }
