@@ -4,3 +4,4 @@ dist
 .vercel
 dist-ssr
 scripts/qa/perf/
+*.tsbuildinfo
