@@ -3,7 +3,8 @@ import { CARTA, SITE, whatsappLink, type CartaItem } from '../data/site'
 import { motion, MotionConfig } from 'motion/react'
 import { MOTION_REDUCIDO } from './animar'
 import { IconoMomento } from './IconoMomento'
-import { CartelDePapel, HojaParaPintar } from './Papeles'
+import { Croissant } from './Croissant'
+import { CartelDePapel } from './Papeles'
 import { ondulado } from './Piezas'
 import { FondoAnimado } from './primitivas/FondoAnimado'
 import { Magnetic } from './primitivas/Magnetic'
@@ -17,16 +18,14 @@ import { TextEffect } from './primitivas/TextEffect'
  * Cada lámina es una foto de estudio recortada con una forma ondulada del color de su fondo, con sombra
  * (referencia LATTE). Los platos que no tienen foto propia del local llevan una imagen generada con IA
  * (Gemini, vía Figma) en /carta: es ILUSTRATIVA para el prototipo y debe reemplazarse por fotos reales del
- * local antes de publicar el sitio definitivo. Las fotos reales (Instagram del local) llevan su mancha detrás.
+ * local antes de publicar el sitio definitivo. Las fotos reales del Instagram en buena resolución van recortadas
+ * sobre su color en /carta/real (`recorte`); los recortes chicos que quedan llevan su mancha detrás (`foto`).
  */
 // fondo tono sobre tono: el mismo color del plato, más claro (la torta oscura sobre un marrón con leche, etc.)
 const COLOR_FOTO: Record<string, string> = {
   'Box de desayuno': '#E8D3B0',
   'Tabla para compartir': '#D7D9A8',
-  'Torta Oreo': '#D9CFC4',
-  'Budín glaseado': '#F1E7A8',
   'Red velvet': '#F2B5B0',
-  'Tarta de frutos rojos': '#E7B8C9',
 }
 // forma ondulada distinta para cada lámina, como recortes hechos a mano
 const forma = (k: number) => {
@@ -51,11 +50,13 @@ function Lamina({ item, k }: { item: CartaItem; k: number }) {
       </div>
     )
   }
+  // `recorte`: foto real del Instagram del local, recortada y apoyada sobre su color (mismo tratamiento que las de estudio)
+  const base = item.kind === 'recorte' ? item.src : `/carta/${item.id}`
   return (
     <div className="lamina lamina-estudio" style={{ '--forma': forma(k) } as CSSProperties}>
       <img
-        src={`/carta/${item.id}-360.webp`}
-        srcSet={`/carta/${item.id}-360.webp 360w, /carta/${item.id}-720.webp 720w`}
+        src={`${base}-360.webp`}
+        srcSet={`${base}-360.webp 360w, ${base}-720.webp 720w`}
         sizes="(min-width: 768px) 11rem, 9rem"
         alt=""
         loading="lazy"
@@ -93,12 +94,11 @@ export function Carta() {
         </p>
 
         <MotionConfig reducedMotion={MOTION_REDUCIDO}>
-          {/* en el teléfono la hoja para pintar llena el hueco a la derecha de las pestañas; desde md la caja es
-              estática y la hoja se ubica respecto de la sección, arriba a la derecha */}
+          {/* en el teléfono el croissant llena el hueco a la derecha de las pestañas; desde md la caja es estática y
+              el croissant se ubica respecto del bloque de la carta, arriba a la derecha */}
           <div className="relative md:static">
-            {/* la hoja del mantel con los lápices, pintándose con el scroll */}
-            <HojaParaPintar className="carta-hoja" />
-            <div role="tablist" aria-label="Momento del día" className="mt-10 flex flex-wrap gap-2" data-sin-flotante="">
+            <Croissant />
+            <div role="tablist" aria-label="Momento del día" className="relative z-[1] mt-10 flex flex-wrap gap-2" data-sin-flotante="">
               {CARTA.map((c) => (
                 <Magnetic key={c.id}>
                   <motion.button

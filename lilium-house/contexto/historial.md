@@ -324,3 +324,15 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   Criterio: taste-skill (lámina de naturalista como motivo). El lirio con picaflor quedó pendiente (sin créditos de IA).
 - Hoja para pintar junto a las pestañas en el teléfono; sin franja lima vacía bajo el sello.
 - Traspaso completo para otra sesión en `contexto/HANDOFF.md`; scripts de QA en `scripts/qa/`.
+
+## 30. Croissant de LATTE, fotos reales del Instagram y fuera la hoja con lápices
+
+- Pedido: sacar (o rehacer) el dibujo de papel y lápices junto a las pestañas de la carta; sumar fotos reales del
+  Instagram a las tarjetas; el croissant como en LATTE. El cliente mandó un zip con 8 fotos y dos videos de LATTE.
+- LATTE (videos): croissant recortado enorme sobre una mancha ondulada, que gira y crece con el scroll, con una cinta
+  "recién horneado" que lo cruza. Versión Lilium: el croissant real del local, mancha durazno, cinta lima detrás.
+- Fotos reales recortadas con rembg (BiRefNet) y apoyadas tono sobre tono, igual que las de estudio: la carta suma
+  croissant con huevos, sándwiches, cheesecake de maracuyá, croissant con frutillas y brownies; Oreo y budín pasan
+  a buena resolución. El mazo de la vitrina pasa de 3 a 9 fotos.
+- Medición local 390×844 (4G lento + CPU 4×), dos corridas por versión: scroll 46–53 cuadros/s contra 48–51 de la
+  rama anterior (dentro del ruido); FCP 1,07 s, LCP 1,43 s, CLS 0,02.

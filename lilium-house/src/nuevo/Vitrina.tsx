@@ -10,24 +10,33 @@ import { TextLoop } from './primitivas/TextLoop'
 import { Tilt } from './primitivas/Tilt'
 
 /*
- * La vitrina: las fotos reales del local (de su sitio oficial) como un mazo de fotos impresas sobre la mesa
+ * La vitrina: las fotos reales del local (de su sitio oficial y de su Instagram) como un mazo de fotos impresas sobre la mesa
  * (referencia: las láminas de Madie). La de arriba se arrastra hacia un costado y pasa al fondo del mazo; tocarla
  * la da vuelta y en el dorso está anotado qué es. Con mouse, la foto de arriba se inclina siguiendo el cursor.
  * Botones para lo mismo (teclado y lectores de pantalla).
  */
 
+// `src` sin el ancho: las del sitio oficial y las del Instagram del local (@lilium.coffee), en 480 y 800 px
 const FOTOS = [
-  { src: 'cheesecake-frutos-rojos', alt: 'Porción de cheesecake con frutos rojos', nota: 'cheesecake de frutos rojos' },
-  { src: 'torta-de-la-vitrina', alt: 'Porción de torta de capas con dulce de leche, chocolate y coco', nota: 'la torta de capas' },
-  { src: 'pizzeta', alt: 'Pizzeta con jamón crudo, morrones y aceitunas sobre una tabla de madera', nota: 'pizzeta para la tarde' },
+  { src: '/fotos/oficial/cheesecake-frutos-rojos', alt: 'Porción de cheesecake con frutos rojos', nota: 'cheesecake de frutos rojos' },
+  { src: '/fotos/instagram/budin-lima', alt: 'Budín con corona de crema y ralladura de lima', nota: 'budín con lima' },
+  { src: '/fotos/oficial/torta-de-la-vitrina', alt: 'Porción de torta de capas con dulce de leche, chocolate y coco', nota: 'la torta de capas' },
+  { src: '/fotos/instagram/croissant-frutillas', alt: 'Croissant abierto relleno de crema pastelera y frutillas, con azúcar impalpable', nota: 'croissant con frutillas' },
+  { src: '/fotos/oficial/pizzeta', alt: 'Pizzeta con jamón crudo, morrones y aceitunas sobre una tabla de madera', nota: 'pizzeta para la tarde' },
+  { src: '/fotos/instagram/brownies-frutos-rojos', alt: 'Brownies con dulce de leche y frutos rojos junto a un bocado con coco', nota: 'brownies con frutos rojos' },
+  { src: '/fotos/instagram/cheesecake-maracuya', alt: 'Porción de cheesecake con pulpa de maracuyá sobre base de chocolate', nota: 'cheesecake de maracuyá' },
+  { src: '/fotos/instagram/sandwich-crudo', alt: 'Sándwich de jamón crudo y queso en pan integral, junto a una cerveza', nota: 'sándwich de crudo' },
+  { src: '/fotos/instagram/tortas-oreo', alt: 'Tres porciones de torta Oreo servidas en una bandeja de madera', nota: 'torta Oreo' },
 ]
 
-// cómo queda cada foto según su lugar en el mazo: la de arriba derecha, las de abajo asomando torcidas
+// cómo queda cada foto según su lugar en el mazo: la de arriba derecha, dos asomando torcidas y el resto escondido
+// debajo de la tercera (sin opacidad, para que las sombras no se sumen)
 const LUGAR = [
-  { rotate: -2, x: '0%', y: '0%', scale: 1 },
-  { rotate: 5, x: '6%', y: '2.5%', scale: 0.96 },
-  { rotate: -7, x: '-7%', y: '4.5%', scale: 0.92 },
+  { rotate: -2, x: '0%', y: '0%', scale: 1, opacity: 1 },
+  { rotate: 5, x: '6%', y: '2.5%', scale: 0.96, opacity: 1 },
+  { rotate: -7, x: '-7%', y: '4.5%', scale: 0.92, opacity: 1 },
 ]
+const ESCONDIDA = { ...LUGAR[2], opacity: 0 }
 
 const muelle = { type: 'spring', stiffness: 440, damping: 34 } as const
 
@@ -71,12 +80,16 @@ function Foto({
       dragMomentum={false}
       onDragEnd={soltar}
       onTap={() => arriba && onVuelta()}
+      // el gesto es para el dedo y el mouse; con teclado se usan los botones de abajo (si no, cada foto del mazo
+      // sería una parada del Tab). Las de abajo quedan fuera del árbol de accesibilidad.
+      tabIndex={-1}
+      aria-hidden={!arriba || undefined}
     >
       <motion.div className="mazo-caras" animate={{ rotateY: vuelta ? 180 : 0 }} transition={{ type: 'spring', stiffness: 320, damping: 28 }}>
         <figure className="mazo-frente">
           <img
-            src={`/fotos/oficial/${f.src}-800.webp`}
-            srcSet={`/fotos/oficial/${f.src}-480.webp 480w, /fotos/oficial/${f.src}-800.webp 800w`}
+            src={`${f.src}-800.webp`}
+            srcSet={`${f.src}-480.webp 480w, ${f.src}-800.webp 800w`}
             sizes="(min-width: 768px) 26rem, 80vw"
             alt={f.alt}
             width={800}
@@ -97,7 +110,7 @@ function Foto({
   )
 
   return (
-    <motion.div className="mazo-lugar" style={{ zIndex: 10 - lugar }} initial={false} animate={LUGAR[lugar]} transition={muelle}>
+    <motion.div className="mazo-lugar" style={{ zIndex: 10 - lugar }} initial={false} animate={LUGAR[lugar] ?? ESCONDIDA} transition={muelle}>
       {arriba ? (
         <Tilt className="h-full w-full" grados={8}>
           {cuerpo}
@@ -118,7 +131,7 @@ const MANCHAS = [
 
 function Mazo() {
   const manchaRef = useRef<SVGPathElement>(null)
-  const [orden, setOrden] = useState([0, 1, 2])
+  const [orden, setOrden] = useState(() => FOTOS.map((_, i) => i))
   const [vuelta, setVuelta] = useState(false)
   const pasar = (dir: 1 | -1) => {
     setVuelta(false)
@@ -127,7 +140,7 @@ function Mazo() {
   const arriba = FOTOS[orden[0]]
   const primera = useRef(true)
   useEffect(() => {
-    const m = MANCHAS[orden[0]]
+    const m = MANCHAS[orden[0] % MANCHAS.length]
     if (primera.current) {
       primera.current = false
       return

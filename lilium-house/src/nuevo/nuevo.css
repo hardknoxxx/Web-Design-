@@ -738,20 +738,46 @@ main section[id] {
   color: var(--color-madera-soft);
 }
 
-/* la hoja para pintar, en la esquina de la carta */
-.carta-hoja {
+/* el croissant de la casa (referencia LATTE): recorte grande sobre su mancha, con una cinta que lo cruza por detrás;
+   la cinta nace escondida detrás del croissant y sale por el borde de la pantalla */
+.croissant {
   position: absolute;
-  z-index: 11;
-  right: -0.25rem;
-  bottom: -0.5rem;
-  width: clamp(6.5rem, 30vw, 15rem);
+  z-index: 0;
+  right: -2.5rem;
+  top: 50%;
+  translate: 0 -42%;
+  width: clamp(10.5rem, 60vw, 30rem);
+  aspect-ratio: 900 / 543;
+  pointer-events: none;
+}
+.croissant-mancha {
+  position: absolute;
+  inset: -26% 6% -24% 12%;
+  width: 82%;
+  height: 150%;
+}
+.croissant-cinta {
+  position: absolute;
+  left: 42%;
+  right: -60%;
+  top: 34%;
+  rotate: -12deg;
+  background: var(--lima);
+}
+.croissant-cinta .cinta-tramo {
+  font-size: clamp(0.8rem, 1.5vw, 1.35rem);
+  padding-block: 0.35rem;
+}
+.croissant-foto {
+  position: relative;
+  width: 100%;
   height: auto;
 }
 @media (min-width: 768px) {
-  .carta-hoja {
-    right: max(0.5rem, calc(50% - 34rem));
-    bottom: auto;
-    top: 4rem;
+  .croissant {
+    right: -3rem;
+    top: 3rem;
+    translate: none;
   }
 }
 

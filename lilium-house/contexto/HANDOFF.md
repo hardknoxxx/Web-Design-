@@ -12,7 +12,7 @@ Historial pedido por pedido: [historial.md](./historial.md). Reglas del cliente:
 | Producción | https://lilium-house.vercel.app (Vercel `hardknoxxx/lilium-house`, rootDirectory `lilium-house`, despliega `main` solo) |
 | Vista previa de la rama | https://lilium-house-git-ccr-fda5bd2b-rxfhw3-hardknoxxx.vercel.app |
 | Repo | https://github.com/hardknoxxx/Web-Design- (carpeta `lilium-house/`) |
-| Rama de trabajo | `ccr-fda5bd2b-rxfhw3` |
+| Rama de trabajo | `ccr-fb496335-5x5npu` (sale de `ccr-fda5bd2b-rxfhw3` y la contiene: PR #27 + entrega 30) |
 | PRs | #24, #25, #26 mergeados y desplegados. **#27 abierto** (fotos de estudio, papeles, henrietta, mapa animado, mancha de Visitanos, cuaderno de campo): falta aprobación del cliente para mergear |
 | Figma (imágenes IA) | https://www.figma.com/design/trwBOhm7IbrMNMT7s8MyDi — "Lilium · fotos de platos (IA, prototipo)". Plan `team::1695123800168087804` |
 | Figma storyboard | archivo `8a62hs9qgXqNI8zOzefJmC` |
@@ -62,8 +62,9 @@ npm run lint       # tsc --noEmit
 | `MesaGiratoria.tsx` | Hero "La mesa giratoria": sprites 2D de 36 cuadros (`public/platos/{id}-giro-{m,d}.webp`, hojas 6×6) con inercia y desenfoque; mandala del mantel que se pinta (localStorage `lilium-mantel`); pista del cursor |
 | `Vitrina.tsx` | Cinta + "Elegí tu favorito" + mazo de fotos reales arrastrable (motion), mancha con morph, estampilla "Hecho en casa" |
 | `Manifiesto.tsx` | Frase con palabras que se encienden (SplitText) + sello giratorio de Google 4,5 |
-| `Carta.tsx` | Pestañas por momento (Magnetic, IconoMomento, FondoAnimado, TextEffect), palabra gigante del momento, láminas con forma ondulada; hoja para pintar junto a las pestañas; cartel de papel arrugado al final |
-| `Papeles.tsx` | `Estampilla` (borde dentado), `CartelDePapel` (bollo → abierto), `HojaParaPintar` (lirio que se pinta con el scroll) |
+| `Carta.tsx` | Pestañas por momento (Magnetic, IconoMomento, FondoAnimado, TextEffect), palabra gigante del momento, láminas con forma ondulada; croissant junto a las pestañas; cartel de papel arrugado al final |
+| `Croissant.tsx` | El croissant de la casa (ref. LATTE): recorte real sobre mancha durazno, cinta lima detrás; gira y crece con el scroll (scrub) |
+| `Papeles.tsx` | `Estampilla` (borde dentado), `CartelDePapel` (bollo → abierto) |
 | `Visita.tsx` | "Te esperamos": estado abierto/cerrado, enlaces animados (skiper40), croquis con calles reales de OSM (`croquisDatos.ts`) animado con anime.js, horario con "hoy" |
 | `Rincon.tsx` + `Cuaderno.tsx` | Cierre: logo, frase y **cuaderno de campo** (bocetos a lápiz y acuarela) |
 | `Coreografia.tsx` | Todas las entradas GSAP: portada que se achica, vitrina, carta, **mancha de café de Visitanos**, cierre |
@@ -94,6 +95,21 @@ salvo pedido.
 - Medición local 390×844, 4G lento + CPU 4×: FCP 0,94 s, LCP 1,43 s, CLS 0,02, TBT de carga 621 ms, scroll 59 fps sin tirones.
   (Local, no en un teléfono real.)
 
+## 6 b. Entrega 30 (rama `ccr-fb496335-5x5npu`, sin publicar)
+
+- Se quitó la hoja para pintar con lápices de la carta (pedido del cliente) y en su lugar va **el croissant de LATTE**,
+  con la foto real del local: recortado de la foto del croissant con huevos, sombra horneada en la imagen (un
+  `drop-shadow` en CSS costaba cuadros al girar).
+- **Fotos reales de Instagram en buena resolución** (zip del cliente, 8 fotos): 6 se sumaron al mazo de la vitrina
+  (`public/fotos/instagram/`, 9 fotos en total) y las 8 entraron a la carta recortadas sobre su color
+  (`public/carta/real/`, tipo `recorte` en `CARTA`): croissant con huevos, sándwich de crudo, sándwich con papas,
+  torta Oreo y budín con lima (reemplazan los recortes chicos), cheesecake de maracuyá, croissant con frutillas,
+  brownies. Se quitó "Tarta de frutos rojos": su recorte chico era la foto de los brownies.
+- Recortes hechos con `rembg` 2.0.86 (MIT, modelo BiRefNet) en un entorno aparte, fuera del proyecto (no es
+  dependencia). Con 16 GB de RAM, de a una foto por proceso.
+- No se generaron imágenes IA nuevas: Figma (donde se usa Gemini) pide autenticarse de nuevo en esta sesión.
+- Mazo: las fotos ya no son paradas del Tab (se usan los botones); las de abajo, `aria-hidden`.
+
 ## 7. Pendientes
 
 1. **Mergear PR #27** cuando el cliente lo apruebe.
@@ -107,7 +123,7 @@ salvo pedido.
    de SplitText en spans del Manifiesto (axe `aria-prohibited-attr`), cartas del mazo enfocables, ticker del sello
    siempre corriendo, contraste del manifiesto mientras se enciende, `will-change` permanente, `Estado`/`.estado`
    sin uso en `Piezas.tsx`/CSS. El cliente pidió hacerlos después de las mejoras visuales (harden/optimize/clarify/polish).
-4. Reemplazar todas las imágenes IA por fotos reales aprobadas (ver §8).
+4. Reemplazar todas las imágenes IA por fotos reales aprobadas (ver §8). Confirmar con el local los nombres de los platos nuevos de la carta (entrega 30).
 5. Actualizar `README.md` de contexto (quedó con descripciones de etapas anteriores: `vida/`, Friso, three.js).
 
 ## 8. Activos
@@ -115,7 +131,9 @@ salvo pedido.
 | Carpeta | Qué | Origen |
 | --- | --- | --- |
 | `public/fotos/oficial/` | Fotos del local (sitio oficial, autorizadas) | Reales |
-| `public/fotos/` | Recortes de Instagram (baja resolución) | Reales, reemplazar por originales |
+| `public/fotos/` | Recortes de Instagram (baja resolución): box, picada, red velvet | Reales, reemplazar por originales |
+| `public/fotos/instagram/{nombre}-{480,800}.webp` | Fotos del Instagram en buena resolución (mazo) | Reales |
+| `public/carta/real/{nombre}-{360,720}.webp`, `croissant-{520,900}.webp` | Recortes de esas fotos sobre su color; croissant con transparencia | Reales |
 | `public/carta/{id}-{360,720}.webp` | café, chipa, té, tostado, ensalada, cheesecake, torta | **IA, ilustrativas** |
 | `public/papel/arrugado.webp` | Textura de papel arrugado | IA (textura, no es producto) |
 | `public/cuaderno/{tucan,hornero,coati}-{420,760}.webp` | Bocetos del cuaderno de campo | IA (ilustración) |
