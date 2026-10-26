@@ -19,13 +19,14 @@ import { TextEffect } from './primitivas/TextEffect'
  * (Gemini, vía Figma) en /carta: es ILUSTRATIVA para el prototipo y debe reemplazarse por fotos reales del
  * local antes de publicar el sitio definitivo. Las fotos reales (Instagram del local) llevan su mancha detrás.
  */
+// fondo tono sobre tono: el mismo color del plato, más claro (la torta oscura sobre un marrón con leche, etc.)
 const COLOR_FOTO: Record<string, string> = {
-  'Box de desayuno': '#F2B6A0',
-  'Tabla para compartir': '#C7D87E',
-  'Torta Oreo': '#64BCB0',
-  'Budín glaseado': '#E6D7BC',
-  'Red velvet': '#64BCB0',
-  'Tarta de frutos rojos': '#E2EBBD',
+  'Box de desayuno': '#E8D3B0',
+  'Tabla para compartir': '#D7D9A8',
+  'Torta Oreo': '#D9CFC4',
+  'Budín glaseado': '#F1E7A8',
+  'Red velvet': '#F2B5B0',
+  'Tarta de frutos rojos': '#E7B8C9',
 }
 // forma ondulada distinta para cada lámina, como recortes hechos a mano
 const forma = (k: number) => {
@@ -81,8 +82,6 @@ export function Carta() {
 
   return (
     <section id="carta" aria-labelledby="carta-titulo" className="relative overflow-hidden bg-crema px-4 pt-20 pb-24 md:px-7 md:pt-28 md:pb-32">
-      {/* la hoja del mantel con los lápices, pintándose con el scroll */}
-      <HojaParaPintar className="carta-hoja" />
       <div className="relative z-10 mx-auto max-w-5xl">
         <div className="flex items-start gap-3">
           <h2 id="carta-titulo" className="titulo-vitrina text-[3.4rem] leading-[0.88] text-laguna-deep md:text-[6.5rem]">
@@ -94,25 +93,31 @@ export function Carta() {
         </p>
 
         <MotionConfig reducedMotion={MOTION_REDUCIDO}>
-          <div role="tablist" aria-label="Momento del día" className="mt-10 flex flex-wrap gap-2" data-sin-flotante="">
-            {CARTA.map((c) => (
-              <Magnetic key={c.id}>
-                <motion.button
-                  role="tab"
-                  id={`tab-${c.id}`}
-                  aria-selected={tab === c.id}
-                  aria-controls="carta-panel"
-                  onClick={() => elegir(c.id)}
-                  className="pestana"
-                  whileTap={{ scale: 0.94 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                >
-                  {tab === c.id && <FondoAnimado grupo="carta-pestana" className="rounded-full bg-laguna-deep" />}
-                  <IconoMomento id={c.id} activo={tab === c.id} />
-                  {c.label} <span className="tabular-nums opacity-70">desde {c.time}</span>
-                </motion.button>
-              </Magnetic>
-            ))}
+          {/* en el teléfono la hoja para pintar llena el hueco a la derecha de las pestañas; desde md la caja es
+              estática y la hoja se ubica respecto de la sección, arriba a la derecha */}
+          <div className="relative md:static">
+            {/* la hoja del mantel con los lápices, pintándose con el scroll */}
+            <HojaParaPintar className="carta-hoja" />
+            <div role="tablist" aria-label="Momento del día" className="mt-10 flex flex-wrap gap-2" data-sin-flotante="">
+              {CARTA.map((c) => (
+                <Magnetic key={c.id}>
+                  <motion.button
+                    role="tab"
+                    id={`tab-${c.id}`}
+                    aria-selected={tab === c.id}
+                    aria-controls="carta-panel"
+                    onClick={() => elegir(c.id)}
+                    className="pestana"
+                    whileTap={{ scale: 0.94 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  >
+                    {tab === c.id && <FondoAnimado grupo="carta-pestana" className="rounded-full bg-laguna-deep" />}
+                    <IconoMomento id={c.id} activo={tab === c.id} />
+                    {c.label} <span className="tabular-nums opacity-70">desde {c.time}</span>
+                  </motion.button>
+                </Magnetic>
+              ))}
+            </div>
           </div>
 
           <div id="carta-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="relative mt-10">

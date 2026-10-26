@@ -1,8 +1,8 @@
 import { LogoLilium } from './LogoLilium'
-import { Matorral } from './Matorral'
+import { Cuaderno } from './Cuaderno'
 
 /*
- * El cierre: el logo y la frase de la casa, y debajo el matorral de la selva misionera con su fauna (Matorral.tsx).
+ * El cierre: el logo y la frase de la casa, y debajo el cuaderno de campo con los vecinos de la selva (Cuaderno.tsx).
  */
 export function Rincon() {
   return (
@@ -14,7 +14,7 @@ export function Rincon() {
         <LogoLilium className="rincon-logo" />
         <p className="rincon-frase">Sabores que te sacan una sonrisa en cada sorbo y bocado.</p>
       </div>
-      <Matorral />
+      <Cuaderno />
       <p className="rincon-pie">© Lilium Coffee Lounge · Puerto Iguazú, Misiones</p>
     </footer>
   )

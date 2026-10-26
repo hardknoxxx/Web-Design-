@@ -520,12 +520,13 @@ main section[id] {
 
 /* ---------- El manifiesto ---------- */
 .manifiesto {
-  padding: 6rem 1rem;
+  padding: 6rem 1rem 3.5rem;
   background: var(--lima-suave);
 }
+/* en el teléfono el sello sube al hueco que deja la última línea (corta) de la frase: sin franja vacía debajo */
 .manifiesto-grilla {
   display: grid;
-  gap: 2.5rem;
+  gap: 0;
   max-width: 72rem;
   margin-inline: auto;
   align-items: center;
@@ -554,6 +555,7 @@ main section[id] {
 .sello {
   position: relative;
   justify-self: end;
+  margin-top: -3.5rem;
   width: clamp(8.5rem, 16vw, 11rem);
   aspect-ratio: 1;
   border-radius: 50%;
@@ -591,6 +593,9 @@ main section[id] {
   .manifiesto-grilla {
     grid-template-columns: 1fr auto;
     gap: 4rem;
+  }
+  .manifiesto .sello {
+    margin-top: 0;
   }
 }
 
@@ -737,13 +742,15 @@ main section[id] {
 .carta-hoja {
   position: absolute;
   z-index: 11;
-  right: max(0.5rem, calc(50% - 34rem));
-  top: 1.25rem;
-  width: clamp(5.5rem, 22vw, 15rem);
+  right: -0.25rem;
+  bottom: -0.5rem;
+  width: clamp(6.5rem, 30vw, 15rem);
   height: auto;
 }
 @media (min-width: 768px) {
   .carta-hoja {
+    right: max(0.5rem, calc(50% - 34rem));
+    bottom: auto;
     top: 4rem;
   }
 }
@@ -823,16 +830,25 @@ main section[id] {
   transform: scaleX(1);
 }
 
-/* la entrada de Visitanos: franjas de colores corren desde la derecha y abren la sección (referencia henrietta) */
-.visita-franjas {
-  position: absolute;
-  inset: 0;
-  z-index: 30;
-  display: flex;
-  pointer-events: none;
+/* la entrada de Visitanos: una mancha de café que nace junto al mapa y crece hasta cubrir la sección (Coreografia) */
+.visita-mancha {
+  --mancha: 0vmax;
+  -webkit-mask: var(--mancha-forma) no-repeat;
+  mask: var(--mancha-forma) no-repeat;
+  -webkit-mask-size: var(--mancha) var(--mancha);
+  mask-size: var(--mancha) var(--mancha);
+  -webkit-mask-position: calc(78vw - var(--mancha) / 2) calc(5rem - var(--mancha) / 2);
+  mask-position: calc(78vw - var(--mancha) / 2) calc(5rem - var(--mancha) / 2);
 }
-.visita-franjas span {
-  flex: 1;
+@media (min-width: 768px) {
+  .visita-mancha {
+    -webkit-mask-position: calc(72vw - var(--mancha) / 2) calc(7rem - var(--mancha) / 2);
+    mask-position: calc(72vw - var(--mancha) / 2) calc(7rem - var(--mancha) / 2);
+  }
+}
+.visita-mancha.abierta {
+  -webkit-mask: none;
+  mask: none;
 }
 
 /* ---------- Visitanos ---------- */
@@ -863,7 +879,7 @@ main section[id] {
   font-family: var(--font-script);
   font-size: 34px;
 }
-/* ---------- El cierre: logo, frase y el matorral ---------- */
+/* ---------- El cierre: logo, frase y el cuaderno de campo ---------- */
 .rincon {
   position: relative;
   background: var(--color-crema);
@@ -904,425 +920,249 @@ main section[id] {
   }
 }
 
-/* el matorral: todo se apoya sobre el suelo (abajo); cada capa tapa la base de la anterior */
-.matorral {
-  --piso: 2.1rem;
+/* el cuaderno de campo: los bocetos se reparten como en una página de naturalista, cada uno con su nota a mano */
+.cuaderno {
   position: relative;
-  height: 27rem;
-  margin-top: 1rem;
-  overflow: hidden;
+  max-width: 88rem;
+  margin: 2.5rem auto 0;
+  aspect-ratio: 390 / 640;
 }
-.matorral > * {
+.cuaderno-titulo {
   position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%) rotate(-2deg);
+  font-family: var(--font-hand);
+  font-size: 1.35rem;
+  color: var(--color-madera-soft);
+  white-space: nowrap;
 }
-.matorral-fondo {
-  inset: auto 0 calc(var(--piso) - 0.5rem) 0;
-  height: 42%;
-  z-index: 0;
+.cuaderno-titulo span {
+  font-family: var(--font-ticket);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-right: 0.4rem;
+  color: var(--color-turquesa-dark);
 }
-.matorral-planta {
-  bottom: var(--piso);
+.cuaderno-pieza {
+  position: absolute;
+  margin: 0;
 }
-.matorral-planta > svg {
+.cuaderno-pieza img,
+.cuaderno-pieza svg {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
 }
-.matorral-arbol {
-  bottom: calc(var(--piso) - 0.4rem);
-  left: -16%;
-  height: 90%;
-  aspect-ratio: 460 / 700;
-  z-index: 1;
-}
-.matorral-palma {
-  left: 26%;
-  height: 58%;
-  aspect-ratio: 240 / 290;
-  z-index: 2;
-}
-.coati-pista {
-  inset: auto 0 calc(var(--piso) - 0.6rem) 0;
-  height: 5.2rem;
-  z-index: 3;
-  --pista: 58vw;
-}
-.coati-paseo {
+.cuaderno-pieza figcaption {
   position: absolute;
-  left: 4vw;
-  bottom: 0;
-  height: 100%;
-  aspect-ratio: 240 / 140;
+  font-family: var(--font-hand);
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--color-madera);
+  white-space: nowrap;
 }
-.coati-cuerpo {
-  height: 100%;
+.cuaderno-pieza figcaption i {
+  display: block;
+  font-size: 0.85em;
+  color: var(--color-madera-soft);
 }
-.matorral-lirios {
-  bottom: 0;
-  left: 44%;
-  height: 80%;
-  aspect-ratio: 560 / 760;
-  z-index: 4;
+/* el subrayado de la nota, como una raya a lápiz */
+.cuaderno-pieza figcaption::after {
+  content: '';
+  display: block;
+  height: 2px;
+  margin-top: 2px;
+  border-radius: 2px;
+  background: var(--color-turquesa);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
 }
-.matorral-lirios > * {
-  position: absolute;
+
+/* teléfono: el tucán arriba a la izquierda, el hornero más abajo a la derecha y el coatí cruzando al pie */
+.cuaderno-pieza-tucan {
+  left: 1%;
+  top: 7%;
+  width: 60%;
 }
-.lirio-a {
-  left: 0;
-  bottom: var(--piso);
-  height: calc(100% - var(--piso));
-  aspect-ratio: 400 / 760;
+.cuaderno-pieza-tucan figcaption {
+  left: 66%;
+  top: 4%;
 }
-.lirio-b {
+.cuaderno-pieza-hornero {
   right: 0;
-  bottom: var(--piso);
-  height: calc(80% - var(--piso));
-  aspect-ratio: 400 / 760;
+  top: 32%;
+  width: 50%;
 }
-.picaflor {
-  left: 8%;
-  top: 19%;
-  width: 24%;
-  aspect-ratio: 140 / 100;
+.cuaderno-pieza-hornero figcaption {
+  right: 108%;
+  top: 48%;
+  text-align: right;
 }
-.matorral-monstera {
-  bottom: 0;
-  left: auto;
-  right: -12%;
-  height: 40%;
-  aspect-ratio: 400 / 232;
-  z-index: 5;
+.cuaderno-pieza-coati {
+  left: 6%;
+  bottom: 4%;
+  width: 84%;
 }
-.matorral-monstera > * {
-  position: absolute;
+.cuaderno-pieza-coati figcaption {
+  right: 4%;
+  bottom: -9%;
+  text-align: right;
 }
-.monstera-a {
-  left: 0;
-  bottom: var(--piso);
-  height: calc(100% - var(--piso));
-  aspect-ratio: 260 / 232;
-}
-.monstera-b {
-  right: 0;
-  bottom: var(--piso);
-  height: calc(72% - var(--piso));
-  aspect-ratio: 260 / 232;
-}
-.mariposa {
-  left: 34%;
-  top: -18%;
-  width: 3rem;
-  aspect-ratio: 68 / 56;
-}
-.mariposa-cuerpo {
-  height: 100%;
-}
-.matorral-helecho {
-  left: 72%;
-  height: 46%;
-  aspect-ratio: 120 / 215;
-  z-index: 6;
-}
-.matorral-banano-a {
-  left: -12%;
-  height: 56%;
-  aspect-ratio: 140 / 340;
-  z-index: 6;
-}
-.matorral-banano-b {
-  right: -6%;
-  height: 80%;
-  aspect-ratio: 140 / 340;
-  z-index: 6;
-}
-.matorral-suelo {
-  inset: auto 0 0 0;
-  height: calc(var(--piso) + 0.6rem);
-  z-index: 7;
-}
-@media (max-width: 767px) {
-  .matorral-palma,
-  .matorral-helecho,
-  .matorral-banano-b {
-    display: none;
-  }
-}
+
 @media (min-width: 768px) {
-  .matorral {
-    --piso: 2.4rem;
-    height: clamp(26rem, 62svh, 36rem);
+  .cuaderno {
+    aspect-ratio: 1440 / 560;
+    margin-top: 1rem;
   }
-  .matorral-arbol {
-    left: -2%;
-    height: 96%;
+  .cuaderno-titulo {
+    top: 2%;
+    font-size: 1.6rem;
   }
-  .matorral-lirios {
-    left: 37%;
-    height: 90%;
+  .cuaderno-pieza figcaption {
+    font-size: 1.45rem;
   }
-  .matorral-monstera {
+  .cuaderno-pieza-tucan {
+    left: 6%;
+    top: auto;
+    bottom: 6%;
+    width: 27%;
+  }
+  .cuaderno-pieza-tucan figcaption {
+    left: 66%;
+    top: 4%;
+  }
+  .cuaderno-pieza-hornero {
+    left: 39%;
     right: auto;
-    left: 58%;
-    height: 48%;
+    top: 16%;
+    width: 22%;
   }
-  .matorral-banano-a {
-    left: -5%;
-    height: 66%;
+  .cuaderno-pieza-hornero figcaption {
+    right: auto;
+    left: 74%;
+    top: 4%;
+    text-align: left;
   }
-  .coati-pista {
-    height: 8.4rem;
-    --pista: 68vw;
+  .cuaderno-pieza-coati {
+    left: auto;
+    right: 4%;
+    bottom: 6%;
+    width: 31%;
   }
-  .mariposa {
-    width: 3.6rem;
+  .cuaderno-pieza-coati figcaption {
+    right: 8%;
+    bottom: -8%;
   }
 }
 
-/* animaciones del matorral */
-.mecer {
+/* se dibuja: cada boceto se descubre en diagonal, como si el lápiz lo fuera llenando, y después su nota */
+.cuaderno-boceto {
+  -webkit-mask: linear-gradient(115deg, #000 40%, transparent 60%) 100% 0 / 260% 100% no-repeat;
+  mask: linear-gradient(115deg, #000 40%, transparent 60%) 100% 0 / 260% 100% no-repeat;
+  transition:
+    -webkit-mask-position 1.8s cubic-bezier(0.65, 0, 0.35, 1),
+    mask-position 1.8s cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: calc(var(--i) * 0.28s);
+}
+.cuaderno-pieza figcaption {
+  opacity: 0;
+  translate: 0 6px;
+  transition:
+    opacity 0.6s ease-out,
+    translate 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  transition-delay: calc(var(--i) * 0.28s + 1.1s);
+}
+.cuaderno-pieza figcaption::after {
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: calc(var(--i) * 0.28s + 1.5s);
+}
+.cuaderno[data-visto] .cuaderno-boceto {
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
+}
+.cuaderno[data-visto] figcaption {
+  opacity: 1;
+  translate: 0 0;
+}
+.cuaderno[data-visto] figcaption::after {
+  transform: scaleX(1);
+}
+
+/* después, vida apenas: la rama del tucán y la del hornero se mecen desde donde se apoyan, el coatí respira
+   y la mariposa recorre la página aleteando */
+.cuaderno-pieza-tucan img {
+  transform-origin: 30% 80%;
+  animation: cuaderno-mecer 5.5s ease-in-out infinite alternate;
+}
+.cuaderno-pieza-hornero img {
+  transform-origin: 50% 85%;
+  animation: cuaderno-mecer 6.5s ease-in-out -2s infinite alternate;
+  --ang: -1deg;
+}
+.cuaderno-pieza-coati img {
   transform-origin: 50% 100%;
-  animation: mecer var(--dur, 6s) ease-in-out infinite alternate;
+  animation: cuaderno-respira 2.6s ease-in-out infinite alternate;
 }
-svg .mecer,
-svg .mecer-copa {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-}
-.mecer-copa {
-  --ang: 1.2deg;
-  animation: mecer var(--dur, 7s) ease-in-out infinite alternate;
-}
-@keyframes mecer {
+@keyframes cuaderno-mecer {
   from {
-    transform: rotate(calc(var(--ang, 2deg) * -1));
+    rotate: calc(var(--ang, 1.2deg) * -1);
   }
   to {
-    transform: rotate(var(--ang, 2deg));
+    rotate: var(--ang, 1.2deg);
   }
 }
-.tucan {
-  animation: tucan-salto 7s ease-out infinite;
-}
-@keyframes tucan-salto {
-  0%,
-  78%,
-  86%,
-  100% {
-    transform: translateY(0);
-  }
-  82% {
-    transform: translateY(-14px);
-  }
-  89% {
-    transform: translateY(-5px);
-  }
-  92% {
-    transform: translateY(0);
-  }
-}
-.tucan-cabeza {
-  transform-box: fill-box;
-  transform-origin: 20% 85%;
-  animation: tucan-cabeza 4.6s ease-in-out infinite;
-}
-@keyframes tucan-cabeza {
-  0%,
-  55%,
-  100% {
-    transform: rotate(0);
-  }
-  62% {
-    transform: rotate(-14deg);
-  }
-  70% {
-    transform: rotate(5deg);
-  }
-  78% {
-    transform: rotate(0);
-  }
-}
-.tucan-parpado {
-  transform-box: fill-box;
-  transform-origin: 50% 50%;
-  transform: scaleY(0);
-  animation: parpadeo 3.7s infinite;
-}
-@keyframes parpadeo {
-  0%,
-  92%,
-  97%,
-  100% {
-    transform: scaleY(0);
-  }
-  94.5% {
-    transform: scaleY(1);
-  }
-}
-.tucan-cola {
-  transform-box: fill-box;
-  transform-origin: 50% 0;
-  animation: mecer 2.8s ease-in-out infinite alternate;
-  --ang: 5deg;
-}
-.hornero-cabeza {
-  transform-box: fill-box;
-  transform-origin: 20% 90%;
-  animation: tucan-cabeza 3.4s ease-in-out infinite;
-}
-.picaflor {
-  animation: picaflor 3.6s ease-in-out infinite;
-}
-@keyframes picaflor {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  14% {
-    transform: translate(7%, 3%);
-  }
-  28% {
-    transform: translate(0, 0);
-  }
-  42% {
-    transform: translate(6%, 2%);
-  }
-  58% {
-    transform: translate(-28%, -30%);
-  }
-  74% {
-    transform: translate(-20%, -16%);
-  }
-  88% {
-    transform: translate(0, 0);
-  }
-}
-.picaflor [data-wing] {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: aleteo 70ms linear infinite alternate;
-}
-@keyframes aleteo {
+@keyframes cuaderno-respira {
   to {
-    transform: scaleY(0.3);
+    scale: 1.008 0.99;
   }
 }
-.mariposa {
-  animation: mariposa 15s ease-in-out infinite;
+.cuaderno-vuelo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
-@keyframes mariposa {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(-10deg);
-  }
-  10% {
-    transform: translate(3rem, -2.2rem) rotate(12deg);
-  }
-  20% {
-    transform: translate(6.5rem, -0.5rem) rotate(20deg);
-  }
-  30% {
-    transform: translate(4rem, 1.8rem) rotate(-6deg);
-  }
-  40% {
-    transform: translate(0.5rem, -1rem) rotate(-14deg);
-  }
-  50%,
-  72% {
-    transform: translate(-1.6rem, 2.6rem) rotate(4deg);
-  }
-  84% {
-    transform: translate(2rem, -1.5rem) rotate(10deg);
-  }
+.cuaderno-mariposa {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2.6rem;
+  offset-path: path('M 40 520 C 120 380 60 260 180 200 S 320 120 300 300 S 120 420 60 330 S 140 120 260 90');
+  offset-rotate: auto 90deg;
+  animation: cuaderno-vuelo 22s ease-in-out infinite alternate;
 }
-.mariposa .ala {
+.ala {
   transform-box: fill-box;
-  animation: ala 0.24s ease-in-out infinite alternate;
+  animation: cuaderno-aleteo 0.32s ease-in-out infinite alternate;
 }
-.mariposa .ala-izq {
+.ala-i {
   transform-origin: 100% 50%;
 }
-.mariposa .ala-der {
+.ala-d {
   transform-origin: 0% 50%;
 }
-@keyframes ala {
+@keyframes cuaderno-aleteo {
   to {
-    transform: scaleX(0.22);
+    transform: scaleX(0.25);
   }
 }
-.coati-paseo {
-  animation: paseo 32s linear infinite;
-}
-@keyframes paseo {
-  0% {
-    transform: translateX(0) scaleX(1);
-  }
-  42%,
-  46% {
-    transform: translateX(var(--pista)) scaleX(1);
-  }
-  48% {
-    transform: translateX(var(--pista)) scaleX(-1);
-  }
-  90%,
-  94% {
-    transform: translateX(0) scaleX(-1);
-  }
-  96%,
-  100% {
-    transform: translateX(0) scaleX(1);
-  }
-}
-.coati-cuerpo {
-  animation: trote 0.32s ease-in-out infinite alternate;
-}
-@keyframes trote {
-  to {
-    transform: translateY(-2px);
-  }
-}
-.coati-pata {
-  transform-box: fill-box;
-  transform-origin: 50% 0;
-  animation: pata 0.64s ease-in-out infinite alternate;
-  animation-delay: calc(var(--k) * -0.64s);
-}
-@keyframes pata {
+@keyframes cuaderno-vuelo {
   from {
-    transform: rotate(-18deg);
+    offset-distance: 0%;
   }
   to {
-    transform: rotate(18deg);
+    offset-distance: 100%;
   }
 }
-.coati-cabeza {
-  transform-box: fill-box;
-  transform-origin: 10% 60%;
-  animation: olfatea 3.2s ease-in-out infinite;
-}
-@keyframes olfatea {
-  0%,
-  60%,
-  100% {
-    transform: rotate(0);
-  }
-  70% {
-    transform: rotate(9deg);
-  }
-  76% {
-    transform: rotate(4deg);
-  }
-  82% {
-    transform: rotate(10deg);
+@media (min-width: 768px) {
+  .cuaderno-mariposa {
+    width: 3.2rem;
+    offset-path: path('M 120 420 C 260 260 420 380 560 200 S 820 60 900 240 S 1100 380 1180 160 S 1320 80 1360 220');
   }
 }
-.coati-cola {
-  transform-box: fill-box;
-  transform-origin: 100% 100%;
-  animation: mecer 2.2s ease-in-out infinite alternate;
-  --ang: 7deg;
-}
-.matorral:not([data-vivo]) *,
-.matorral:not([data-vivo]) {
+.cuaderno:not([data-vivo]) *,
+.cuaderno:not([data-vivo]) {
   animation-play-state: paused !important;
 }
 

@@ -311,3 +311,16 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   WhatsApp e Instagram en Visitanos. No se usó `npx shadcn add` (configuraría shadcn/Next.js, que el proyecto no usa).
 - **Matorral:** la copa del árbol y los arbustos pasaron de círculos a follaje dibujado hoja por hoja.
 - Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,99 s, LCP 1,46 s, CLS 0,02, scroll 58,8 cuadros/s.
+
+## 29. Carta tono sobre tono, mancha de café, cuaderno de campo y traspaso
+
+- **Carta:** las 7 fotos IA se regeneraron con el fondo del color del plato en otro tono (torta de chocolate sobre
+  marrón claro, cheesecake sobre rosa, chipa sobre amarillo manteca…); las 6 fotos reales también llevan su mancha
+  tono sobre tono.
+- **"Te esperamos":** en vez de la puerta corrediza con franjas, la sección se derrama como una mancha de café que
+  nace junto al mapa y crece con el scroll; el título cae letra por letra.
+- **Cierre:** el matorral SVG se reemplazó por un cuaderno de campo con bocetos a lápiz y acuarela (tucán agarrado a
+  su rama, hornero sobre su horno de barro, coatí caminando), sin bordes visibles, con notas a mano y una mariposa 88.
+  Criterio: taste-skill (lámina de naturalista como motivo). El lirio con picaflor quedó pendiente (sin créditos de IA).
+- Hoja para pintar junto a las pestañas en el teléfono; sin franja lima vacía bajo el sello.
+- Traspaso completo para otra sesión en `contexto/HANDOFF.md`; scripts de QA en `scripts/qa/`.

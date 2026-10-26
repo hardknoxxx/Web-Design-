@@ -244,12 +244,6 @@ export function Visita() {
       aria-labelledby="visita-titulo"
       className="relative overflow-hidden bg-laguna-deep px-4 pt-20 pb-24 text-crema md:px-7 md:pt-28 md:pb-32"
     >
-      {/* franjas que corren desde la derecha al entrar (ver Coreografia) */}
-      <div className="visita-franjas" aria-hidden="true">
-        {["#C7D87E", "#64BCB0", "#E6D7BC", "#F2B6A0"].map((c) => (
-          <span key={c} style={{ background: c }} />
-        ))}
-      </div>
       <div className="relative z-10 mx-auto grid max-w-5xl gap-14 md:grid-cols-[1fr_1.1fr] md:gap-16">
         <div>
           <h2
