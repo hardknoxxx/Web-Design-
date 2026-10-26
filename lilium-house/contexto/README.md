@@ -1,5 +1,7 @@
 # Contexto del proyecto — Lilium Coffee Lounge
 
+> **Para retomar en otra sesión, leer primero [HANDOFF.md](./HANDOFF.md)** (vigente; este README tiene partes de etapas anteriores).
+
 Resumen compacto de la conversación con Claude Code que construyó esta landing (oct. 2026).
 Sirve para retomar el trabajo en otra sesión sin perder decisiones. El historial detallado,
 pedido por pedido, está en [historial.md](./historial.md).

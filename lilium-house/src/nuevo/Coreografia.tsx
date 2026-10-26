@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin'
 import { gsap, reducido, SplitText } from './animar'
+import { ondulado } from './Piezas'
 
 gsap.registerPlugin(DrawSVGPlugin)
 
@@ -10,7 +11,8 @@ gsap.registerPlugin(DrawSVGPlugin)
  * - la mesa: el mandala del mantel se dibuja trazo a trazo, como un mantel para colorear;
  * - la vitrina: el título sube por líneas y el mazo de fotos cae sobre la mesa y se acomoda;
  * - la carta: el título sube, las pestañas llegan en fila y cada lámina se asienta;
- * - visitanos: el mapa se abre como una persiana y el horario aparece renglón por renglón;
+ * - visitanos: la sección se derrama como una mancha de café desde el mapa, el título cae letra por letra y
+ *   el horario aparece renglón por renglón;
  * - el cierre: el logo se asienta y la frase sube.
  * Movimiento reducido: ver animar.ts.
  */
@@ -48,8 +50,32 @@ export function Coreografia() {
       // las pestañas llegan en fila (opacidad y desenfoque: su transform es del imán y del toque)
       gsap.from('#carta [role="tab"]', { opacity: 0, filter: 'blur(6px)', duration: 0.7, stagger: 0.08, scrollTrigger: { trigger: '#carta [role="tablist"]', start: 'top 88%', once: true } })
 
-      // visitanos
-      lineas('#visita-titulo')
+      // visitanos se derrama sobre la carta como una mancha de café: una forma ondulada que nace junto al mapa y
+      // crece con el scroll hasta cubrir la sección; al terminar se saca la máscara (no queda costo de pintado)
+      const visita = document.querySelector<HTMLElement>('#visita')
+      if (visita) {
+        const forma = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='-100 -100 200 200'><path d='${ondulado(9, 0.06)}'/></svg>`
+        visita.style.setProperty('--mancha-forma', `url("data:image/svg+xml,${encodeURIComponent(forma)}")`)
+        visita.classList.add('visita-mancha')
+        gsap.fromTo(visita, { '--mancha': '0vmax' }, {
+          '--mancha': '260vmax',
+          ease: 'power2.in',
+          scrollTrigger: {
+            trigger: visita,
+            start: 'top bottom',
+            end: 'top top',
+            scrub: 0.6,
+            onUpdate: (st) => visita.classList.toggle('abierta', st.progress > 0.999),
+          },
+        })
+      }
+      const titulo = document.querySelector<HTMLElement>('#visita-titulo')
+      if (titulo) {
+        const s = SplitText.create(titulo, { type: 'chars' })
+        splits.push(s)
+        gsap.from(s.chars, { yPercent: -120, rotate: () => gsap.utils.random(-25, 25), opacity: 0, duration: 0.9, ease: 'back.out(2.2)', stagger: 0.045, scrollTrigger: { trigger: titulo, start: 'top 85%', once: true } })
+      }
+      gsap.from('#visita-titulo ~ p, #visita-titulo ~ ul li', { x: -24, opacity: 0, duration: 0.7, stagger: 0.08, delay: 0.35, scrollTrigger: { trigger: '#visita-titulo', start: 'top 85%', once: true } })
       gsap.from('#visita figure svg', { clipPath: 'inset(0% 0% 100% 0% round 1.25rem)', duration: 1.3, ease: 'power3.inOut', scrollTrigger: { trigger: '#visita figure', start: 'top 85%', once: true } })
       gsap.from('#visita .horario-fila', { y: 18, opacity: 0, duration: 0.7, stagger: 0.08, scrollTrigger: { trigger: '#visita dl', start: 'top 90%', once: true } })
 
@@ -60,6 +86,7 @@ export function Coreografia() {
 
     return () => {
       ctx.revert()
+      document.querySelector('#visita')?.classList.remove('visita-mancha', 'abierta')
       for (const s of splits) s.revert()
     }
   }, [])

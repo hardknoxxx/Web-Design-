@@ -3,3 +3,5 @@ dist
 .DS_Store
 .vercel
 dist-ssr
+scripts/qa/perf/
+*.tsbuildinfo

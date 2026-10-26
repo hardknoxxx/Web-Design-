@@ -290,3 +290,37 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   - **Reloj en vivo** en el pie: la hora de Puerto Iguazú y si el local está abierto.
 - Medición local 390×844 (4G lento + CPU 4×): primer contenido 1,07 s, LCP 1,44 s, CLS 0,02; scroll a 51
   cuadros por segundo de promedio (antes 59) con 0,9 % de cuadros lentos y 21 ms de bloqueo total.
+
+## 28. Fotos de estudio, papeles, henrietta, mapa animado y follaje
+
+- **Fotos de la carta:** los 7 platos que no tenían foto propia (café, chipa, té, tostado, ensalada, cheesecake, torta
+  de chocolate) llevan una foto de estudio generada con IA (Gemini 3.1 Flash Image, vía el conector de Figma, archivo
+  "Lilium · fotos de platos (IA, prototipo)"), pedida sobre un fondo liso del color de la mancha. Son ILUSTRATIVAS
+  para presentar el prototipo: reemplazarlas por fotos reales del local antes de publicar el sitio definitivo.
+  No se generaron imágenes de los 6 platos que ya tienen foto real (Instagram del local): mantienen su foto, ahora
+  recortada sobre una mancha de color. Todas las láminas: forma ondulada (máscara), sombra de estudio.
+- **Papeles:** cartel de papel real (textura de hoja arrugada generada con IA) que llega hecho un bollo y se abre;
+  estampillas con borde dentado ("Hecho en casa" en el mazo, "Puerto Iguazú" sobre el mapa) que caen y se sellan;
+  hoja del mantel para colorear con el lirio y dos lápices, que se pinta con el scroll.
+- **Henrietta** (henrietta.wearetattoodigital.com: GSAP + Lenis): palabra gigante del momento elegido detrás de la
+  lista, con las letras subiendo; "Visitanos" entra desde la derecha como una puerta corrediza con franjas de
+  colores que la cruzan.
+- **Mapa** con anime.js (se carga recién al verse): las calles se dibujan, un punto recorre Av. Tres Fronteras hasta
+  la puerta, el lirio cae con rebote y deja ondas.
+- **Enlaces animados** adaptados de Skiper UI (skiper40, uso libre con atribución en el código): dirección,
+  WhatsApp e Instagram en Visitanos. No se usó `npx shadcn add` (configuraría shadcn/Next.js, que el proyecto no usa).
+- **Matorral:** la copa del árbol y los arbustos pasaron de círculos a follaje dibujado hoja por hoja.
+- Medición local 390×844 (4G lento + CPU 4×): primer contenido 0,99 s, LCP 1,46 s, CLS 0,02, scroll 58,8 cuadros/s.
+
+## 29. Carta tono sobre tono, mancha de café, cuaderno de campo y traspaso
+
+- **Carta:** las 7 fotos IA se regeneraron con el fondo del color del plato en otro tono (torta de chocolate sobre
+  marrón claro, cheesecake sobre rosa, chipa sobre amarillo manteca…); las 6 fotos reales también llevan su mancha
+  tono sobre tono.
+- **"Te esperamos":** en vez de la puerta corrediza con franjas, la sección se derrama como una mancha de café que
+  nace junto al mapa y crece con el scroll; el título cae letra por letra.
+- **Cierre:** el matorral SVG se reemplazó por un cuaderno de campo con bocetos a lápiz y acuarela (tucán agarrado a
+  su rama, hornero sobre su horno de barro, coatí caminando), sin bordes visibles, con notas a mano y una mariposa 88.
+  Criterio: taste-skill (lámina de naturalista como motivo). El lirio con picaflor quedó pendiente (sin créditos de IA).
+- Hoja para pintar junto a las pestañas en el teléfono; sin franja lima vacía bajo el sello.
+- Traspaso completo para otra sesión en `contexto/HANDOFF.md`; scripts de QA en `scripts/qa/`.

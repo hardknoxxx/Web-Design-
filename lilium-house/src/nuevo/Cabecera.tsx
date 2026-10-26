@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { InstagramIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from '../components/Icons'
 import { SITE, whatsappLink } from '../data/site'
-import { useOpenStatus } from '../hooks/useOpenStatus'
 import { gsap, reducido } from './animar'
 import { LogoLilium } from './LogoLilium'
-import { Estado } from './Piezas'
 import { pausarScroll } from './suave'
 import { FondoAnimado } from './primitivas/FondoAnimado'
 
@@ -22,7 +20,6 @@ const SECCIONES = [
 ]
 
 export function Cabecera() {
-  const status = useOpenStatus()
   const [abierto, setAbierto] = useState(false)
   const [senalada, setSenalada] = useState<string | null>(null)
   const botonRef = useRef<HTMLButtonElement>(null)
@@ -77,7 +74,6 @@ export function Cabecera() {
           <LogoLilium className="h-full w-auto" />
         </a>
         <div className="flex items-center gap-2 md:gap-3">
-          <Estado status={status} className="max-md:hidden" />
           <a href={SITE.mapsHref} target="_blank" rel="noopener" className="pildora pildora-laguna max-sm:hidden">
             Cómo llegar
           </a>
