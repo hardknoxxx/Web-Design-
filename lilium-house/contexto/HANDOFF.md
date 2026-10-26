@@ -110,6 +110,19 @@ salvo pedido.
 - No se generaron imágenes IA nuevas: Figma (donde se usa Gemini) pide autenticarse de nuevo en esta sesión.
 - Mazo: las fotos ya no son paradas del Tab (se usan los botones); las de abajo, `aria-hidden`.
 
+## 6 c. Entrega 31 (en curso, rama `ccr-fb496335-5x5npu`)
+
+- **Fotos reales mejoradas con IA:** superresolución Real-ESRGAN x4plus (versión ONNX oficial de Qualcomm AI Hub,
+  BSD-3) por mosaicos, más un retoque suave de luz y color; después se rearman todas las salidas con
+  `scripts/fotos_reales.py` (mazo, recortes de la carta y croissant). El modelo y las fotos maestras no se versionan.
+- **Fotos IA de la carta por nombre:** el cliente aprobó los nombres de la carta. Figma no tenía créditos de IA hasta
+  2026-10-27 00:00 UTC; quedó una tarea programada en la sesión para generarlas a las 00:10 UTC (mismo estilo tono
+  sobre tono que `public/carta/*.webp`, describiendo cada plato según su foto real).
+- **Skill Apple HIG** (`.claude/skills/apple-hig-designer`, axiaoge2/Apple-Hig-Designer, MIT, auditada, ver
+  SOURCE.md): se toman principios, 44 px táctiles y respuesta al presionar; no su tipografía ni sus colores.
+- Pulido con taste-skill + emil-design-eng + HIG: enlaces de Visitanos con zona táctil de 44 px y curva ease-out
+  fuerte; `TextEffect` y el manifiesto sin `aria-label` prohibido (axe `aria-prohibited-attr` resuelto).
+
 ## 7. Pendientes
 
 1. **Mergear PR #27** cuando el cliente lo apruebe.
@@ -119,8 +132,7 @@ salvo pedido.
    washes only on parts …, isolated subject on pure plain white paper, no background, no border, no frame, no text,
    no shadow on paper"*, modelo `gemini-3.1-flash-image`. Después: `python3 -I scripts/quitar_papel.py lirio.png
    public/cuaderno/lirio`, sumarlo a `BOCETOS` en `Cuaderno.tsx` y ubicarlo en `nuevo.css` (bloque cuaderno).
-3. Auditoría impeccable (14/20) — arreglos P1/P2 que faltan: loops que no se pueden pausar (WCAG 2.2.2), `aria-label`
-   de SplitText en spans del Manifiesto (axe `aria-prohibited-attr`), cartas del mazo enfocables, ticker del sello
+3. Auditoría impeccable (14/20) — arreglos P1/P2 que faltan: loops que no se pueden pausar (WCAG 2.2.2), ticker del sello
    siempre corriendo, contraste del manifiesto mientras se enciende, `will-change` permanente, `Estado`/`.estado`
    sin uso en `Piezas.tsx`/CSS. El cliente pidió hacerlos después de las mejoras visuales (harden/optimize/clarify/polish).
 4. Reemplazar todas las imágenes IA por fotos reales aprobadas (ver §8). Confirmar con el local los nombres de los platos nuevos de la carta (entrega 30).
@@ -148,6 +160,7 @@ Paleta: `#64BCB0` `#277067` `#1C4A45` `#3D2314` `#FAF7F2` `#415521` `#6F7F2E` `#
 - `scripts/sprites/` — pipeline de la mesa: `render.html/render.ts` (escena three.js por plato), `render.cjs`
   (Playwright captura 36 cuadros), `build-sheets.py` (arma hojas 6×6 webp), `objetos.ts` (modelos).
 - `scripts/quitar_papel.py` — boceto sobre papel → webp con transparencia, sin bordes.
+- `scripts/fotos_reales.py` — fotos del Instagram (originales, mejoradas con Real-ESRGAN y máscaras de rembg) → mazo, recortes de la carta y croissant.
 - `scripts/qa/recorrido.cjs` — capturas de carta, entrada de Visitanos y cuaderno (1440 y 390).
 - `scripts/qa/accesibilidad.cjs` — axe-core (WCAG 2.1 AA), objetivos táctiles, foco, zoom 200 %.
 - `scripts/qa/rendimiento.cjs [url]` — FCP/LCP/CLS/TBT y fps de scroll, sin límite y "gama media"
@@ -161,6 +174,7 @@ Skills del repo (`.claude/skills/`, auditadas, cada una con su `SOURCE.md` o lic
 | --- | --- |
 | `taste-skill` | Dirección de arte, evitar look de plantilla; guía de imágenes/dibujo (cuaderno de campo) |
 | `impeccable` | Crítica y auditoría (14/20); el motor es un binario nativo que no se versiona, **sin hooks** |
+| `apple-hig-designer` | Principios HIG: claridad, contenido protagonista, 44 px táctiles, respuesta al presionar |
 | `emil-design-eng` | Curvas y duraciones (ease-out fuertes, solo transform/opacity/clip-path/mask) |
 | `motion` | Motion (Framer Motion) y CSS: mazo, pestañas, primitivas |
 | `ui-ux-pro-max` | Patrones y paletas de apoyo |

@@ -336,3 +336,14 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   a buena resolución. El mazo de la vitrina pasa de 3 a 9 fotos.
 - Medición local 390×844 (4G lento + CPU 4×), dos corridas por versión: scroll 46–53 cuadros/s contra 48–51 de la
   rama anterior (dentro del ruido); FCP 1,07 s, LCP 1,43 s, CLS 0,02.
+
+## 31. Fotos reales mejoradas con IA, skill Apple HIG y pulido
+
+- Pedido: mejorar con IA las fotos reales; generar con IA las imágenes de la carta con los nombres ya aprobados; usar
+  taste-skill, emil-design-eng y una skill de diseño Apple buscada en GitHub.
+- Mejora: Real-ESRGAN x4plus (ONNX oficial de Qualcomm AI Hub, BSD-3) por mosaicos sobre las 8 fotos del Instagram y
+  las 3 del sitio oficial, más un retoque suave de luz y color; salidas rearmadas con `scripts/fotos_reales.py`.
+- Imágenes IA de la carta: Figma sin créditos hasta 2026-10-27 00:00 UTC; quedó programada la generación.
+- Skill `apple-hig-designer` (axiaoge2/Apple-Hig-Designer, MIT) auditada e instalada; se eligió por ser para web
+  (las otras candidatas eran para SwiftUI o traían CLI y binarios).
+- Pulido: enlaces de Visitanos con zona táctil de 44 px; `aria-label` prohibidos fuera (TextEffect y manifiesto).

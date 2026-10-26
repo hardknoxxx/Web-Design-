@@ -9,11 +9,12 @@ export function TextEffect({ children, className, animar = true }: { children: s
   return (
     <motion.p
       className={className}
-      aria-label={children}
       initial={animar ? 'oculto' : false}
       animate="visible"
       variants={{ visible: { transition: { staggerChildren: 0.035 } } }}
     >
+      {/* el texto entero para lectores de pantalla (un <p> no admite aria-label); las palabras animadas van ocultas */}
+      <span className="sr-only">{children}</span>
       {palabras.map((p, i) =>
         /^\s+$/.test(p) ? (
           p

@@ -83,7 +83,7 @@ export function Manifiesto() {
   useEffect(() => {
     if (reducido()) return
     const el = fraseRef.current!
-    const split = SplitText.create(el.querySelectorAll('.mf-texto'), { type: 'words' })
+    const split = SplitText.create(el.querySelectorAll('.mf-texto'), { type: 'words', aria: 'none' })
     const ctx = gsap.context(() => {
       const st = { trigger: el, start: 'top 80%', end: 'bottom 45%', scrub: true }
       gsap.fromTo(split.words, { opacity: 0.16 }, { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: st })
