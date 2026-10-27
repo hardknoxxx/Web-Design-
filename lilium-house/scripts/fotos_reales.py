@@ -1,11 +1,12 @@
-"""Fotos reales del Instagram del local -> mazo de la vitrina, recortes de la carta y croissant de LATTE.
+"""Fotos reales del local (Instagram y sitio oficial) -> mazo de la vitrina y croissant de LATTE.
 
 Uso:  python3 -I scripts/fotos_reales.py <originales> <mejoradas> <recortes> public
 
 - <originales>: las fotos del Instagram tal como llegaron (<id>.jpeg).
 - <mejoradas>:  las mismas pasadas por Real-ESRGAN x4plus (<id>.png; ver contexto/HANDOFF.md) y, para el sitio
   oficial, oficial-<nombre>.png. Si falta una mejorada se usa la original.
-- <recortes>:   las máscaras de rembg/BiRefNet (<id>.png con transparencia) y croissant.png (el croissant suelto).
+- <recortes>:   croissant.png, la máscara de rembg/BiRefNet del croissant suelto (zona CROISSANT de la foto).
+  La carta usa fotos de estudio generadas con IA (public/carta/), no estas fotos.
 Solo usa Pillow y numpy.
 """
 import sys
@@ -27,23 +28,8 @@ MAZO = {
     '1792979051145': ('tortas-oreo', 0.5),
 }
 OFICIAL = ['cheesecake-frutos-rojos', 'torta-de-la-vitrina', 'pizzeta']
-# recortes de la carta: (nombre, color de fondo tono sobre tono, cuánto ocupa, alineación x, franja x opcional)
-CARTA = {
-    '1792978943477': ('budin-lima', '#F1E7A8', 1.12, 'derecha', None),
-    '1792978956137': ('brownies', '#E2C6B0', 0.86, 0.5, None),
-    '1792978964993': ('croissant-huevos', '#F0DBA8', 0.88, 0.5, None),
-    '1792978973913': ('sandwich-papas', '#E6D3AE', 1.06, 0.5, None),
-    '1792979000825': ('cheesecake-maracuya', '#F4DDA2', 0.86, 0.5, None),
-    '1792979018575': ('croissant-frutillas', '#F4CDBE', 0.88, 0.5, None),
-    '1792979038495': ('sandwich-crudo', '#E8CDA0', 0.92, 0.5, None),
-    '1792979051145': ('torta-oreo', '#D9CFC4', 0.8, 0.5, (0.36, 0.64)),
-}
 # zona del croissant dentro de la foto del croissant con huevos (en píxeles de la original de 1440 de ancho)
 CROISSANT = (270, 0, 960, 372)
-
-
-def hexrgb(h):
-    return tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))
 
 
 def color(im):
@@ -80,36 +66,6 @@ def mazo():
         im = color(Image.open(p).convert('RGB'))
         for W in (480, 800):
             webp(im.resize((W, round(im.height * W / im.width)), Image.LANCZOS), PUB / f'fotos/oficial/{n}-{W}.webp', 80)
-
-
-def recorte(k):
-    """Foto mejorada con la transparencia de la máscara de rembg (llevada al tamaño de la mejorada)."""
-    im = mejorada(k, ORIG / f'{k}.jpeg')
-    alfa = Image.open(REC / f'{k}.png').getchannel('A').resize(im.size, Image.LANCZOS)
-    im = im.convert('RGBA')
-    im.putalpha(alfa)
-    return im.crop(im.getbbox())
-
-
-def carta():
-    for k, (n, col, fr, ax, franja) in CARTA.items():
-        im = recorte(k)
-        if franja:
-            w = im.width
-            im = im.crop((int(w * franja[0]), 0, int(w * franja[1]), im.height))
-            im = im.crop(im.getbbox())
-        for W in (360, 720):
-            bg = Image.new('RGBA', (W, W), hexrgb(col) + (255,))
-            if ax == 'derecha':  # el budín está cortado por el borde de la foto: el corte queda fuera de la forma
-                s = W * fr / im.height
-                t = im.resize((int(im.width * s), int(im.height * s)), Image.LANCZOS)
-                x, y = W - t.width + int(W * 0.08), (W - t.height) // 2
-            else:
-                s = min(W * fr / im.width, W * fr / im.height)
-                t = im.resize((int(im.width * s), int(im.height * s)), Image.LANCZOS)
-                x, y = int((W - t.width) * ax), (W - t.height) // 2 + int(W * 0.03)
-            bg.alpha_composite(t, (x, y))
-            webp(bg.convert('RGB'), PUB / f'carta/real/{n}-{W}.webp')
 
 
 def inundar(on, semillas):
@@ -171,6 +127,5 @@ def croissant():
 
 if __name__ == '__main__':
     mazo()
-    carta()
     croissant()
     print('listo')

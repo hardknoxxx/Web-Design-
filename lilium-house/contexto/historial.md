@@ -343,7 +343,9 @@ Orden cronológico de lo que pidió el cliente y qué se hizo. PRs en `hardknoxx
   taste-skill, emil-design-eng y una skill de diseño Apple buscada en GitHub.
 - Mejora: Real-ESRGAN x4plus (ONNX oficial de Qualcomm AI Hub, BSD-3) por mosaicos sobre las 8 fotos del Instagram y
   las 3 del sitio oficial, más un retoque suave de luz y color; salidas rearmadas con `scripts/fotos_reales.py`.
-- Imágenes IA de la carta: Figma sin créditos hasta 2026-10-27 00:00 UTC; quedó programada la generación.
+- Imágenes IA de la carta: generadas el 27/10 al renovarse los créditos de Figma (11 platos con los nombres aprobados,
+  mismo estilo que las anteriores). La carta queda toda en fotos de estudio IA; las reales, en el mazo y el croissant.
+- Medición local 390×844 (4G lento + CPU 4×): FCP 1,00 s, LCP 1,41 s, CLS 0,02, scroll 56 cuadros/s.
 - Skill `apple-hig-designer` (axiaoge2/Apple-Hig-Designer, MIT) auditada e instalada; se eligió por ser para web
   (las otras candidatas eran para SwiftUI o traían CLI y binarios).
 - Pulido: enlaces de Visitanos con zona táctil de 44 px; `aria-label` prohibidos fuera (TextEffect y manifiesto).

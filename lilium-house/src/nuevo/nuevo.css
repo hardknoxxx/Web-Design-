@@ -620,20 +620,6 @@ main section[id] {
   -webkit-mask: var(--forma) center / 100% 100% no-repeat;
   mask: var(--forma) center / 100% 100% no-repeat;
 }
-/* la foto real va sobre su mancha de color, un poco más chica y corrida, como un recorte pegado */
-.lamina-fondo {
-  position: absolute;
-  inset: -6%;
-  background: var(--mancha);
-  -webkit-mask: var(--forma) center / 100% 100% no-repeat;
-  mask: var(--forma) center / 100% 100% no-repeat;
-  rotate: -8deg;
-}
-.lamina-real img {
-  position: relative;
-  scale: 0.84;
-  rotate: 4deg;
-}
 @media (hover: hover) and (pointer: fine) {
   .especimen:hover .lamina {
     rotate: -4deg;

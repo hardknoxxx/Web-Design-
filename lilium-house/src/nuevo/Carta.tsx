@@ -16,17 +16,9 @@ import { TextEffect } from './primitivas/TextEffect'
 
 /*
  * Cada lámina es una foto de estudio recortada con una forma ondulada del color de su fondo, con sombra
- * (referencia LATTE). Los platos que no tienen foto propia del local llevan una imagen generada con IA
- * (Gemini, vía Figma) en /carta: es ILUSTRATIVA para el prototipo y debe reemplazarse por fotos reales del
- * local antes de publicar el sitio definitivo. Las fotos reales del Instagram en buena resolución van recortadas
- * sobre su color en /carta/real (`recorte`); los recortes chicos que quedan llevan su mancha detrás (`foto`).
+ * (referencia LATTE). Son imágenes generadas con IA (Gemini, vía Figma) en /carta, descriptas a partir de las fotos
+ * reales del local: son ILUSTRATIVAS para el prototipo y deben reemplazarse por fotos reales antes del lanzamiento.
  */
-// fondo tono sobre tono: el mismo color del plato, más claro (la torta oscura sobre un marrón con leche, etc.)
-const COLOR_FOTO: Record<string, string> = {
-  'Box de desayuno': '#E8D3B0',
-  'Tabla para compartir': '#D7D9A8',
-  'Red velvet': '#F2B5B0',
-}
 // forma ondulada distinta para cada lámina, como recortes hechos a mano
 const forma = (k: number) => {
   const d = ondulado(8 + (k % 4) * 2, 0.045 + (k % 3) * 0.015, 96 - (k % 2) * 6, 92 + (k % 2) * 6)
@@ -42,16 +34,7 @@ function momentoPorHora() {
 }
 
 function Lamina({ item, k }: { item: CartaItem; k: number }) {
-  if (item.kind === 'foto') {
-    return (
-      <div className="lamina lamina-real" style={{ '--mancha': COLOR_FOTO[item.name] ?? '#E6D7BC', '--forma': forma(k + 1) } as CSSProperties}>
-        <span className="lamina-fondo" aria-hidden="true" />
-        <img src={item.src} alt="" loading="lazy" decoding="async" width={300} height={300} />
-      </div>
-    )
-  }
-  // `recorte`: foto real del Instagram del local, recortada y apoyada sobre su color (mismo tratamiento que las de estudio)
-  const base = item.kind === 'recorte' ? item.src : `/carta/${item.id}`
+  const base = `/carta/${item.kind === 'estudio' ? item.src : item.id}`
   return (
     <div className="lamina lamina-estudio" style={{ '--forma': forma(k) } as CSSProperties}>
       <img

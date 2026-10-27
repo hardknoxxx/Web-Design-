@@ -110,14 +110,21 @@ salvo pedido.
 - No se generaron imágenes IA nuevas: Figma (donde se usa Gemini) pide autenticarse de nuevo en esta sesión.
 - Mazo: las fotos ya no son paradas del Tab (se usan los botones); las de abajo, `aria-hidden`.
 
-## 6 c. Entrega 31 (en curso, rama `ccr-fb496335-5x5npu`)
+## 6 c. Entrega 31 (PR #29)
 
 - **Fotos reales mejoradas con IA:** superresolución Real-ESRGAN x4plus (versión ONNX oficial de Qualcomm AI Hub,
   BSD-3) por mosaicos, más un retoque suave de luz y color; después se rearman todas las salidas con
   `scripts/fotos_reales.py` (mazo, recortes de la carta y croissant). El modelo y las fotos maestras no se versionan.
-- **Fotos IA de la carta por nombre:** el cliente aprobó los nombres de la carta. Figma no tenía créditos de IA hasta
-  2026-10-27 00:00 UTC; quedó una tarea programada en la sesión para generarlas a las 00:10 UTC (mismo estilo tono
-  sobre tono que `public/carta/*.webp`, describiendo cada plato según su foto real).
+- **Fotos IA de la carta por nombre** (nombres aprobados por el cliente): 11 nuevas con Gemini 3.1 Flash Image vía
+  Figma (archivo trwBOhm7IbrMNMT7s8MyDi, nodos 20:2 a 30:2), mismo estilo tono sobre tono que las 7 anteriores y
+  descriptas según la foto real de cada plato. Toda la carta queda en fotos de estudio IA (tipo `estudio` en `CARTA`);
+  las fotos reales quedan en el mazo de la vitrina y el croissant. Se borraron los recortes chicos de Instagram y los
+  recortes reales de la carta.
+  Prompt base: *"Professional food studio photograph of <plato y descripción>, three-quarter angle view from slightly
+  above, the plate centered and small in the frame with generous empty space around it. Seamless plain solid <color>
+  background (<hex>), the table surface the same color as the wall, no horizon line. Soft diffused daylight from the
+  upper left, gentle soft contact shadow. Appetizing, realistic, sharp focus, natural colors. No props, no cutlery,
+  no text, no hands, no logo."*
 - **Skill Apple HIG** (`.claude/skills/apple-hig-designer`, axiaoge2/Apple-Hig-Designer, MIT, auditada, ver
   SOURCE.md): se toman principios, 44 px táctiles y respuesta al presionar; no su tipografía ni sus colores.
 - Pulido con taste-skill + emil-design-eng + HIG: enlaces de Visitanos con zona táctil de 44 px y curva ease-out
@@ -143,10 +150,9 @@ salvo pedido.
 | Carpeta | Qué | Origen |
 | --- | --- | --- |
 | `public/fotos/oficial/` | Fotos del local (sitio oficial, autorizadas) | Reales |
-| `public/fotos/` | Recortes de Instagram (baja resolución): box, picada, red velvet | Reales, reemplazar por originales |
 | `public/fotos/instagram/{nombre}-{480,800}.webp` | Fotos del Instagram en buena resolución (mazo) | Reales |
-| `public/carta/real/{nombre}-{360,720}.webp`, `croissant-{520,900}.webp` | Recortes de esas fotos sobre su color; croissant con transparencia | Reales |
-| `public/carta/{id}-{360,720}.webp` | café, chipa, té, tostado, ensalada, cheesecake, torta | **IA, ilustrativas** |
+| `public/carta/real/croissant-{520,900}.webp` | Croissant recortado con transparencia y sombra horneada | Real (mejorada) |
+| `public/carta/{id}-{360,720}.webp` | Los 18 platos de la carta | **IA, ilustrativas** |
 | `public/papel/arrugado.webp` | Textura de papel arrugado | IA (textura, no es producto) |
 | `public/cuaderno/{tucan,hornero,coati}-{420,760}.webp` | Bocetos del cuaderno de campo | IA (ilustración) |
 | `public/platos/` | Sprites de la mesa giratoria | Render propio (`scripts/sprites/`) |

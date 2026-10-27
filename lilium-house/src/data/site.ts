@@ -86,12 +86,11 @@ export const SCENES = [
 
 // La carta por momento del día ("Desayunos, almuerzos y meriendas", como dice el perfil).
 // Las fotos son del Instagram del local; los nombres y descripciones hay que confirmarlos
-// con la carta real. `plato` = foto de estudio (IA, ilustrativa) y sprite de la mesa giratoria; `recorte` = foto real
-// del Instagram recortada sobre su color (`src` sin el ancho: hay -360 y -720); `foto` = foto de la casa tal cual.
+// con la carta real. `plato` = foto de estudio (IA, ilustrativa) y sprite de la mesa giratoria; `estudio` = solo foto de
+// estudio (IA, ilustrativa) en /carta/<src>-{360,720}.webp.
 export type CartaItem =
   | { kind: 'plato'; id: 'cafe' | 'chipa' | 'te' | 'cheesecake' | 'torta' | 'tostado' | 'ensalada'; name: string; note: string; desc: string }
-  | { kind: 'foto'; src: string; name: string; note: string; desc: string }
-  | { kind: 'recorte'; src: string; name: string; note: string; desc: string }
+  | { kind: 'estudio'; src: string; name: string; note: string; desc: string }
 
 export const CARTA: { id: string; label: string; time: string; intro: string; items: CartaItem[] }[] = [
   {
@@ -101,9 +100,9 @@ export const CARTA: { id: string; label: string; time: string; intro: string; it
     intro: 'Para arrancar el día sin apuro.',
     items: [
       { kind: 'plato', id: 'cafe', name: 'Café de especialidad', note: 'espresso, con leche o frío', desc: 'Tazas generosas y latte art de la casa.' },
-      { kind: 'foto', src: '/fotos/box-desayuno.webp', name: 'Box de desayuno', note: 'para regalar', desc: 'Bagel, scones, cookies, medialuna y fruta.' },
+      { kind: 'estudio', src: 'box-desayuno', name: 'Box de desayuno', note: 'para regalar', desc: 'Bagel, scones, cookies, medialuna y fruta.' },
       { kind: 'plato', id: 'chipa', name: 'Chipa', note: 'recién horneada', desc: 'Almidón de mandioca y queso, calentita.' },
-      { kind: 'recorte', src: '/carta/real/croissant-huevos', name: 'Croissant con huevos', note: 'para empezar con todo', desc: 'Jamón crudo, huevos a la plancha y verdes.' },
+      { kind: 'estudio', src: 'croissant-huevos', name: 'Croissant con huevos', note: 'para empezar con todo', desc: 'Jamón crudo, huevos a la plancha y verdes.' },
       { kind: 'plato', id: 'te', name: 'Té en tetera', note: 'para compartir', desc: 'Hebras servidas en tetera, sin apuro.' },
     ],
   },
@@ -113,11 +112,11 @@ export const CARTA: { id: string; label: string; time: string; intro: string; it
     time: '12:00',
     intro: 'Al mediodía, algo rico y liviano para seguir paseando.',
     items: [
-      { kind: 'foto', src: '/fotos/picada.webp', name: 'Tabla para compartir', note: 'para la mesa', desc: 'Quesos, fiambres, aceitunas y tomates.' },
+      { kind: 'estudio', src: 'tabla', name: 'Tabla para compartir', note: 'para la mesa', desc: 'Quesos, fiambres, aceitunas y tomates.' },
       { kind: 'plato', id: 'tostado', name: 'Tostados y sándwiches', note: 'a la plancha', desc: 'En pan de la casa, con jugo o café.' },
       { kind: 'plato', id: 'ensalada', name: 'Ensaladas', note: 'frescas', desc: 'Verdes de estación, tomate y huevo.' },
-      { kind: 'recorte', src: '/carta/real/sandwich-crudo', name: 'Sándwich de crudo', note: 'en pan integral', desc: 'Jamón crudo, queso y verdes.' },
-      { kind: 'recorte', src: '/carta/real/sandwich-papas', name: 'Sándwich con papas', note: 'para el mediodía', desc: 'Carne, queso y lechuga en pan largo, con papas fritas.' },
+      { kind: 'estudio', src: 'sandwich-crudo', name: 'Sándwich de crudo', note: 'en pan integral', desc: 'Jamón crudo, queso y verdes.' },
+      { kind: 'estudio', src: 'sandwich-papas', name: 'Sándwich con papas', note: 'para el mediodía', desc: 'Carne, queso y lechuga en pan largo, con papas fritas.' },
     ],
   },
   {
@@ -126,13 +125,13 @@ export const CARTA: { id: string; label: string; time: string; intro: string; it
     time: '17:00',
     intro: 'La vitrina se abre: tortas, budines y tentaciones.',
     items: [
-      { kind: 'recorte', src: '/carta/real/torta-oreo', name: 'Torta Oreo', note: 'de la vitrina', desc: 'Capas de crema, galletita y dulce de leche.' },
+      { kind: 'estudio', src: 'torta-oreo', name: 'Torta Oreo', note: 'de la vitrina', desc: 'Capas de crema, galletita y dulce de leche.' },
       { kind: 'plato', id: 'cheesecake', name: 'Cheesecake', note: 'con frutos rojos', desc: 'Cremoso, sobre base crocante.' },
-      { kind: 'recorte', src: '/carta/real/budin-lima', name: 'Budín con lima', note: 'con corona de crema', desc: 'Esponjoso, con crema y ralladura de lima.' },
-      { kind: 'recorte', src: '/carta/real/cheesecake-maracuya', name: 'Cheesecake de maracuyá', note: 'con la pulpa', desc: 'Cremoso, sobre base de chocolate.' },
-      { kind: 'recorte', src: '/carta/real/croissant-frutillas', name: 'Croissant con frutillas', note: 'relleno', desc: 'Crema pastelera, frutillas y azúcar impalpable.' },
-      { kind: 'recorte', src: '/carta/real/brownies', name: 'Brownies', note: 'con frutos rojos', desc: 'Con nueces, dulce de leche y frutos rojos.' },
-      { kind: 'foto', src: '/fotos/red-velvet.webp', name: 'Red velvet', note: 'con frutillas', desc: 'Bizcocho rojo y crema suave.' },
+      { kind: 'estudio', src: 'budin-lima', name: 'Budín con lima', note: 'con corona de crema', desc: 'Esponjoso, con crema y ralladura de lima.' },
+      { kind: 'estudio', src: 'cheesecake-maracuya', name: 'Cheesecake de maracuyá', note: 'con la pulpa', desc: 'Cremoso, sobre base de chocolate.' },
+      { kind: 'estudio', src: 'croissant-frutillas', name: 'Croissant con frutillas', note: 'relleno', desc: 'Crema pastelera, frutillas y azúcar impalpable.' },
+      { kind: 'estudio', src: 'brownies', name: 'Brownies', note: 'con frutos rojos', desc: 'Con nueces, dulce de leche y frutos rojos.' },
+      { kind: 'estudio', src: 'red-velvet', name: 'Red velvet', note: 'con frutillas', desc: 'Bizcocho rojo y crema suave.' },
       { kind: 'plato', id: 'torta', name: 'Torta de chocolate', note: 'húmeda', desc: 'Con frambuesa.' },
     ],
   },
