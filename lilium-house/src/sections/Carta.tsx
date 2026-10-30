@@ -35,8 +35,8 @@ function tabByHour() {
 }
 
 function Item({ item }: { item: CartaItem }) {
-  if (item.kind === 'foto' || item.kind === 'recorte') {
-    const src = item.kind === 'recorte' ? `${item.src}-360.webp` : item.src
+  if (item.kind === 'estudio') {
+    const src = `/carta/${item.src}-360.webp`
     // foto de la casa: copia impresa apoyada sobre la mesa
     return (
       <div data-plato="" className="w-[86%] max-w-[240px] bg-[#FFFDF7] p-2 pb-7 shadow-[0_18px_22px_-12px_rgb(0_0_0/0.6)]">
